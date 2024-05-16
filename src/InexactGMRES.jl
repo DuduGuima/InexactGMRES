@@ -1,30 +1,12 @@
 module InexactGMRES
 
 using LinearAlgebra
+using HMatrices
 
-function Arnold(A,n,b=A[:,1])
-    Q = zeros(size(A)[2],n)
-    H = zeros(n,n)
-    v=b/norm(b)
-    Q[:,1] = v
-    for k=1:n
-        if k>1
-            Q[:,k] = v / H[k,k-1]
-        end
-        v = A*Q[:,k]
-        for j=1:k
-            H[j,k] = (Q[:,j]')*v
-            v-= H[j,k]*Q[:,j]
-        end
-        if k<n
-            H[k+1,k] = norm(v)
-        end
-        
-    end
-    return Q,H
-end
+export igmres
 
-function MyGMRES(A,b,maxiter=size(A,2),restart = length(b),see_r = false,tol=0.0005)
+
+function igmres(A,b,maxiter=size(A,2),restart = length(b),see_r = false,tol=0.0005)
     it=0
     bheta = norm(b)
     m=restart
