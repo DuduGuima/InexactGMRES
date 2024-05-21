@@ -7,15 +7,21 @@ export igmres
 
 
 function igmres(A,b,maxiter=size(A,2),restart = length(b),see_r = false,tol=0.0005)
+
+    T = eltype(A)
+
     it=0
     bheta = norm(b)
     m=restart
-    x=zeros(size(b))
+    x=zeros(size(b))#
     res = bheta
+
     while it<maxiter
         Q=zeros(size(A,1),m+1)
         H=zeros(m+1,m)
-        J = Vector{Any}(undef,m)
+
+        J = Vector{Any}(undef,m)#
+
         e1=zeros(m+1,1)
         e1[1]=bheta
         v = b/bheta
@@ -27,7 +33,9 @@ function igmres(A,b,maxiter=size(A,2),restart = length(b),see_r = false,tol=0.00
             end
             ###Arnold's iteration inside GMRES to use Q,H from past iterations
             #----------------------------------------------
-            v = A*Q[:,k]
+            #Aqn= h11*q1 + h22*q2 + ... + hn+1n+1 *qn+1
+            v = A*Q[:,k] #main heavy part should be in this matrix-vector produ
+            
             for j=1:k
                 H[j,k] = (Q[:,j]')*v
                 v-= H[j,k]*Q[:,j]
@@ -56,9 +64,12 @@ function igmres(A,b,maxiter=size(A,2),restart = length(b),see_r = false,tol=0.00
             #since now H is rotated in the final linear system, we need to change the RHS too:
             e1=J[k]*e1
             #-------------------------------------
-            y = H[1:k,1:k]\e1[1:k] #-> ta feio isso aqui paizao
-            x=Q[:,1:k]*y#-> isso aqui entao nem se fala
-            res=norm(A*x - b)
+            y = H[1:k,1:k]\e1[1:k]#mudar isso aqui
+
+            x=Q[:,1:k]*y#-> take out this product?
+
+            #res=norm(A*x - b)#get another way of measure residual
+            res = e1[m+1]
             if res < tol#ta zoado esse calculo aqui tb
                 println("Finished at iteration: ",it+1," Final residual: ",res)
                 return x
