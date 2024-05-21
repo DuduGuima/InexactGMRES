@@ -6,34 +6,43 @@ using HMatrices
 export igmres
 
 
-function igmres(A,b,maxiter=size(A,2),restart = length(b),see_r = false,tol=0.0005)
+function igmres(A,b,maxiter=size(A,2),restart = min(length(b),maxiter),see_r = false,tol=1e-10)
 
-    T = eltype(A)
+    if eltype(A)==ComplexF64 || eltype(b)==ComplexF64
+        T = ComplexF64
+
+    else
+        T = eltype(A)
+    end
+    x = zeros(T,size(b))
+    residuals = zeros(Float64,maxiter)
 
     it=0
     bheta = norm(b)
     m=restart
-    x=zeros(size(b))#
     res = bheta
 
     while it<maxiter
-        Q=zeros(size(A,1),m+1)
-        H=zeros(m+1,m)
+        Q=zeros(T,size(A,1),m+1)
+        H=zeros(T,m+1,m)
 
         J = Vector{Any}(undef,m)#
 
-        e1=zeros(m+1,1)
+        #resduals = 
+        e1=zeros(T,m+1,1)
         e1[1]=bheta
         v = b/bheta
         Q[:,1] = v
         for k=1:m
+            if it>= maxiter
+                break
+            end
             it+=1
             if see_r
                 println("Iteration: ",it," Current residual: ",res)
             end
             ###Arnold's iteration inside GMRES to use Q,H from past iterations
             #----------------------------------------------
-            #Aqn= h11*q1 + h22*q2 + ... + hn+1n+1 *qn+1
             v = A*Q[:,k] #main heavy part should be in this matrix-vector produ
             
             for j=1:k
@@ -69,15 +78,17 @@ function igmres(A,b,maxiter=size(A,2),restart = length(b),see_r = false,tol=0.00
             x=Q[:,1:k]*y#-> take out this product?
 
             #res=norm(A*x - b)#get another way of measure residual
-            res = e1[m+1]
-            if res < tol#ta zoado esse calculo aqui tb
+
+            res = norm(e1[k+1])
+            residuals[it] = res/bheta
+            if res < tol #ta zoado esse calculo aqui tb
                 println("Finished at iteration: ",it+1," Final residual: ",res)
-                return x
+                return x,residuals,it
             end
         end
-    end
+    end #main while loop
     println("Maximum iteration reached")
-    return x
-end
+    return x,residuals,it
+end 
 
 end # module InexactGMRES
