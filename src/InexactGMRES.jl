@@ -6,6 +6,23 @@ using HMatrices
 export igmres
 
 
+function triangularsquares!(y,A,b)
+    #y is required to have same length as b
+    #A is supposed to be upper triangular, and square
+    #b is the RHS, same length as A 
+    m = length(b)
+    #x = zeros(ComplexF64,m)#always in complex values
+    for k=m:-1:1
+        y[k] = b[k]
+        for j=m:-1:k+1
+            y[k] = y[k] - A[k,j]*y[j]
+        end
+        y[k] = y[k]/A[k,k]
+    end
+end
+
+
+
 function igmres(A,b,maxiter=size(A,2),restart = min(length(b),maxiter),see_r = false,tol=1e-10)
 
     if eltype(A)==ComplexF64 || eltype(b)==ComplexF64
@@ -73,14 +90,15 @@ function igmres(A,b,maxiter=size(A,2),restart = min(length(b),maxiter),see_r = f
             #since now H is rotated in the final linear system, we need to change the RHS too:
             e1=J[k]*e1
             #-------------------------------------
-            y = H[1:k,1:k]\e1[1:k]#mudar isso aqui
+            #y = H[1:k,1:k]\e1[1:k] since H is now upper triangular, we could just make a backward substitution
+            triangularsquares!(x,H[1:k,1:k],e1[1:k])
 
-            x=Q[:,1:k]*y#-> take out this product?
+            x=Q[:,1:k]*x[1:k]#-> take out this product?
 
-            #res=norm(A*x - b)#get another way of measure residual
-
+            #Residuals are always stored in the last element of e1
             res = norm(e1[k+1])
             residuals[it] = res/bheta
+
             if res < tol #ta zoado esse calculo aqui tb
                 println("Finished at iteration: ",it+1," Final residual: ",res)
                 return x,residuals,it

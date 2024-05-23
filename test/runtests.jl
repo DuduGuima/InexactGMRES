@@ -31,4 +31,18 @@ using InexactGMRES
 
 end;
 
+# @testset "check least squares solver" begin
+#     for m=10:20
+#         A = rand(m,m)
+#         b = rand(m)
+#         A_t=UpperTriangular(A)
 
+#         my_x = triangularsquares!(A_t,b)
+#         true_x = A_t\b
+
+#         res = norm(true_x - my_x)/norm(true_x)
+
+#         @test res < 1e-5
+#     end
+
+# end;
