@@ -21,6 +21,30 @@ function triangularsquares!(y,A,b)
     end
 end
 
+function my_arnoldi!(Q,H,A, current_it)
+    Q[:,current_it+1] = A*Q[:,current_it] #heavy part should be here
+    for j=1:current_it
+        H[j,current_it] = (Q[:,j]')*Q[:,current_it+1]
+        Q[:,current_it+1]-= H[j,current_it]*Q[:,j]
+    end
+    H[current_it+1,current_it]=norm(Q[:,current_it+1])
+    Q[:,current_it+1]/=H[current_it+1,current_it]
+end
+
+function my_rotation!(H,J,rhs,current_it)
+    #given two integers k and k+1, it will return an object G with 4 numbers:(k,k+1,s,c)
+    #b=G*a with a column vector a of length k+1 will return a new vector b which has
+    #b[k+1] = 0 and b[k] changed by the rotation
+    for j=1:current_it-1
+        H[1:current_it+1,current_it] = J[j] * H[1:current_it+1,current_it]
+    end
+
+    J[current_it], = givens(H[current_it,current_it],H[current_it+1,current_it],current_it,current_it+1)
+
+    H[1:current_it+1,current_it] = J[current_it] * H[1:current_it+1,current_it]
+
+    rhs[:]=J[current_it]*rhs
+end
 
 
 function igmres(A,b,maxiter=size(A,2),restart = min(length(b),maxiter),see_r = false,tol=1e-10)
@@ -60,37 +84,16 @@ function igmres(A,b,maxiter=size(A,2),restart = min(length(b),maxiter),see_r = f
             end
             ###Arnold's iteration inside GMRES to use Q,H from past iterations
             #----------------------------------------------
-            v = A*Q[:,k] #main heavy part should be in this matrix-vector produ
-            
-            for j=1:k
-                H[j,k] = (Q[:,j]')*v
-                v-= H[j,k]*Q[:,j]
-            end
-            H[k+1,k]=norm(v)
-            Q[:,k+1] = v/H[k+1,k]
-
+            my_arnoldi!(Q,H,A,k)#no new vector is created, everything is done directly in H and Q
             #---------------------------#
 
             ###Givens rotation
             #-----------------------------------
             #We use this so that H is upper triangular, which speeds up the
             #least square problem we'll have to solve afterwards, to find y
-            for j=1:k-1
-                H[1:k+1,k] = J[j] * H[1:k+1,k]
-            end
-            #this givens functions isn't very intuitive
-            #given two integers k and k+1, it will return an object with 4 numbers:(k,k+1,s,c)
-            #where s and c are the numbers needed to rotate a vector X in a way such that will
-            #anulate H[k+1,k] and change H[k,k].
-            #it seems the object is pre-programmed to do calculations on vectors where k and k+1
-            #make sense, so thats why we have to create e1 as a maxiter + 1 column vector 
-            J[k], = givens(H[k,k],H[k+1,k],k,k+1)
-            #the loop above only fixes the first k elements, to change the last one:
-            H[1:k+1,k] = J[k] * H[1:k+1,k]
-            #since now H is rotated in the final linear system, we need to change the RHS too:
-            e1=J[k]*e1
+            my_rotation!(H,J,e1,k)
             #-------------------------------------
-            #y = H[1:k,1:k]\e1[1:k] since H is now upper triangular, we could just make a backward substitution
+            #since H is now upper triangular, we could just make a backward substitution
             triangularsquares!(x,H[1:k,1:k],e1[1:k])
 
             x=Q[:,1:k]*x[1:k]#-> take out this product?
