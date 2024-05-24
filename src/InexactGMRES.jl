@@ -23,13 +23,13 @@ function triangularsquares!(y, A, b)
 end
 
 function my_arnoldi!(Q, H, A, current_it)
-    Q[:, current_it+1] = A * Q[:, current_it] #heavy part should be here
+    push!(Q, A * Q[current_it]) # heavy part should be here
     for j = 1:current_it
-        H[j, current_it] = (Q[:, j]') * Q[:, current_it+1]
-        Q[:, current_it+1] -= H[j, current_it] * Q[:, j]
+        H[j, current_it] = (Q[j]') * Q[current_it+1]
+        Q[current_it+1] -= H[j, current_it] * Q[j]
     end
-    H[current_it+1, current_it] = norm(Q[:, current_it+1])
-    Q[:, current_it+1] /= H[current_it+1, current_it]
+    H[current_it+1, current_it] = norm(Q[current_it+1])
+    Q[current_it+1] /= H[current_it+1, current_it]
 end
 
 function my_rotation!(H, J, rhs, current_it)
@@ -60,9 +60,8 @@ function igmres(A, b, maxiter=size(A, 2), restart=min(length(b), maxiter), see_r
     bheta = norm(b)
     m = restart
     res = bheta
-    # Q = Vector{Vector{T}}()
+    Q = Vector{Vector{T}}()
     while it < maxiter
-        Q = zeros(T, size(A, 1), m + 1)
         H = zeros(T, m + 1, m)
         J = Vector{Any}(undef, m)#
 
@@ -70,8 +69,7 @@ function igmres(A, b, maxiter=size(A, 2), restart=min(length(b), maxiter), see_r
         e1 = zeros(T, m + 1, 1)
         e1[1] = bheta
         v = b / bheta
-        Q[:, 1] = v
-        # push!(Q, v)
+        push!(Q, v)
         for k = 1:m
             if it >= maxiter
                 break
@@ -99,9 +97,12 @@ function igmres(A, b, maxiter=size(A, 2), restart=min(length(b), maxiter), see_r
             residuals[it] = res / bheta
 
             if res < tol #ta zoado esse calculo aqui tb
-                x = Q[:, 1:k] * x[1:k]#-> take out this product?
-                println("Finished at iteration: ", it + 1, " Final residual: ", res)
-                return x, residuals, it
+                y = zero(x)
+                for n = 1:k
+                    y += Q[n] * x[n]
+                end
+                # println("Finished at iteration: ", it + 1, " Final residual: ", res)
+                return y, residuals, it
             end
         end
     end #main while loop

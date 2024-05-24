@@ -3,31 +3,31 @@ using Random
 using LinearAlgebra
 using InexactGMRES
 
-@test true==true
+@test true == true
 
 @testset "check convergence" begin
-    m=200
+    m = 200
     n_iterations = 18
-    A = Matrix((2.0+0im)*I,m,m) + 0.5*randn(m,m)/sqrt(m)
-    b = ones(ComplexF64,m,1)
+    A = Matrix((2.0 + 0im) * I, m, m) + 0.5 * randn(m, m) / sqrt(m)
+    b = ones(ComplexF64, m)
 
-    D = Matrix((1.0+0im)*I ,m,m)
+    D = Matrix((1.0 + 0im) * I, m, m)
 
-    for i=0:m-1
-        D[i+1,i+1] = (-2 +2*sin((i*pi)/(m-1))) + cos((i*pi)/(m-1))im
+    for i = 0:m-1
+        D[i+1, i+1] = (-2 + 2 * sin((i * pi) / (m - 1))) + cos((i * pi) / (m - 1))im
     end
 
     A_slow = A + D
 
-    x_fast,residuals_fast,fast_it = igmres(A,b)
-    x_slow,residuals_slow,slow_it = igmres(A_slow,b)
+    x_fast, residuals_fast, fast_it = igmres(A, b)
+    x_slow, residuals_slow, slow_it = igmres(A_slow, b)
 
-    x_ftrue = A\b
-    x_strue = A_slow\b
+    x_ftrue = A \ b
+    x_strue = A_slow \ b
 
-    @test norm(A*x_fast - b) < 1e-10
-    @test norm(A_slow*x_slow - b) < 1e-10
-    @test fast_it<slow_it
+    @test norm(A * x_fast - b) < 1e-10
+    @test norm(A_slow * x_slow - b) < 1e-10
+    @test fast_it < slow_it
 
 end;
 
