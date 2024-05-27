@@ -6,6 +6,12 @@ using HMatrices
 export igmres
 
 
+"""
+    triangularsquares!(y,A,b)
+
+Solves the system Ax = b with backwards substitution, assuming A is always upper triangular.
+A must be a vector of vectors, where each A[i] is a column vector added through push!(A,v).
+"""
 
 function triangularsquares!(y, A, b)
     #y is required to have same length as b
@@ -23,11 +29,18 @@ function triangularsquares!(y, A, b)
     end
 end
 
+
+"""
+    my_arnoldi(Q,H,A,current_it)
+
+Calculates the current_it'th iteration of the Arnoldi's Method.
+Q and H are assumed as vectors of vectors, where Q[i] stores the i-th orthonormal vector we'll be using as a basis for Km(A,b)
+and H[i] stores de i+1 first values of H's i-th column.
+"""
 function my_arnoldi!(Q, H, A, current_it)
     push!(Q, A * Q[current_it]) # heavy part should be here
     push!(H,zeros(current_it+1))
     for j = 1:current_it
-        #H[j, current_it] = (Q[j]') * Q[current_it+1]
         H[current_it][j] = (Q[j]') * Q[current_it+1]
         Q[current_it+1] -= H[current_it][j] * Q[j]
     end
@@ -35,6 +48,14 @@ function my_arnoldi!(Q, H, A, current_it)
     Q[current_it+1] /= H[current_it][current_it+1]
 end
 
+
+"""
+    my_rotation!(H,J,rhs,current_it)
+
+Applies Givens's Operator to rotate H and transform it in a upper triangular matrix.
+The sequence of operators is assumed to be stored in J.
+It also applies the transformations to the Right Hand Side(RHS).
+"""
 function my_rotation!(H, J, rhs, current_it)
     #given two integers k and k+1, it will return an object G with 4 numbers:(k,k+1,s,c)
     #b=G*a with a column vector a of length k+1 will return a new vector b which has
@@ -54,18 +75,22 @@ end
     igmres(...)
 """
 function igmres(A, b, maxiter=size(A, 2), restart=min(length(b), maxiter), see_r=false, tol=1e-10)
+    #choose type to create vectors and matrices
     TA = eltype(A)
     Tb = eltype(b)
     T = promote_type(TA, Tb)
-    x = zeros(T, size(b))
-    residuals = zeros(real(T), maxiter)
+
+    
+    x = zeros(T, size(b))#will hold answer
+    residuals = zeros(real(T), maxiter) # will hold residuals
     it = 0
     bheta = norm(b)
     m = restart
     res = bheta
-    Q = Vector{Vector{T}}()
-    H = Vector{Vector{T}}()
+    
     while it < maxiter
+        Q = Vector{Vector{T}}()
+        H = Vector{Vector{T}}()
         J = Vector{Any}(undef, m)#
 
         #resduals =
@@ -88,11 +113,10 @@ function igmres(A, b, maxiter=size(A, 2), restart=min(length(b), maxiter), see_r
 
             ###Givens rotation
             #-----------------------------------
-            #We use this so that H is upper triangular, which speeds up the
-            #least square problem we'll have to solve afterwards, to find y
+            #Rotations on H to make it triangular
             my_rotation!(H, J, e1, k)
             #-------------------------------------
-            #since H is now upper triangular, we could just make a backward substitution
+
             triangularsquares!(x, H, e1[1:k])
 
             #Residuals are always stored in the last element of e1
@@ -116,7 +140,7 @@ end
 """
     trefethen_fast(m)
 
-Create the matrix A from Trefethen and Bau's book, formula xx.xx.
+Create the matrix A from Trefethen and Bau's book, formula 35.17, in examples 35.1 and 35.2
 """
 function trefethen_fast(m)
     A = Matrix((2.0 + 0im) * I, m, m) + 0.5 * randn(m, m) / sqrt(m)
