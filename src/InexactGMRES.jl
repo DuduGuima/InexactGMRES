@@ -10,26 +10,29 @@ export igmres
 function triangularsquares!(y, A, b)
     #y is required to have same length as b
     #A is supposed to be upper triangular, and square
+    #Here, A is also an vector of vectors, so the expression need to be adapted
     #b is the RHS, same length as A
     m = length(b)
     #x = zeros(ComplexF64,m)#always in complex values
     for k = m:-1:1
         y[k] = b[k]
         for j = m:-1:k+1
-            y[k] = y[k] - A[k, j] * y[j]
+            y[k] = y[k] - A[j][k] * y[j]
         end
-        y[k] = y[k] / A[k, k]
+        y[k] = y[k] / A[k][k]
     end
 end
 
 function my_arnoldi!(Q, H, A, current_it)
     push!(Q, A * Q[current_it]) # heavy part should be here
+    push!(H,zeros(current_it+1))
     for j = 1:current_it
-        H[j, current_it] = (Q[j]') * Q[current_it+1]
-        Q[current_it+1] -= H[j, current_it] * Q[j]
+        #H[j, current_it] = (Q[j]') * Q[current_it+1]
+        H[current_it][j] = (Q[j]') * Q[current_it+1]
+        Q[current_it+1] -= H[current_it][j] * Q[j]
     end
-    H[current_it+1, current_it] = norm(Q[current_it+1])
-    Q[current_it+1] /= H[current_it+1, current_it]
+    H[current_it][current_it+1] = norm(Q[current_it+1])
+    Q[current_it+1] /= H[current_it][current_it+1]
 end
 
 function my_rotation!(H, J, rhs, current_it)
@@ -37,12 +40,12 @@ function my_rotation!(H, J, rhs, current_it)
     #b=G*a with a column vector a of length k+1 will return a new vector b which has
     #b[k+1] = 0 and b[k] changed by the rotation
     for j = 1:current_it-1
-        H[1:current_it+1, current_it] = J[j] * H[1:current_it+1, current_it]
+        H[current_it] = J[j] * H[current_it]
     end
 
-    J[current_it], = givens(H[current_it, current_it], H[current_it+1, current_it], current_it, current_it + 1)
+    J[current_it], = givens(H[current_it][current_it], H[current_it][current_it+1], current_it, current_it + 1)
 
-    H[1:current_it+1, current_it] = J[current_it] * H[1:current_it+1, current_it]
+    H[current_it] = J[current_it] * H[current_it]
 
     rhs[:] = J[current_it] * rhs
 end
@@ -61,8 +64,8 @@ function igmres(A, b, maxiter=size(A, 2), restart=min(length(b), maxiter), see_r
     m = restart
     res = bheta
     Q = Vector{Vector{T}}()
+    H = Vector{Vector{T}}()
     while it < maxiter
-        H = zeros(T, m + 1, m)
         J = Vector{Any}(undef, m)#
 
         #resduals =
@@ -90,7 +93,7 @@ function igmres(A, b, maxiter=size(A, 2), restart=min(length(b), maxiter), see_r
             my_rotation!(H, J, e1, k)
             #-------------------------------------
             #since H is now upper triangular, we could just make a backward substitution
-            triangularsquares!(x, H[1:k, 1:k], e1[1:k])
+            triangularsquares!(x, H, e1[1:k])
 
             #Residuals are always stored in the last element of e1
             res = norm(e1[k+1])
