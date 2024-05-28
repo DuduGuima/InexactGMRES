@@ -42,10 +42,15 @@ function my_arnoldi!(Q, H, A, current_it)
     push!(H,zeros(current_it+1))
     for j = 1:current_it
         H[current_it][j] = (Q[j]') * Q[current_it+1]
-        Q[current_it+1] -= H[current_it][j] * Q[j]
+        #Q[current_it+1] -= H[current_it][j] * Q[j]
+        
+        #mul!(C,A,B,alpha,bheta) : C = (A*B)alpha + bhetaC
+        mul!(Q[current_it+1],I,Q[j],-H[current_it][j],1)
     end
     H[current_it][current_it+1] = norm(Q[current_it+1])
-    Q[current_it+1] /= H[current_it][current_it+1]
+    
+    #Q[current_it+1] /= H[current_it][current_it+1]
+    lmul!(1/H[current_it][current_it+1],Q[current_it+1])
 end
 
 
@@ -61,14 +66,20 @@ function my_rotation!(H, J, rhs, current_it)
     #b=G*a with a column vector a of length k+1 will return a new vector b which has
     #b[k+1] = 0 and b[k] changed by the rotation
     for j = 1:current_it-1
-        H[current_it] = J[j] * H[current_it]
+        
+        #H[current_it] = J[j] * H[current_it]
+        lmul!(J[j],H[current_it])
     end
 
     J[current_it], = givens(H[current_it][current_it], H[current_it][current_it+1], current_it, current_it + 1)
+    
+    #H[current_it] = J[current_it] * H[current_it]
+    lmul!(J[current_it],H[current_it])
 
-    H[current_it] = J[current_it] * H[current_it]
 
-    rhs[:] = J[current_it] * rhs
+    #rhs[:] = J[current_it] * rhs
+    lmul!(J[current_it],rhs)
+    
 end
 
 """
@@ -133,8 +144,14 @@ function igmres(A, b, maxiter=size(A, 2), restart=min(length(b), maxiter), see_r
             end
         end
     end #main while loop
+    y = zero(x)
+    for n = 1:k
+        y += Q[n] * x[n]
+    end
+            
+                
     println("Maximum iteration reached")
-    return x, residuals, it
+    return y, residuals, it
 end
 
 """
