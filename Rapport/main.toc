@@ -9,3 +9,4 @@
 \contentsline {chapter}{\numberline {3}Matrices Hiérarchiques et méthode ACA}{7}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Matrices low-rank}{7}{section.3.1}%
 \contentsline {section}{\numberline {3.2}Méthode ACA(Adaptative Cross Approximation)}{8}{section.3.2}%
+\contentsline {chapter}{Bibliography}{9}{equation.3.2.5}%

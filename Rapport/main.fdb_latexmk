@@ -1,8 +1,15 @@
 # Fdb version 3
-["pdflatex"] 1717405696 "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" "main.pdf" "main" 1717405697
+["bibtex main"] 1717407282 "main.aux" "main.bbl" "main" 1717407283
+  "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
+  "bibliografia.bib" 1717394166 892 0a455a2b4df020e10df1a38a35e394f2 ""
+  "main.aux" 1717407283 5008 abae8089e65b4a324d1f363872477e8f "pdflatex"
+  (generated)
+  "main.bbl"
+  "main.blg"
+["pdflatex"] 1717407282 "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" "main.pdf" "main" 1717407283
   "/dev/null" 1717394772 0 d41d8cd98f00b204e9800998ecf8427e ""
   "/etc/texmf/web2c/texmf.cnf" 1717400101 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" 1717405694 16434 08a6bd4daceca6cf02cc362efd9967d9 ""
+  "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" 1717407280 16424 da5d88dfc431419e68c066b5028c16b2 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1000.tfm" 1136768653 3584 adb004a0c8e7c46ee66cad73671f37b4 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/euler/eufm10.tfm" 1246382020 1040 b84415f97d114011685943ade933dc71 ""
@@ -186,10 +193,11 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1717402444 4076837 dc187c2b7f4d7919f2284be86ca17ce2 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1717405446 2110259 3bb9d54f1d5b7ed5b00a9ea7a3d936ec ""
   "images/ensta_logo.svg" 1717394166 8935 f32d479ef2de92a22e486ba130e9fd4d ""
-  "main.aux" 1717405697 4697 12d2f07e95463dd235244dfe845421be "pdflatex"
-  "main.out" 1717405697 1759 9a22dc1f1466bac33d97bce14f3e28d8 "pdflatex"
-  "main.tex" 1717405694 16434 08a6bd4daceca6cf02cc362efd9967d9 ""
-  "main.toc" 1717405697 838 5aa3a4005d76d4d30d54d98f813f798e "pdflatex"
+  "main.aux" 1717407283 5008 abae8089e65b4a324d1f363872477e8f "pdflatex"
+  "main.bbl" 1717407282 739 7f6f5088138fb5b34cda3d637cf5ba6c "bibtex main"
+  "main.out" 1717407283 1868 52a10bf41b95ed44d07c364409bd830b "pdflatex"
+  "main.tex" 1717407280 16424 da5d88dfc431419e68c066b5028c16b2 ""
+  "main.toc" 1717407283 896 f4d892cc0cdbd955b20044a96970d396 "pdflatex"
   "svg-inkscape/ensta_logo_svg-tex.pdf" 1717405157 8003 004c634d6e7b2191cea3f342df8affa1 ""
   "svg-inkscape/ensta_logo_svg-tex.pdf_tex" 1717405157 2087 e8135603b92125faae49e4f3286abbcf ""
   (generated)
