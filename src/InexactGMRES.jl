@@ -44,7 +44,7 @@ function my_arnoldi!(Q, H, A, current_it)
         H[current_it][j] = (Q[j]') * Q[current_it+1]
         #Q[current_it+1] -= H[current_it][j] * Q[j]
         
-        #mul!(C,A,B,alpha,bheta) : C = (A*B)alpha + bhetaC
+        #mul!(C,A,B,alpha,bheta) : C <- (A*B)alpha + bhetaC
         mul!(Q[current_it+1],I,Q[j],-H[current_it][j],1)
     end
     H[current_it][current_it+1] = norm(Q[current_it+1])
@@ -85,7 +85,7 @@ end
 """
     igmres(...)
 """
-function igmres(A, b, maxiter=size(A, 2), restart=min(length(b), maxiter), see_r=false, tol=1e-10)
+function igmres(A, b;maxiter=size(A, 2), restart=min(length(b), maxiter), see_r=false, tol=sqrt(eps()))
     #choose type to create vectors and matrices
     TA = eltype(A)
     Tb = eltype(b)

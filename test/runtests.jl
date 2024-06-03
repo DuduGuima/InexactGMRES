@@ -2,11 +2,12 @@ using Test
 using Random
 using LinearAlgebra
 using InexactGMRES
+using IterativeSolvers
 
 @test true == true
 
 @testset "check convergence" begin
-    m = 200
+    m = 700
     n_iterations = 18
     A = Matrix((2.0 + 0im) * I, m, m) + 0.5 * randn(m, m) / sqrt(m)
     b = ones(ComplexF64, m)
@@ -21,9 +22,13 @@ using InexactGMRES
 
     x_fast, residuals_fast, fast_it = igmres(A, b)
     x_slow, residuals_slow, slow_it = igmres(A_slow, b)
+    x_juliafast
 
     x_ftrue = A \ b
     x_strue = A_slow \ b
+
+
+
 
     @test norm(A * x_fast - b) < 1e-10
     @test norm(A_slow * x_slow - b) < 1e-10
