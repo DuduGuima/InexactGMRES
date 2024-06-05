@@ -1,0 +1,77 @@
+
+\section{Matrices low-rank}
+    
+En pratique, les matrices sont de grande taille, de façon que stocker chaque élément n'est pas efficace ou même faisable.  Si $A \in \mathbb{C}^{n\times m}$ a un rang \textit{k} tel que $k \leq m$ et que $k(n+m) < n*m$ (\textit{A} est low-rank), \textit{A} peut être représentée comme un produit entre deux matrices $U \in \mathbb{C}^{n\times k} $ et $V \in \mathbb{C}^{m\times k}$, ce qui est vu en \ref{eq::outer_product}, où $u_{i}, v_{i}$ sont les vecteurs colonnes de \textit{U} et \textit{V}.
+
+\begin{equation}\label{eq::outer_product}
+    A = UV^{H} = \sum_{i=1} ^{k} u_{i} v_{i} ^{*}
+\end{equation}
+
+Ainsi, en stockant $k(n+m)$ éléments pour représenter $A$, au lieu de $n\times m$. Une matrice \textit{A} qui peut être représentée comme \ref{eq::outer_product} est dite un élément de $\mathbb{C}^{n\times m}_{k}$
+
+La représentation en \ref{eq::outer_product} facilite aussi des autres opérations possibles avec $A$, comme les produits matrice-vecteur $Ab$ qui sont toujours présents dans les méthodes itératives comme GMRES \cite{bebendorf2008hierarchical} et les différentes normes, comme $\norm{A}_{F}, \norm{A}_{2}$ \cite{bebendorf2008hierarchical}. 
+
+Cependant, même matrices de 'full rank', c-à-d matrices peuvent être approximées par matrices de rang plus petit. Un théorème \cite{bebendorf2008hierarchical} établit que la plus proche matrice en $\mathbb{C}^{n\times m}_{k}$ d'une matrice en $\mathbb{C}^{n\times m}$ peut être obtenue de la SVD $A = U \Sigma V^{H}$, où $\Sigma$ contient les valeurs singulières $\sigma_{1} \geq \sigma_{2} \dots \sigma_{m} \geq 0$ et $U,V$ sont unitaires.
+
+Si $ A_{k} $ est l'approximation obtenue en prenant les k premiers éléments de $\Sigma$ (en créant la matrice $ \Sigma_{k} $ ), l'erreur entre $ A $ et $ A_{k} $ est obtenu en \ref{eq:error_lowrank}.
+
+\begin{equation}\label{eq:error_lowrank}
+    \norm{A-A_{k}} = \norm{U\Sigma V^{H} - U^{'} \Sigma_{k} V_{' H}} = \norm{\Sigma - \Sigma_{k}} 
+\end{equation}
+
+Si la norme spectrale, $\norm{.}_{2} $ est utilisée, l'erreur en \ref{eq:error_lowrank} est donné par $\sigma_{k+1}$. Pour la norme de Frobenius, $\norm{.}_{F}$, l'erreur devient $\sum^{n}_{l=k+1} \sigma^{2}_{l}$.
+
+Au lieu d'approximer des grandes matrices en une seule fois, c'est mieux penser dans les approximations faites pour leurs blocs. Des blocs qui vient d'une discrétisation d'opérateurs elliptiques  ont aussi la possibilité d'être aproximés par matrices qui décroissent exponentiellement  $S_{k}$, comme en \ref{eq:exp_matrix}.
+
+\begin{equation}\label{eq:exp_matrix}
+    \norm{A-S_{k}}_{2} < q^{k}\norm{A}_{2}
+\end{equation}
+
+Ainsi, le rang dépend de la précision d'une façon logarithme, et le rang nécessaire pour une certaine $\epsilon$ est \ref{eq:exp_error}.
+
+\begin{equation}\label{eq:exp_error}
+    k(\epsilon) = min\{ k \in \mathbb{N} : \sigma_{k+1} < \epsilon\sigma_{1}\}
+\end{equation}
+
+\section{Méthode ACA(Adaptative Cross Approximation)}
+
+Comment montré dans la section antérieure, la méthode SVD donne une approximation de $A$ à partir d'une erreur $\epsilon$, à travers de la relation en \ref{eq:error_lowrank}. Néanmoins, c'est une méthode lourde, où la complexité la rend infaisable pour les grands calculs qui peuvent apparaître normalement. L'ACA arrive comme une alternative plus efficace pour les problemes où le noyau est asymptotiquement lisse pour au moins une variable. Il faut mentionner que le noyau lui même n'est pas nécessaire, juste l'information qu'il appartient à ce groupe de fonctions.
+
+
+L'algorithme pour la méthode est en \ref{alg:aca_method}, où $a_{ij}$ sont les éléments d'une matrice $A \in \mathbb{R}^{n\times m}$. L'objectif est d'approximer la matrice $A$ pour $A=S_{k} + R_{k}$, $S_{k} = \sum_{l=1}^{k} u_{l}v_{l}^{t}$ et $R_{k}$ est le résidu.
+
+
+\begin{algorithm}
+\caption{Méthode ACA}\label{alg:aca_method}
+\begin{algorithmic}[1]
+\State $k=1$ et $\mathbf{Z} = \emptyset $
+\Repeat
+\State Trouver $i_{k}$
+\State $\hat{v}_{k} = a_{i_{k},1:m} $
+\For{$l=1,\dots , k-1$}
+\State $\hat{v}_{k} = \hat{v}_{k} - (u_{l})_{i_{k}}v_{l} $
+\EndFor
+\State $Z = Z \bigcup \{ i_{k} \} $
+
+\If{$\hat{v}_{k}$ ne disparaît pas}
+\State $j_{k} = argmax_{j}|(\hat{v}_{k})_{j}|$ ; $v_{k} = (\hat{v}_{k})^{-1}_{j_{k}} \hat{v}_{k}$
+\State $u_{k}=a_{1:n,j_{k}}$
+
+\For{$l=1,\dots,k-1$}
+\State $u_{k}=u_{k} - (v_{l})_{j_{k}}u_{l}$
+\EndFor
+\State $k=k+1$
+
+\EndIf
+
+
+\Until{$\norm{u_{k}}\norm{v_{k}} \leq \epsilon$}
+
+\end{algorithmic}
+\end{algorithm}
+
+Soit $I,J \in \mathbb{N}$ l'ensemble des index d'une matrice quelconque et $\mathbf{T}_{I \times J}$ l'arbre que contient une partition admissible \textit{P} de $ I \times J$ dans ses feuilles, $\mathfrak{L}(\mathbf{T}_{I \times J})$. L'ensemble des matrices hiérarchiques en $\mathbf{T}_{I \times J}$ rang k pour chaque bloc $A_{b}$ est définit en \ref{eq:matrix_hier}.
+
+\begin{equation}\label{eq:matrix_hier}
+    \mathfrak{H}(\mathbf{T}_{I \times J},k) = \left\{  A\in \mathbb{C}^{I\times J} : rankA_{b} \leq k, \forall b \in P \right\}
+\end{equation}

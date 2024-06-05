@@ -1,0 +1,121 @@
+Un méthode de projetion en $\mathcal{K}_{k}(A,b)$, où les différentes approximations sont prises comme en \ref{eq:init_gmres}, où $Q_{m}$ est le vecteur défini en \ref{eq:init_arnoldi}.
+
+    \begin{equation}\label{eq:init_gmres}
+        x = x_{0} + Q_{m}y
+    \end{equation}
+
+    Avec \ref{eq:init_gmres} et \ref{eq:init_arnoldi} le résidu devient \ref{eq:final_gmres}, où $x_{0} = 0$, $\beta=\norm{b}$ et $Q_{m+1}^{t}b=(\norm{b} 0 \hspace{0.05in} 0\dots)^{t}$ puisque les colonnes de $Q_{m+1}$ sont des vecteurs orthonormals et $q_{1} = \frac{b}{\norm{b}}$. 
+
+    \begin{align} \label{eq:final_gmres}
+    \begin{split}
+        r(y) &= \norm{b - Ax}\\ 
+        &= \norm{b - A(Q_{m}y)}\\ 
+        &= \norm{b-Q_{m+1}H_{m}y} \\
+        &= \norm{Q_{m+1}(Q_{m+1}^{t}b-H_{m}y)} \\
+        &= \norm{\beta e_{1} - H_{m}y}
+    \end{split}
+    \end{align}
+
+    Ainsi, $y$ qui apparaît en \ref{eq:init_gmres}, est trouvé comme la solution du problème de minimisation du résidu en \ref{eq:final_gmres}.
+
+    \begin{equation}\label{eq:y_gmres}
+        y = min_{y} \norm{\beta e_{1} - H_{m}y}
+    \end{equation}
+
+    Une version initiale du GMRES est en \ref{alg:gmres_init}. Les lignes entre 4 et 12 apportent la Méthode d'Arnoldi présentée en \ref{alg:arnoldi}.
+    
+    \begin{algorithm}
+    \caption{GMRES Initial}\label{alg:gmres_init}
+    \begin{algorithmic}[1]
+    \State $A \in \mathbb{K}^{n \times n}$ et $b\in \mathbb{K}^{n}$
+    \State $x=0, \beta=\norm{b},q_{1}=\frac{b}{\beta}$
+    \For{$k=1,2,\dots$}
+    \For{$j=1,2,\dots k$}
+    \State $q_{j+1} = Aq_{j}$
+
+    \For{ $i=1,2,\dots j$}
+    \State $h_{ij}= q_{j+1}^{t}q_{i}$
+    \State $q_{j+1} = q_{j+1} - h_{ij}q_{i}$
+    \EndFor
+    \State $h_{j+1,j}=\norm{q_{j+1}}$
+    \State $q_{j+1} = \frac{q_{j+1}}{h_{j+1,j}}$
+    \EndFor
+    \State Trouver $y = min_{y} \norm{\beta e_{1} - H_{m}y}$
+    \State $x = Q_{k}y$
+    \State \textbf{Arrêter} si le résidu est inférieur à la tolérance
+    \EndFor
+    \end{algorithmic}
+    \end{algorithm}
+
+    Cependant, \ref{alg:gmres_init} n'apporte pas une façon efficace de trouver le résidu en chaque itération. Pour le résoudre et trouver aussi une mieux façon de traiter le problème des moindres carrés en \ref{eq:y_gmres}, une transformation est appliquée en $H_{m}$, la transformant dans une matrice triangulaire.
+
+    \section{Transformation de Givens}
+
+    L'opérateur de Givens, $G(i,i+1)$, est une matrice unitaire telle que le vecteur colonne résultant $a = Gb$ a les éléments $a(i) = r \in \mathbb{R}$ et $a(i+1)=0$. Il est une matrice de struture comme en \ref{eq:givens}. Les coefficients $c_{i},s_{i}$ n'apparaissent que dans les lignes $i$ et $i+1$.
+
+    \begin{equation}\label{eq:givens}
+    G(i,i+1)=
+    \begin{bmatrix}
+            1 & & & & & & & \\
+             &\ddots & & & & & & \\
+             & & 1 & & & & & \\
+              & & & c_{i}& s_{i} & & & \\
+            & & & -s_{i}& c_{i} & & & \\
+            & & & & & 1& & \\
+            & & & & & & \ddots& \\
+            & & & & & & & 1\\
+    \end{bmatrix}
+    \end{equation}
+
+    L'opérateur est une façon de transformer les colonnes de $H_{m}$, annulant l'élément dehors la diagonale. Comme un produit d'opérateurs unitaires est encore unitaire, cela nous permet récrire \ref{eq:y_gmres} comme \ref{eq:after_givens}, où $R_{m}$ et $g_{m}$ sont les résultats de l'application des opérateurs de Givens à $H_{m}$ et $\beta e_{1}$.
+
+    \begin{equation}\label{eq:after_givens}
+        y = min_{y} \norm{\beta e_{1} - H_{m}y} = min_{y} \norm{g_{m} - R_{m}y}
+    \end{equation}
+
+    Il peut être montré que $g_{m}$ contient aussi la valeur du résidu de chaque itération \cite{saad2003iterative}.
+
+    Ainsi, le nouveau problème \ref{eq:after_givens} peut être résolu avec une simple substitution.
+
+    (écrire le nouvel algorithme )
+
+    \section{GMRES Inexact}
+
+    La plus grande partie des calculs lourds est dans le produit matrice-vecteur contenue en \ref{alg:arnoldi}, dans la ligne 4. Ainsi, un des approches pour accélerer les itérations est ne pas réalizer $Aq $, mais approximer son résultat avec \ref{eq:aprox_Aq}.
+
+    \begin{equation}\label{eq:aprox_Aq}
+        \mathcal{A}q = (A + E)q
+    \end{equation}
+    
+    Oú \textit{E} en \ref{eq:aprox_Aq} est une \textit{matrice erreur} qui change à chaque itération et sera écrite comme $E_{k}$ pour l'itération k.
+
+    Quand le produit matrice-vecteur n'est pas exact, la gauche de \ref{eq:init_arnoldi} doit être changée par \ref{eq:new_projection}.
+
+    % \begin{equation}\label{eq:new_projection}
+    %     [(A + E_{1})q_{1}, (A + E_{2})q_{2},\dots, (A + E_{k})q_{k}] = Q_{k+1}H_{k}
+    % \end{equation}
+
+    \begin{align} \label{eq:new_projection}
+    \begin{split}
+        [(A + E_{1})q_{1}, (A + E_{2})q_{2},\dots, (A + E_{k})q_{k}] &= Q_{k+1}H_{k}\\ 
+        (A + \mathcal{E}_{k})Q_{k} &= Q_{k+1}H_{k}, \hspace{0.1in} \mathcal{E}_{k} = \sum_{i=1}^{k}E_{i}q_{i}q_{i}^{t}\\
+        \mathcal{A}Q_{k} &= Q_{k+1}H_{k}
+    \end{split}
+    \end{align}
+
+
+    Maintenant le sous-espace généré par les vecteurs de $Q_{k}$ n'est plus un sous-espace de Krylov, mais ils sont encore orthonormals.
+    La relation \ref{eq:new_projection} montre aussi que $Q_{k}$ devient une base pour un sous-espace de Krylov, $\mathcal{K}_{k}(A+\mathcal{E}_{k},b)$, spanné par une grande perturbation de $A$, qui est mise à jour dans chaque itération.
+    
+    En utilisant $r_{k}$, le résidu exact, et $\tilde{r}_{k}$, le résidu de la k-ème itération du GMRES inexact, il peut être montré \cite{simoncini2003theory} que si $E_{k}$ suit la relation \ref{eq:res_Hinexact}, alors les deux résidus suivent \ref{eq:res_igmres}.
+
+
+    \begin{equation}\label{eq:res_Hinexact}
+        \norm{E_{k}} \leq \frac{\sigma_{k} \left( \hat{H}_{k} \right) }{k} \frac{1}{\norm{\tilde{r}_{k}}} \epsilon
+    \end{equation}
+
+    \begin{equation}\label{eq:res_igmres}
+        \norm{r_{k}-\tilde{r}_{k}} \leq \epsilon
+    \end{equation}
+
+    En \ref{eq:res_Hinexact}, $\hat{H}_{k}$ est la matrice triangulaire obtenue aprés l'application des rotations de Givens en $H_{k}$ et $\sigma_{k}$ le k-ème valeur singulière d'une matrice quelconte.
