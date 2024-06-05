@@ -9,9 +9,10 @@
 
 ## To do's list 31/05
 
-- Change errors in the report, put it in the Github's repository;
-- Change the function in _aca_partial in compressor.jl in HMatrices to store er/est_norm  in the Rk_Matrix struct;
-- Read notes sent by Pierre;
+- Change errors in the report, put it in the Github's repository;x
+- Change the function in _aca_partial in compressor.jl in HMatrices to store er/est_norm  in the Rk_Matrix struct;x?
+- Read notes sent by Pierre, maybe put them already in the report;x
+- Write partial report to Référent;
 - Transform GMRES into Inexact GMRES;
 
 
