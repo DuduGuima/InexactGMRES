@@ -1,28 +1,33 @@
-\section{Méthodes itératives et motivation}
-    Les méthodes itératives apparaissent comme une alternative aux méthodes de solution directe , où la vrai solution n'est pas recherchée et une bonne approximation suffit.
+\section{Iterative Methods and motivation}
+    
+    Iterative methods appear as an alternative to exact solution methods, where the true solution is not desired and a good approximation is enough.
 
-    L'idée consiste à trouver, après un nombre définit d'itérations, une suite ${x_{k}}$ qui converge à $x$, la solution exacte du problème \ref{eq:suite}.
+
+    
+    The idea is to find, after a certain number of iterations, a sequence ${x_{k}}$ that converges to $x$, the correct solution of the problem \ref{eq:suite}.
+
 
     \begin{equation}\label{eq:suite}
         x = lim_{k \to \infty} x_{k}
     \end{equation}
 
-    La méthode est appliquée de façon à s'arrêter après $k$ itérations, où $x_{k}$ est le premier élément de la suite à satisfaire la condition \ref{eq:ch1_it}.
+    
+    The method stops after $k$ iterations, where $x_{k}$ is the fist element of the sequence to satisfy the condition \ref{eq:ch1_it}.
+
 
     \begin{equation}\label{eq:ch1_it}
        \frac{||x_{k} - x||}{||x||} \leq \epsilon
     \end{equation}
+    Where $\epsilon$ is a tolerance defined by who is applying the algorithm.
 
-    Où $\epsilon$ est une tolérance définie par qui l'applique.
-
-    Normalement $x$ n'est pas connue, de façon que \ref{eq:ch1_it} est changée pour \ref{eq:residual}, où $A$ est la matrice du système linéaire et $b$ le RHS(Right Hand Side).
+    Usually $x$ isn't known, so \ref{eq:ch1_it} gets modified for \ref{eq:residual}, where $A$ is the system's matrix and $b$ is the RHS(right hand side).
 
     \begin{equation}\label{eq:residual}
         \frac{||Ax_{k} - b||}{||b||} \leq \epsilon
     \end{equation}
 
-    Les premiers méthodes itératives utilisaient une décomposition de la matrice $A$ comme une combinaison de deux matrices \ref{eq:A-comb}, où $A_{1}$ est inversible, et chaque itération serait définie comme \ref{eq:A_it}.
-
+    The first iterative methods used a decomposition of $A$ as a combination of two matrices \ref{eq:A-comb}, where $A_{1}$ isn't singular, and each iteration is defined as \ref{eq:A_it}.
+    
     \begin{equation}\label{eq:A-comb}
         A = A_{1} - A_{2}
     \end{equation}
@@ -31,51 +36,51 @@
         A_{1} x_{k+1} = b + A_{2}x_{k}
     \end{equation}
 
-    Avec une substitution des autres $x_{k}$, \ref{eq:A_it} donne \ref{eq:it_fin}, qui converge n'importe quelle solution initiale ssi $\rho(A_{2}A_{1}^{-1}) < 1$, où $\rho(X)$ est le rayon spectral de la matrice X \cite{bonnet}.
+    With a substitution of the others $x_{k}$, \ref{eq:A_it} gives \ref{eq:it_fin}, which converges for every initial solution if and only lff $\rho(A_{2}A_{1}^{-1}) < 1$, or $\rho(X)$ is the spectral radius of X \cite{bonnet}.
 
     \begin{equation}\label{eq:it_fin}
         x_{k+1} = A_{1}^{-1}(b + A_{2}x_{k}) = A_{1}^{-1}(b + A_{2}A_{1}^{-1}(b + A_{2}x_{k-1}))... = A_{1}^{-1} \left[ \sum_{i=0}^{k} (A_{2}A_{1}^{-1})^{i}b\right]
     \end{equation}
+    If $A_{1} = I$ and $A_{2} = I - A$ in \ref{eq:A-comb}, the sequence found in \ref{eq:it_fin} is: $x_{1} = b$,$x_{2} = 2b- Ab$, $x_{3} = 3b-3Ab+A^{2}b$ , $\dots$
 
-    Si $A_{1} = I$ et $A_{2} = I - A$ en \ref{eq:A-comb}, la suite trouvée en \ref{eq:it_fin} est: $x_{1} = b$,$x_{2} = 2b- Ab$, $x_{3} = 3b-3Ab+A^{2}b$ , ...
-
-    Même que la condition $\rho(A-I) \leq 1$ soit restrictive \cite{bonnet}, cela nous montre qu'une approximation $x_{k}$ peut être représentée comme \ref{eq:xkry}.
-
+    Even if the condition $\rho(A-I) \leq 1$ is strong \cite{bonnet}, it shows that one approximation $x_{k}$ could be represented as \ref{eq:xkry}.
+    
     \begin{equation}\label{eq:xkry}
         x_{k} \in span(b,Ab,A^{2}b,...,A^{k-1}b)
     \end{equation}
 
-    \section{Sous-espace de Krylov}
-    Soit $A \in \mathbb{K}^{n \times n}$ une matrice et $b\in \mathbb{K}^{n}$. Pour $k\leq n$ le sous-espace de Krylov $\mathcal{K}_{k}=\mathcal{K}_{k}(A,b)$ associé à A,b est défini comme \ref{eq:krylov}.
+    \section{Krylov's Subspace}
+    Be $A \in \mathbb{K}^{n \times n}$ a matrix and $b\in \mathbb{K}^{n}$. To each $k\leq n$ the Krylov's Subspace $\mathcal{K}_{k}=\mathcal{K}_{k}(A,b)$ associated to A,b is defined as \ref{eq:krylov}.
 
     \begin{equation}\label{eq:krylov}
         \mathcal{K}_{k}(A,b) = span(b,Ab,A^{2}b,\dots , A^{k-1}b)
     \end{equation}
 
-    Ces sous-espaces suivent aussi la propriété: $k<l \to \mathcal{K}^{k} \subset \mathcal{K}^{l}$ \cite{bonnet}.
+    These Subspaces also have the following property: $k<l \to \mathcal{K}^{k} \subset \mathcal{K}^{l}$ \cite{bonnet}.
 
-    Ce sous-espace $\mathcal{K}_{k}(A,b)$ est aussi le sous-espace de tous les vecteurs de $\mathbb{R}^{m}$ qui peuvent être écrits comme $x=p(A)b$, où $p(A)$ est un polynôme de degré inférieur à $k-1$ dont $p(0)=1$.
+    The subspace $\mathcal{K}_{k}(A,b)$ is also the subspace of all the vectors from $\mathbb{R}^{m}$ which could be written as $x=p(A)b$, where $p(A)$ is a polynom of degree less than $k-1$ which $p(0)=1$.
 
-    Le problème avec l'utilisation de ${A^{k}b}, k \in {0,1,2,\dots}$ comme une base vient du fait que les produits successifs de la matrice $A$ font des vecteurs qui sont \textit{presque colinéaires}, vu que ceux sont proches du vecteur propre du plus grand valeur propre de la matrice $A$.
+    The problem with using ${A^{k}b}, k \in {0,1,2,\dots}$ as a base comes from the fact that successive products of $A$ make vectors that are \textit{approximately colinears}, since those are really close of the eigenvector with the biggest eigenvalue of $A$.
 
-    \section{Méthode d'Arnoldi}
+    \section{Arnoldi's Method}
     
-    Dans le but d'obtenir une base orthonormale pour $\mathcal{K}_{k}(A,b)$, le méthode cherche une matrice unitaire $Q$ tel que l'expression \ref{eq:init_arnoldi} est valide. $H_{k}={h_{ij}}$ est une matrice de Hessenberg.
+    With the task of obtaining an orthonormal basis to $\mathcal{K}_{k}(A,b)$, the method searches for a unitary matrix $Q$ for which the expression \ref{eq:init_arnoldi} is valid. $H_{k}={h_{ij}}$ is an Hessenberg's matrix.
+
 
     \begin{equation} \label{eq:init_arnoldi}
         AQ_{k} = Q_{k+1}H_{k}
     \end{equation} 
 
-    Pour chaque vecteur-colonne de $Q$, $q_{i}$, \ref{eq:init_arnoldi} peut être écrite comme \ref{eq:final_arnoldi}, où la représentation de $\mathcal{K}_{k}(A,b)$ avec une base orthonormal devient plus claire. Dans une application pratique, $Q$ est initialisée avec $q_{1} = \frac{b}{||b||}$.
+    For each column-vector of $Q$, $q_{i}$, \ref{eq:init_arnoldi} could be written as \ref{eq:final_arnoldi}, where the representation of $\mathcal{K}_{k}(A,b)$ with an orthonormal basis becomes more evident. In a pratical application, $Q$ est initialized with $q_{1} = \frac{b}{||b||}$.
 
     \begin{equation}\label{eq:final_arnoldi}
         Aq_{m} = h_{1m}q_{1} + h_{2m}q_{2} + \dots h_{m+1,m}q_{m+1}
     \end{equation}
 
-    Un algorithme pour la méthode peut être trouvée en \ref{alg:arnoldi}.
+    An algorithm for the method can be found in \ref{alg:arnoldi}.
 
      \begin{algorithm}
-    \caption{Itération k dArnoldi}\label{alg:arnoldi}
+    \caption{Arnoldi's iteration}\label{alg:arnoldi}
     \begin{algorithmic}[1]
     \State $A \in \mathbb{K}^{n \times n}$ et $b\in \mathbb{K}^{n}$
     \State $x=0, \beta=\norm{b},q_{1}=\frac{b}{\beta}$

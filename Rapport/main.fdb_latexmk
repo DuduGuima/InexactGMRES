@@ -1,15 +1,15 @@
 # Fdb version 3
-["bibtex main"] 1717591358 "main.aux" "main.bbl" "main" 1717593026
+["bibtex main"] 1718032987 "main.aux" "main.bbl" "main" 1718032993
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "bibliografia.bib" 1717578553 1203 b7f423dc1c007d40f17bc0fa20c1b771 ""
-  "main.aux" 1717593026 5463 db3432528233ca679afdf4678cbfe299 "pdflatex"
+  "main.aux" 1718032993 5381 3a517f76e4265a57eb9a53ec0dee304c "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
-["pdflatex"] 1717593025 "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" "main.pdf" "main" 1717593026
-  "/dev/null" 1717569997 0 d41d8cd98f00b204e9800998ecf8427e ""
+["pdflatex"] 1718032992 "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" "main.pdf" "main" 1718032993
+  "/dev/null" 1718004937 0 d41d8cd98f00b204e9800998ecf8427e ""
   "/etc/texmf/web2c/texmf.cnf" 1717400101 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" 1717593025 2643 5790ebd96222e2f2efd8f9c4e9dc339a ""
+  "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" 1718032991 2618 25bb88b75ebac023a425ff42483e3176 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1000.tfm" 1136768653 3584 adb004a0c8e7c46ee66cad73671f37b4 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/euler/eufm10.tfm" 1246382020 1040 b84415f97d114011685943ade933dc71 ""
@@ -192,15 +192,15 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1644012257 39432 7155514e09a3d69036fac785183a21c2 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1717402444 4076837 dc187c2b7f4d7919f2284be86ca17ce2 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1717405446 2110259 3bb9d54f1d5b7ed5b00a9ea7a3d936ec ""
-  "chap1.tex" 1717577107 4864 94328dae817c564212cf22d81ef9149f ""
-  "chap2.tex" 1717591372 6190 a96ca2d08b8ae8d9e4ddbe026ff3b568 ""
-  "chap3.tex" 1717577224 5097 2861191ca67546fe8fea15b8b4bb1af6 ""
+  "chap1.tex" 1718027961 4655 f4bd4f60ac9de9fb6a021dab386fe5c4 ""
+  "chap2.tex" 1718030834 5941 5a56a555cbe881e741de27c2ca13601d ""
+  "chap3.tex" 1718032867 4581 3f9827d077683ec17b784b1a8c729701 ""
   "images/ensta_logo.svg" 1717394166 8935 f32d479ef2de92a22e486ba130e9fd4d ""
-  "main.aux" 1717593026 5463 db3432528233ca679afdf4678cbfe299 "pdflatex"
-  "main.bbl" 1717591358 980 55b8920684e5c494e1aa8913e7765e0d "bibtex main"
-  "main.out" 1717593026 1991 5f9cd1a3dc54a74d82b62c2badcca6de "pdflatex"
-  "main.tex" 1717593025 2643 5790ebd96222e2f2efd8f9c4e9dc339a ""
-  "main.toc" 1717593026 970 4877d2be0d11d96d28ed9cf1f606b497 "pdflatex"
+  "main.aux" 1718032993 5381 3a517f76e4265a57eb9a53ec0dee304c "pdflatex"
+  "main.bbl" 1718032987 980 55b8920684e5c494e1aa8913e7765e0d "bibtex main"
+  "main.out" 1718032993 1850 4a7e8d933a5f11a0ef8ae2ad0e8e6d63 "pdflatex"
+  "main.tex" 1718032991 2618 25bb88b75ebac023a425ff42483e3176 ""
+  "main.toc" 1718032993 941 ec9aeac8ee4d96933e1cf7c7b02db177 "pdflatex"
   "svg-inkscape/ensta_logo_svg-tex.pdf" 1717405157 8003 004c634d6e7b2191cea3f342df8affa1 ""
   "svg-inkscape/ensta_logo_svg-tex.pdf_tex" 1717405157 2087 e8135603b92125faae49e4f3286abbcf ""
   (generated)

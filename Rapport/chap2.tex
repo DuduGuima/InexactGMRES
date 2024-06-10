@@ -1,10 +1,10 @@
-Un méthode de projetion en $\mathcal{K}_{k}(A,b)$, où les différentes approximations sont prises comme en \ref{eq:init_gmres}, où $Q_{m}$ est le vecteur défini en \ref{eq:init_arnoldi}.
 
+    A projection in $\mathcal{K}_{k}(A,b)$, where the different approximations are taken as in \ref{eq:init_gmres}, where $Q_{m}$ is the vector in \ref{eq:init_arnoldi}.
     \begin{equation}\label{eq:init_gmres}
         x = x_{0} + Q_{m}y
     \end{equation}
 
-    Avec \ref{eq:init_gmres} et \ref{eq:init_arnoldi} le résidu devient \ref{eq:final_gmres}, où $x_{0} = 0$, $\beta=\norm{b}$ et $Q_{m+1}^{t}b=(\norm{b} 0 \hspace{0.05in} 0\dots)^{t}$ puisque les colonnes de $Q_{m+1}$ sont des vecteurs orthonormals et $q_{1} = \frac{b}{\norm{b}}$. 
+    With \ref{eq:init_gmres} and \ref{eq:init_arnoldi} the residue becomes \ref{eq:final_gmres}, where $x_{0} = 0$, $\beta=\norm{b}$ and $Q_{m+1}^{t}b=(\norm{b} 0 \hspace{0.05in} 0\dots)^{t}$ since the columns of $Q_{m+1}$ are orthonormal vectors and $q_{1} = \frac{b}{\norm{b}}$. 
 
     \begin{align} \label{eq:final_gmres}
     \begin{split}
@@ -16,18 +16,19 @@ Un méthode de projetion en $\mathcal{K}_{k}(A,b)$, où les différentes approxi
     \end{split}
     \end{align}
 
-    Ainsi, $y$ qui apparaît en \ref{eq:init_gmres}, est trouvé comme la solution du problème de minimisation du résidu en \ref{eq:final_gmres}.
+    
+    Thus, $y$ which appears in \ref{eq:init_gmres}, is found as the solution of the residual's minimisation problem  in \ref{eq:final_gmres}.
 
     \begin{equation}\label{eq:y_gmres}
         y = min_{y} \norm{\beta e_{1} - H_{m}y}
     \end{equation}
 
-    Une version initiale du GMRES est en \ref{alg:gmres_init}. Les lignes entre 4 et 12 apportent la Méthode d'Arnoldi présentée en \ref{alg:arnoldi}.
+    An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 bring the Arnoldi's Method presented in \ref{alg:arnoldi}.
     
     \begin{algorithm}
-    \caption{GMRES Initial}\label{alg:gmres_init}
+    \caption{Initial GMRES}\label{alg:gmres_init}
     \begin{algorithmic}[1]
-    \State $A \in \mathbb{K}^{n \times n}$ et $b\in \mathbb{K}^{n}$
+    \State $A \in \mathbb{K}^{n \times n}$ and $b\in \mathbb{K}^{n}$
     \State $x=0, \beta=\norm{b},q_{1}=\frac{b}{\beta}$
     \For{$k=1,2,\dots$}
     \For{$j=1,2,\dots k$}
@@ -40,18 +41,18 @@ Un méthode de projetion en $\mathcal{K}_{k}(A,b)$, où les différentes approxi
     \State $h_{j+1,j}=\norm{q_{j+1}}$
     \State $q_{j+1} = \frac{q_{j+1}}{h_{j+1,j}}$
     \EndFor
-    \State Trouver $y = min_{y} \norm{\beta e_{1} - H_{m}y}$
+    \State Find $y = min_{y} \norm{\beta e_{1} - H_{m}y}$
     \State $x = Q_{k}y$
-    \State \textbf{Arrêter} si le résidu est inférieur à la tolérance
+    \State \textbf{Stop} if the residual is smaller than the tolerance 
     \EndFor
     \end{algorithmic}
     \end{algorithm}
 
-    Cependant, \ref{alg:gmres_init} n'apporte pas une façon efficace de trouver le résidu en chaque itération. Pour le résoudre et trouver aussi une mieux façon de traiter le problème des moindres carrés en \ref{eq:y_gmres}, une transformation est appliquée en $H_{m}$, la transformant dans une matrice triangulaire.
+    However, \ref{alg:gmres_init} doesn't bring an efficient way of finding the residual in each iteration. To solve this problem and also to find a more efficient way of solving the least squares problem in \ref{eq:y_gmres}, a transformation is applied to $H_{m}$, turning it into a triangular matrix.
 
-    \section{Transformation de Givens}
+    \section{Givens's Rotation}
 
-    L'opérateur de Givens, $G(i,i+1)$, est une matrice unitaire telle que le vecteur colonne résultant $a = Gb$ a les éléments $a(i) = r \in \mathbb{R}$ et $a(i+1)=0$. Il est une matrice de struture comme en \ref{eq:givens}. Les coefficients $c_{i},s_{i}$ n'apparaissent que dans les lignes $i$ et $i+1$.
+    Givens's operator, $G(i,i+1)$, is an unitary matrix such that the column vector $a = Gb$ has the elements $a(i) = r \in \mathbb{R}$ and $a(i+1)=0$. It has a structure as in \ref{eq:givens}. The coefficients $c_{i},s_{i}$ only appear in the rows $i$ et $i+1$.
 
     \begin{equation}\label{eq:givens}
     G(i,i+1)=
@@ -66,30 +67,29 @@ Un méthode de projetion en $\mathcal{K}_{k}(A,b)$, où les différentes approxi
             & & & & & & & 1\\
     \end{bmatrix}
     \end{equation}
-
-    L'opérateur est une façon de transformer les colonnes de $H_{m}$, annulant l'élément dehors la diagonale. Comme un produit d'opérateurs unitaires est encore unitaire, cela nous permet récrire \ref{eq:y_gmres} comme \ref{eq:after_givens}, où $R_{m}$ et $g_{m}$ sont les résultats de l'application des opérateurs de Givens à $H_{m}$ et $\beta e_{1}$.
+    This operator offers a way to transform the columns in $H_{m}$, \textit{zeroing} the elements outside the main diagonal. Since a product of unitary operators is still unitary, \ref{eq:y_gmres} can be written as \ref{eq:after_givens}, where $R_{m}$ and $g_{m}$ are the results from the application of multiple Givens's operators to $H_{m}$ and $\beta e_{1}$.
 
     \begin{equation}\label{eq:after_givens}
         y = min_{y} \norm{\beta e_{1} - H_{m}y} = min_{y} \norm{g_{m} - R_{m}y}
     \end{equation}
 
-    Il peut être montré que $g_{m}$ contient aussi la valeur du résidu de chaque itération \cite{saad2003iterative}.
+    It can be shown that $g_{m}$ contains the residual of each iteration \cite{saad2003iterative}.
 
-    Ainsi, le nouveau problème \ref{eq:after_givens} peut être résolu avec une simple substitution.
+    Thus, the new problem \ref{eq:after_givens} can be solved with a simple backwards substitution.
 
     (écrire le nouvel algorithme )
 
-    \section{GMRES Inexact}
+    \section{Inexact GMRES}
 
-    La plus grande partie des calculs lourds est dans le produit matrice-vecteur contenue en \ref{alg:arnoldi}, dans la ligne 4. Ainsi, un des approches pour accélerer les itérations est ne pas réalizer $Aq $, mais approximer son résultat avec \ref{eq:aprox_Aq}.
+    The heaviest part in the code is in the matrix-vector product \ref{alg:arnoldi}, line 4. Therefore, one approach to accelerate the iterations involves an approximation of $Aq $, instead of using the exact answer, as shown in \ref{eq:aprox_Aq}.
 
     \begin{equation}\label{eq:aprox_Aq}
         \mathcal{A}q = (A + E)q
     \end{equation}
     
-    Oú \textit{E} en \ref{eq:aprox_Aq} est une \textit{matrice erreur} qui change à chaque itération et sera écrite comme $E_{k}$ pour l'itération k.
+    Where \textit{E} in \ref{eq:aprox_Aq} is a \textit{pertubation matrix} that changes with each iteration and will be written as $E_{k}$ for iteration k.
 
-    Quand le produit matrice-vecteur n'est pas exact, la gauche de \ref{eq:init_arnoldi} doit être changée par \ref{eq:new_projection}.
+    When the matrix-vector product isn't exact, the left side of \ref{eq:init_arnoldi} must be changed by \ref{eq:new_projection}.
 
     % \begin{equation}\label{eq:new_projection}
     %     [(A + E_{1})q_{1}, (A + E_{2})q_{2},\dots, (A + E_{k})q_{k}] = Q_{k+1}H_{k}
@@ -103,11 +103,11 @@ Un méthode de projetion en $\mathcal{K}_{k}(A,b)$, où les différentes approxi
     \end{split}
     \end{align}
 
-
-    Maintenant le sous-espace généré par les vecteurs de $Q_{k}$ n'est plus un sous-espace de Krylov, mais ils sont encore orthonormals.
-    La relation \ref{eq:new_projection} montre aussi que $Q_{k}$ devient une base pour un sous-espace de Krylov, $\mathcal{K}_{k}(A+\mathcal{E}_{k},b)$, spanné par une grande perturbation de $A$, qui est mise à jour dans chaque itération.
+    Now the subspace spawn by the vectors of $Q_{k}$ is not a Krylov's subspace, bbut these are still orthonormal.
     
-    En utilisant $r_{k}$, le résidu exact, et $\tilde{r}_{k}$, le résidu de la k-ème itération du GMRES inexact, il peut être montré \cite{simoncini2003theory} que si $E_{k}$ suit la relation \ref{eq:res_Hinexact}, alors les deux résidus suivent \ref{eq:res_igmres}.
+    The expression \ref{eq:new_projection} also shows that $Q_{k}$ becomes a basis for a Krylov's subspace, $\mathcal{K}_{k}(A+\mathcal{E}_{k},b)$, made by a big pertubation in $A$, that gets updated in each iteration.
+    
+    Using $r_{k}$, the exact residue, and $\tilde{r}_{k}$, the residue from the Inexact GMRES's k-th iteration, it can be shown \cite{simoncini2003theory} that if $E_{k}$ satisfies the relation \ref{eq:res_Hinexact}, then the two residues satisfy \ref{eq:res_igmres}.
 
 
     \begin{equation}\label{eq:res_Hinexact}
@@ -118,4 +118,4 @@ Un méthode de projetion en $\mathcal{K}_{k}(A,b)$, où les différentes approxi
         \norm{r_{k}-\tilde{r}_{k}} \leq \epsilon
     \end{equation}
 
-    En \ref{eq:res_Hinexact}, $\hat{H}_{k}$ est la matrice triangulaire obtenue aprés l'application des rotations de Givens en $H_{k}$ et $\sigma_{k}$ le k-ème valeur singulière d'une matrice quelconte.
+    In \ref{eq:res_Hinexact}, $\hat{H}_{k}$ is the upper triangular matrix got after Givens's rotations in $H_{k}$ and $\sigma_{k}$ is the k-th singular value of a given matrix.

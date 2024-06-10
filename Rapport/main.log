@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.6.3)  5 JUN 2024 15:10
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.6.3)  10 JUN 2024 17:23
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -748,7 +748,7 @@ Chapter 1.
 (./chap1.tex [2
 
 ]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 78.
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on input line 83.
 ) [3] [4]
 Chapter 2.
 (./chap2.tex [5
@@ -758,25 +758,25 @@ Chapter 3.
 (./chap3.tex [8
 
 ]
-LaTeX Font Info:    Trying to load font information for U+euf on input line 73.
+LaTeX Font Info:    Trying to load font information for U+euf on input line 75.
  (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/ueuf.fd
 File: ueuf.fd 2013/01/14 v3.01 Euler Fraktur
 )) [9] (./main.bbl) [10
 
 ] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 5F9CD1A3DC54A74D82B62C2BADCCA6DE;1991.
+(rerunfilecheck)             Checksum: 4A7E8D933A5F11A0EF8AE2AD0E8E6D63;1850.
  ) 
 Here is how much of TeX's memory you used:
  18687 strings out of 479519
  312094 string characters out of 5875646
- 651898 words of memory out of 5000000
+ 651844 words of memory out of 5000000
  36246 multiletter control sequences out of 15000+600000
  544117 words of font info for 79 fonts, out of 8000000 for 9000
  419 hyphenation exceptions out of 8191
- 94i,15n,92p,680b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 94i,15n,92p,585b,446s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi5.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr5.pfb></usr/share/texmf/fonts/type1/public/lm/lmr7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy5.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on main.pdf (11 pages, 298668 bytes).
+Output written on main.pdf (11 pages, 295942 bytes).
 PDF statistics:
  320 PDF objects out of 1000 (max. 8388607)
  266 compressed objects within 3 object streams
