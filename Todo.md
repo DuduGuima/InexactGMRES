@@ -24,6 +24,6 @@
 
 ## To do's list 13/06
 
-- Verify the theory of the residue, remake the rest of the demonstrations, presentation at the 27th June;x
+- Verify the theory of the residue, remake the rest of the demonstrations, presentation at the 27th June;(read and added to the report, might need some rehearsals)
 - Do the tests with fixed size and see tolerance change, fix tolerance change size etc;
 - Start to test everything in a cavity scattering problem;

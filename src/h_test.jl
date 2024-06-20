@@ -1,4 +1,13 @@
-using HMatrices, LinearAlgebra, StaticArrays
+using Test
+using HMatrices
+using LinearAlgebra
+using Random
+using StaticArrays
+using BenchmarkTools
+using HMatrices: RkMatrix
+using LoopVectorization
+using InexactGMRES
+
 const Point2D = SVector{2,Float64}
 
 # points on a circle
@@ -23,3 +32,5 @@ adm = StrongAdmissibilityStd()
 comp = PartialACA(;atol=1e-6)
 
 H = assemble_hmatrix(K,Xclt,Yclt;adm,comp,threads=false,distributed=false)
+T = eltype(H)
+b = rand(T,n)
