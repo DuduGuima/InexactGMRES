@@ -15,6 +15,11 @@ Eric Darve and Mary Wootters.
 \newblock {\em Numerical linear algebra with Julia}.
 \newblock SIAM, 2021.
 
+\bibitem{git_dudu}
+Guimaraes E.
+\newblock Project's repository.
+\newblock \url{https://github.com/DuduGuima/InexactGMRES},, 2024.
+
 \bibitem{saad2003iterative}
 Yousef Saad.
 \newblock {\em Iterative methods for sparse linear systems}.

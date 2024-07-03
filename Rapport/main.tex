@@ -56,62 +56,66 @@
 
 %% Document
 \begin{document}
-    \selectlanguage{english}
+\selectlanguage{english}
 
-    \thispagestyle{empty}
-    \addtocounter{page}{-1}
+\thispagestyle{empty}
+\addtocounter{page}{-1}
 
-    \indent{0mm} \newgeometry{top=3cm, bottom=2cm}
+\indent{0mm} \newgeometry{top=3cm, bottom=2cm}
 
-    \begin{minipage}{\linewidth}
-        \includesvg[width=8cm]{images/ensta_logo.svg}
-    \end{minipage}
+\begin{minipage}{\linewidth}
+    \includesvg[width=8cm]{images/ensta_logo.svg}
+\end{minipage}
 
-    \vspace{5cm}
+\vspace{5cm}
 
-    \begin{center}
-        \fontsize{16pt}{24pt} \selectfont{\textbf{Hierarchical Matrices and \\ Inexact GMRES}}
+\begin{center}
+    \fontsize{16pt}{24pt} \selectfont{\textbf{Hierarchical Matrices and \\ Inexact GMRES}}
 
-        \vspace{1.8cm} \line(1,0){60} \vspace{2cm}
+    \vspace{1.8cm} \line(1,0){60} \vspace{2cm}
 
-        \fontsize{12pt}{18pt} \selectfont{
-            \begin{tabular}{rl}
-                Sudent:& \\
-                GUIMARÃES& Eduardo \\
-                Advisors:& \\
-                FARIA &Luiz \\
-                MARCHAND& Pierre\\
-                Enseignant-Référent: & \\
-                CHAPOUTOT& Alexandre
-            \end{tabular}
+    \fontsize{12pt}{18pt} \selectfont{
+        \begin{tabular}{rl}
+            Sudent:              &           \\
+            GUIMARÃES            & Eduardo   \\
+            Advisors:            &           \\
+            FARIA                & Luiz      \\
+            MARCHAND             & Pierre    \\
+            Enseignant-Référent: &           \\
+            CHAPOUTOT            & Alexandre
+        \end{tabular}
 
         \vfill Palaiseau, 13th May 2024}
-    \end{center}
+\end{center}
 
-    \newpage \restoregeometry
+\newpage \restoregeometry
 
-    \tableofcontents \newpage
+\tableofcontents \newpage
 
-    \chapter{Iterative Methods and Krylov's Subspace}
-    \input{chap1.tex}
+\chapter{Iterative Methods and Krylov's Subspace}
+\input{chap1.tex}
 
-    \chapter{GMRES}
+\chapter{GMRES}
 
-    \input{chap2.tex}
+\input{chap2.tex}
 
-    %Mudar para aproximacao lwo rank 
-    \chapter{Hierarchical Matrices and ACA Method}
-    \input{chap3.tex}
+%Mudar para aproximacao lwo rank 
+\chapter{Hierarchical Matrices and ACA Method}
+\input{chap3.tex}
 
-    \newpage
+\chapter{First results}
+\input{chap4.tex}
 
-    \addcontentsline{toc}{chapter}{\bibname}
+
+\newpage
+
+\addcontentsline{toc}{chapter}{\bibname}
 
 
-    \bibliography{bibliografia}
-    \bibliographystyle{plain}
-    \nocite{*}
-    
-    
-    
+\bibliography{bibliografia}
+\bibliographystyle{plain}
+\nocite{*}
+
+
+
 \end{document}

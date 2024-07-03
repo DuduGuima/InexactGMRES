@@ -10,4 +10,7 @@
 \contentsline {chapter}{\numberline {3}Hierarchical Matrices and ACA Method}{9}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Low-rank Matrices}{9}{section.3.1}%
 \contentsline {section}{\numberline {3.2}ACA Method(Adaptative Cross Approximation)}{10}{section.3.2}%
-\contentsline {chapter}{Bibliography}{11}{equation.3.2.5}%
+\contentsline {chapter}{\numberline {4}First results}{11}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Laplace's results}{11}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Helmholtz's results}{12}{section.4.2}%
+\contentsline {chapter}{Bibliography}{14}{figure.caption.4}%
