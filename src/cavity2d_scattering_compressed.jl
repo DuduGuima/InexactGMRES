@@ -16,7 +16,7 @@ using IterativeSolvers
 using LinearMaps
 using SpecialFunctions
 using SparseArrays
-using Plots
+
 #-
 
 #Inexact
@@ -46,7 +46,7 @@ function Base.getindex(K::Helm_DoubleLayer,i::Int,j::Int)
     filter = !(d <= Inti.SAME_POINT_TOLERANCE)
     sod_term = im / 4 * hankelh1(0, k * d)
     dod_term = (im * k / 4 / d * hankelh1(1, k * d) .* dot(r, ny))
-    return filter*(dod_term - im*k*sod_term)*Inti.weight(K.W[j])
+    return filter*(dod_term - im*k*sod_term)
 end
 
 Base.size(K::Helm_DoubleLayer) = length(K.Q),length(K.W)
@@ -103,4 +103,27 @@ end ## Neumann trace on boundary
 ## Use GMRES to solve the linear system
 L_or = I / 2 + D - im * k * S
 #L_or = D - im * k * S
-σ = gmres(L, g; restart = 1000, maxiter = 400, abstol = 1e-4, verbose = true)
+σ = gmres(L_or, g; restart = 1000, maxiter = 400, abstol = 1e-4, verbose = true)
+
+𝒮, 𝒟 = Inti.single_double_layer_potential(; pde, source = Q)
+u = (x) -> 𝒟[σ](x) - im * k * 𝒮[σ](x)
+xx = yy = range(-2, 2; step = meshsize)
+colorrange = (-2, 2)
+vals = map(Iterators.product(xx, yy)) do x
+    x = SVector(x)
+    return Inti.isinside(x, Q) ? Complex(NaN) : uᵢ(x) + u(x)
+end
+fig, ax, hm = heatmap(
+    xx,
+    yy,
+    real(vals);
+    colormap = :viridis,
+    colorrange,
+    interpolate = true,
+    axis = (aspect = DataAspect(), xgridvisible = false, ygridvisible = false),
+)
+viz!(Γ_msh; segmentsize = 4, color = :white)
+Colorbar(fig[1, 2], hm; label = "Re(u)")
+display(fig)
+GLMakie.save("cavity_fig.jpg",fig)
+##

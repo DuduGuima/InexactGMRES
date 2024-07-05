@@ -1,13 +1,13 @@
 # Fdb version 3
-["bibtex main"] 1720015027 "main.aux" "main.bbl" "main" 1720015033
+["bibtex main"] 1720083658 "main.aux" "main.bbl" "main" 1720084045
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
-  "bibliografia.bib" 1720012761 1389 a1144b8f297e7ceb1b91535c653095a3 ""
-  "main.aux" 1720015032 7568 53870bc1e39fa77cc955931bafe9d099 "pdflatex"
+  "bibliografia.bib" 1720082103 1572 7b7a3af526a4204b93d6be726525b940 ""
+  "main.aux" 1720084045 7884 f3bde88826473dc76a5a37c90d2d6d1e "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
-["pdflatex"] 1720015031 "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" "main.pdf" "main" 1720015033
-  "/dev/null" 1719993066 0 d41d8cd98f00b204e9800998ecf8427e ""
+["pdflatex"] 1720084043 "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" "main.pdf" "main" 1720084045
+  "/dev/null" 1720079372 0 d41d8cd98f00b204e9800998ecf8427e ""
   "/etc/texmf/web2c/texmf.cnf" 1717400101 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/dudu/Documents/PRe/InexactGMRES/Rapport/main.tex" 1720009882 2626 2105afd8e70ac92d715b1aa88e8f087f ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -200,17 +200,18 @@
   "chap1.tex" 1718027961 4655 f4bd4f60ac9de9fb6a021dab386fe5c4 ""
   "chap2.tex" 1718636715 8105 8e914dd1ca06f4b7e7987298fd85cd14 ""
   "chap3.tex" 1718032867 4581 3f9827d077683ec17b784b1a8c729701 ""
-  "chap4.tex" 1720015031 3192 608613de8d0aeadc8b5aa509dc65be55 ""
+  "chap4.tex" 1720084042 3665 4691ec6164e802bcd365216e7fcfdc1e ""
+  "images/cavity_fig.jpg" 1720083389 57341 3a2162fbeee989deb64032278f670110 ""
   "images/ensta_logo.svg" 1717394166 8935 f32d479ef2de92a22e486ba130e9fd4d ""
   "images/fixed_size_helmholtz_cavity.svg" 1719933243 108760 3677b419f828d217883a5f4eef4743aa ""
   "images/fixed_size_helmholtz_gmres.svg" 1719994741 111606 57bf5bb6c17c8543f410601fe0497f70 ""
   "images/fixed_size_helmholtz_product.svg" 1719909271 114706 325256b0ad960496642b78937821137f ""
   "images/fixed_size_laplace_product.svg" 1719995464 114909 bf6c3479392cf62e33aa3ccea6e9724e ""
-  "main.aux" 1720015032 7568 53870bc1e39fa77cc955931bafe9d099 "pdflatex"
-  "main.bbl" 1720015027 1111 328adb010bfb696583ca67fa66477352 "bibtex main"
-  "main.out" 1720015032 2260 dc0e0826a6693d93d4aae9fc20ee436a "pdflatex"
+  "main.aux" 1720084045 7884 f3bde88826473dc76a5a37c90d2d6d1e "pdflatex"
+  "main.bbl" 1720083658 1276 82c1a720ce387b7cb416f2da44e82d84 "bibtex main"
+  "main.out" 1720084045 2260 faa0c3b3aca06412767a87b46c05f880 "pdflatex"
   "main.tex" 1720009882 2626 2105afd8e70ac92d715b1aa88e8f087f ""
-  "main.toc" 1720015032 1172 3f42d69fbf587490ae5c77c97e0570e6 "pdflatex"
+  "main.toc" 1720084045 1172 4e57fe22b9b585802f2d443d1ec44a4e "pdflatex"
   "svg-inkscape/ensta_logo_svg-tex.pdf" 1717405157 8003 004c634d6e7b2191cea3f342df8affa1 ""
   "svg-inkscape/ensta_logo_svg-tex.pdf_tex" 1717405157 2087 e8135603b92125faae49e4f3286abbcf ""
   "svg-inkscape/fixed_size_helmholtz_cavity_svg-tex.pdf" 1720015023 138237 b5a11777b27b86abf2b1bcab9b06944b ""

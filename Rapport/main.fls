@@ -1169,6 +1169,11 @@ INPUT ./chap4.tex
 INPUT chap4.tex
 INPUT ./chap4.tex
 INPUT chap4.tex
+INPUT ./images/cavity_fig.jpg
+INPUT ./images/cavity_fig.jpg
+INPUT images/cavity_fig.jpg
+INPUT ./images/cavity_fig.jpg
+INPUT ./images/cavity_fig.jpg
 INPUT ./images/fixed_size_laplace_product.svg
 INPUT images/fixed_size_laplace_product.svg
 INPUT ./images/fixed_size_laplace_product.svg

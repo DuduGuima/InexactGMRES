@@ -1,6 +1,6 @@
 Before using the inexact product in big problems, simpler examples are used to validate the approach and fix minor parameters in the scheme.
 
-The two firsts tests evaluate the speedup in the product of a Hierarchical Matrix and a vector and an exection of the Inexact GMRES with few iterations, using the operators obtained through 2nd type Equations of Laplace and Helmholtz \ref{eq:pde_helmlaplace}, where $\Delta$ is the Laplace operator and everything is suposed to be solved in two dimentions. The last test will use a cavity problem to test the speedup of the algorithm in a situation with more iterations.
+The two firsts tests evaluate the speedup in the product of a Hierarchical Matrix and a vector and an exection of the Inexact GMRES with few iterations, using the operators obtained through 2nd type Equations of Laplace and Helmholtz \ref{eq:pde_helmlaplace}, where the last one is a scaterring problem, where $\Delta$ is the Laplace operator and everything is suposed to be solved in two dimentions. The last test will use a cavity problem to test the speedup of the algorithm in a situation with more iterations.
 
 \begin{align}\label{eq:pde_helmlaplace}
     \begin{split}
@@ -22,7 +22,17 @@ Reformulationg both equations as a Boundary Integral Equation, the simple \texti
     \end{split}
 \end{align}
 
-For the first to examples, a unit circle around the origin is used as the boundary to generate the operators. In the last test, the mesh is made from a cavity $.geo$ file avaiable in \cite{git_dudu}.
+For the first to examples, a unit circle around the origin is used as the boundary to generate the operators, with the mesh being created with the Inti library \cite{git-inti}. 
+
+For the last test, the mesh is made from a cavity $.geo$ file avaiable in \cite{git_dudu}. A view of the figure can be seen in \ref{fig:cavity_fig}. The incident wave' angle is chosen to be $\frac{\pi}{4}$ rad.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\linewidth]{images/cavity_fig.jpg}
+    \caption{Geometry used in the test.}
+    \label{fig:cavity_fig}
+\end{figure}
+
 
 \section{Laplace's results}
 
@@ -37,18 +47,18 @@ All results are contained in \ref{fig:laplace_results}, showing the evolution of
 
 \section{Helmholtz's results}
 
-For the unitary circle boundary the results can be seen in \ref{fig:Helmholtz_circle_results}
 
+For the unitary circle boundary the results can be seen in \ref{fig:Helmholtz_circle_results}.
 
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.4\linewidth}
+    \begin{subfigure}[b]{0.45\linewidth}
         \includesvg[width=\linewidth]{images/fixed_size_helmholtz_product.svg}
         \caption{Results for the product of a 70000x 70000 HMatrix and a vector.}
     \end{subfigure}
-    \begin{subfigure}[b]{0.4\linewidth}
+    \begin{subfigure}[b]{0.45\linewidth}
         \includesvg[width=\linewidth]{images/fixed_size_helmholtz_gmres.svg}
-        \caption{More coffee.}
+        \caption{Results for an initial application of the Inexact GMRES algorithm.}
     \end{subfigure}
     \caption{Results for the application of the Inexact GMRES algorithm with a 70000x70000 HMatrix.}
     \label{fig:Helmholtz_circle_results}
