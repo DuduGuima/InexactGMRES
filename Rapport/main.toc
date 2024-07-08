@@ -13,4 +13,4 @@
 \contentsline {chapter}{\numberline {4}First results}{11}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Laplace's results}{12}{section.4.1}%
 \contentsline {section}{\numberline {4.2}Helmholtz's results}{12}{section.4.2}%
-\contentsline {chapter}{Bibliography}{14}{figure.caption.5}%
+\contentsline {chapter}{Bibliography}{14}{figure.caption.6}%

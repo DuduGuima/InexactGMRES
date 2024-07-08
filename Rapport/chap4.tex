@@ -22,7 +22,7 @@ Reformulationg both equations as a Boundary Integral Equation, the simple \texti
     \end{split}
 \end{align}
 
-For the first to examples, a unit circle around the origin is used as the boundary to generate the operators, with the mesh being created with the Inti library \cite{git-inti}. 
+For the first to examples, a unit circle around the origin is used as the boundary to generate the operators, with the mesh being created with the Inti library \cite{git-inti}.
 
 For the last test, the mesh is made from a cavity $.geo$ file avaiable in \cite{git_dudu}. A view of the figure can be seen in \ref{fig:cavity_fig}. The incident wave' angle is chosen to be $\frac{\pi}{4}$ rad.
 
@@ -72,4 +72,13 @@ For the cavity, \ref{fig:cavity_results}.
     \includesvg[width=0.6\linewidth]{images/fixed_size_helmholtz_cavity.svg}
     \caption{Speedup and residual evolution for the product between a 8000x8000 HMatrix and a vector.}
     \label{fig:cavity_results}
+\end{figure}
+
+An evolution of the number of iterations in face of the different tolerances passed to the algorithm is in \ref{fig:cavity_iterations}.
+
+\begin{figure}[h!]
+    \centering
+    \includesvg[width=0.6\linewidth]{images/fixed_size_helmholtz_cavity_iterations.svg}
+    \caption{Evolution of the quantity of iterations needed for convergence and overall tolerance passed as an argument.}
+    \label{fig:cavity_iterations}
 \end{figure}

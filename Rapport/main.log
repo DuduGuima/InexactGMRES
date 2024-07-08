@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.6.3)  4 JUL 2024 11:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2024.6.3)  8 JUL 2024 15:05
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -813,13 +813,31 @@ Package pdftex.def Info: ./svg-inkscape/fixed_size_helmholtz_cavity_svg-tex.pdf 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-) [12 <./images/cavity_fig.jpg> <./svg-inkscape/fixed_size_laplace_product_svg-tex.pdf>] (./main.bbl [13 <./svg-inkscape/fixed_size_helmholtz_product_svg-tex.pdf> <./svg-inkscape/fixed_size_helmholtz_gmres_svg-tex.pdf
+Package svg Info: Last page of `./svg-inkscape/fixed_size_helmholtz_cavity_iterations_svg-tex.pdf' is 1 on input line 81.
+(./svg-inkscape/fixed_size_helmholtz_cavity_iterations_svg-tex.pdf_tex
+<./svg-inkscape/fixed_size_helmholtz_cavity_iterations_svg-tex.pdf, id=280, page=1, 451.6875pt x 301.125pt>
+File: ./svg-inkscape/fixed_size_helmholtz_cavity_iterations_svg-tex.pdf Graphic file (type pdf)
+<use ./svg-inkscape/fixed_size_helmholtz_cavity_iterations_svg-tex.pdf, page 1>
+Package pdftex.def Info: ./svg-inkscape/fixed_size_helmholtz_cavity_iterations_svg-tex.pdf , page1 used on input line 56.
+(pdftex.def)             Requested size: 256.07741pt x 170.72865pt.
+)
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+) [12 <./images/cavity_fig.jpg> <./svg-inkscape/fixed_size_laplace_product_svg-tex.pdf>]
+
+LaTeX Warning: Text page 13 contains only floats.
+
+[13 <./svg-inkscape/fixed_size_helmholtz_product_svg-tex.pdf> <./svg-inkscape/fixed_size_helmholtz_gmres_svg-tex.pdf
 
 pdfTeX warning: pdflatex (file ./svg-inkscape/fixed_size_helmholtz_gmres_svg-tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
 > <./svg-inkscape/fixed_size_helmholtz_cavity_svg-tex.pdf
 
 pdfTeX warning: pdflatex (file ./svg-inkscape/fixed_size_helmholtz_cavity_svg-tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
->]
+> <./svg-inkscape/fixed_size_helmholtz_cavity_iterations_svg-tex.pdf
+
+pdfTeX warning: pdflatex (file ./svg-inkscape/fixed_size_helmholtz_cavity_iterations_svg-tex.pdf): PDF inclusion: multiple pdfs with page group included in a single page
+>] (./main.bbl
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 5.
  (/usr/share/texmf/tex/latex/lm/t1lmtt.fd
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
@@ -827,21 +845,21 @@ File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 
 ] (./main.aux)
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: FAA0C3B3ACA06412767A87B46C05F880;2260.
+(rerunfilecheck)             Checksum: AB622B89CE0401C47411F22469CE9CFB;2260.
  ) 
 Here is how much of TeX's memory you used:
- 18848 strings out of 479519
- 316865 string characters out of 5875646
- 652684 words of memory out of 5000000
- 36360 multiletter control sequences out of 15000+600000
+ 18864 strings out of 479519
+ 317844 string characters out of 5875646
+ 652825 words of memory out of 5000000
+ 36371 multiletter control sequences out of 15000+600000
  547433 words of font info for 81 fonts, out of 8000000 for 9000
  419 hyphenation exceptions out of 8191
  94i,16n,92p,610b,662s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-rm.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathsy.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathit.enc}{/usr/share/texmf/fonts/enc/dvips/lm/lm-mathex.enc}</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx10.pfb></usr/share/texmf/fonts/type1/public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmex10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi10.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi5.pfb></usr/share/texmf/fonts/type1/public/lm/lmmi7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr5.pfb></usr/share/texmf/fonts/type1/public/lm/lmr7.pfb></usr/share/texmf/fonts/type1/public/lm/lmr8.pfb></usr/share/texmf/fonts/type1/public/lm/lmr9.pfb></usr/share/texmf/fonts/type1/public/lm/lmri10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy10.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy5.pfb></usr/share/texmf/fonts/type1/public/lm/lmsy7.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on main.pdf (15 pages, 831161 bytes).
+Output written on main.pdf (15 pages, 881788 bytes).
 PDF statistics:
- 3511 PDF objects out of 3580 (max. 8388607)
- 2394 compressed objects within 24 object streams
- 78 named destinations out of 1000 (max. 500000)
- 180 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 3883 PDF objects out of 4296 (max. 8388607)
+ 2640 compressed objects within 27 object streams
+ 79 named destinations out of 1000 (max. 500000)
+ 190 words of extra memory for PDF output out of 10000 (max. 10000000)
 
