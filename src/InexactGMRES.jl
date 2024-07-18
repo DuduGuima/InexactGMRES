@@ -5,119 +5,14 @@ using HMatrices
 
 export igmres
 
+include("utils.jl")
 
-"""
-    rel_to_eps(res,tol)
-
-Converts the residue from iteration k-1 and overall desired tolerance into and eps we'll use to approximate the original problem's matrix A.
-
-"""
-function rel_to_eps(res::Float64, tol::Float64)
-    return min((tol/min(res,1)),1)
-end
-
-"""
-    triangularsquares!(y,A,b)
-
-Solves the system Ax = b with backwards substitution, assuming A is always upper triangular.
-A must be a vector of vectors, where each A[i] is a column vector added through push!(A,v).
-"""
-
-function triangularsquares!(y, A, b)
-    #y is required to have same length as b
-    #A is supposed to be upper triangular, and square
-    #Here, A is also an vector of vectors, so the expression need to be adapted
-    #b is the RHS, same length as A
-    m = length(b)
-    #x = zeros(ComplexF64,m)#always in complex values
-    for k = m:-1:1
-        y[k] = b[k]
-        for j = m:-1:k+1
-            y[k] = y[k] - A[j][k] * y[j]
-        end
-        y[k] = y[k] / A[k][k]
-    end
-end
-
-
-"""
-    my_arnoldi(Q,H,A,current_it)
-
-Calculates the current_it'th iteration of the Arnoldi's Method.
-Q and H are assumed as vectors of vectors, where Q[i] stores the i-th orthonormal vector we'll be using as a basis for Km(A,b)
-and H[i] stores de i+1 first values of H's i-th column.
-"""
-function my_arnoldi!(Q, H, A::Union{HMatrices.HTypes,HMatrices.HTriangular}, current_it, p_tol)
-    dummy_v = similar(Q[current_it])
-    mul!(dummy_v,A,Q[current_it],1,0,p_tol;threads=false)
-    push!(Q, dummy_v) # heavy part should be here
-    push!(H,zeros(current_it+1))
-    for j = 1:current_it
-        H[current_it][j] = (Q[j]') * Q[current_it+1]
-        #Q[current_it+1] -= H[current_it][j] * Q[j]
-        
-        #mul!(C,A,B,alpha,bheta) : C <- (A*B)alpha + bhetaC
-        mul!(Q[current_it+1],I,Q[j],-H[current_it][j],1)
-    end
-    H[current_it][current_it+1] = norm(Q[current_it+1])
-    
-    #Q[current_it+1] /= H[current_it][current_it+1]
-    lmul!(1/H[current_it][current_it+1],Q[current_it+1])
-end
-
-function my_arnoldi!(Q, H, A::AbstractMatrix, current_it)
-    dummy_v = similar(Q[current_it])
-    mul!(dummy_v,A,Q[current_it],1,0;threads=false)
-    push!(Q, dummy_v) # heavy part should be here
-    push!(H,zeros(current_it+1))
-    for j = 1:current_it
-        H[current_it][j] = (Q[j]') * Q[current_it+1]
-        #Q[current_it+1] -= H[current_it][j] * Q[j]
-        
-        #mul!(C,A,B,alpha,bheta) : C <- (A*B)alpha + bhetaC
-        mul!(Q[current_it+1],I,Q[j],-H[current_it][j],1)
-    end
-    H[current_it][current_it+1] = norm(Q[current_it+1])
-    
-    #Q[current_it+1] /= H[current_it][current_it+1]
-    lmul!(1/H[current_it][current_it+1],Q[current_it+1])
-end
-
-
-
-"""
-    my_rotation!(H,J,rhs,current_it)
-
-Applies Givens's Operator to rotate H and transform it in a upper triangular matrix.
-The sequence of operators is assumed to be stored in J.
-It also applies the transformations to the Right Hand Side(RHS).
-"""
-function my_rotation!(H, J, rhs, current_it)
-    #given two integers k and k+1, it will return an object G with 4 numbers:(k,k+1,s,c)
-    #b=G*a with a column vector a of length k+1 will return a new vector b which has
-    #b[k+1] = 0 and b[k] changed by the rotation
-    for j = 1:current_it-1
-        
-        #H[current_it] = J[j] * H[current_it]
-        lmul!(J[j],H[current_it])
-    end
-
-    J[current_it], = givens(H[current_it][current_it], H[current_it][current_it+1], current_it, current_it + 1)
-    
-    #H[current_it] = J[current_it] * H[current_it]
-    lmul!(J[current_it],H[current_it])
-
-
-    #rhs[:] = J[current_it] * rhs
-    lmul!(J[current_it],rhs)
-    
-end
 
 
 """
     igmres(...)
 """
-function igmres(A, b;maxiter=size(A, 2), restart=min(length(b), maxiter), see_r=false, tol=sqrt(eps()))
+function igmres(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,2)), see_r=false, tol=sqrt(eps()))
     #choose type to create vectors and matrices
     TA = eltype(A)
     Tb = eltype(b)
@@ -132,7 +27,7 @@ function igmres(A, b;maxiter=size(A, 2), restart=min(length(b), maxiter), see_r=
     m = restart
     res = bheta
     current_perror = Float64
-    
+    A_iterable = HMatrices.ITerm(A,res)
     while it < maxiter
         Q = Vector{Vector{T}}()
         H = Vector{Vector{T}}()
@@ -144,19 +39,17 @@ function igmres(A, b;maxiter=size(A, 2), restart=min(length(b), maxiter), see_r=
         v = b / bheta
         push!(Q, v)
         for k = 1:m
-            if it >= maxiter
+            if it > maxiter
                 break
             end
-            it += 1
-            if see_r
-                println("Iteration: ", it, " Current residual: ", res)
-            end
+
 
             ###Transformation of current residue and overall tolerance in the new error we'll use
             current_perror = rel_to_eps(res,tol)
+            A_iterable.rtol = current_perror
             ###Arnold's iteration inside GMRES to use Q,H from past iterations
             #----------------------------------------------
-            my_arnoldi!(Q, H, A, k,current_perror)#no new vector is created, everything is done directly in H and Q
+            my_arnoldi!(Q, H, A_iterable, k)#no new vector is created, everything is done directly in H and Q
             #---------------------------#
 
             ###Givens rotation
@@ -171,6 +64,11 @@ function igmres(A, b;maxiter=size(A, 2), restart=min(length(b), maxiter), see_r=
             res = norm(e1[k+1])
             #residuals[it] = res/bheta
             push!(residuals,res/bheta)
+
+            it += 1
+            if see_r
+                println("Iteration: ", it, " Current residual: ", res)
+            end
 
             if res < tol #ta zoado esse calculo aqui tb
                 y = zero(x)
@@ -210,6 +108,7 @@ function test_gmres(A, b;maxiter=size(A, 2), restart=min(length(b), maxiter), se
     res = bheta
     current_perror = Float64
     
+    A_iterable = HMatrices.ITerm(A,res)
     while it < maxiter
         Q = Vector{Vector{T}}()
         H = Vector{Vector{T}}()
@@ -224,12 +123,10 @@ function test_gmres(A, b;maxiter=size(A, 2), restart=min(length(b), maxiter), se
             if it >= maxiter
                 break
             end
-            it += 1
-            if see_r
-                println("Iteration: ", it, " Current residual: ", res)
-            end
+            
 
             current_perror = rel_to_eps(res,tol)
+            A_iterable.rtol = current_perror
             ###Arnold's iteration inside GMRES to use Q,H from past iterations
             #----------------------------------------------
             my_arnoldi!(Q, H, A, k)
@@ -247,6 +144,11 @@ function test_gmres(A, b;maxiter=size(A, 2), restart=min(length(b), maxiter), se
             res = norm(e1[k+1])
             push!(residuals,res/bheta)
 
+            it += 1
+            if see_r
+                println("Iteration: ", it, " Current residual: ", res)
+            end
+            
             if res < tol #ta zoado esse calculo aqui tb
                 y = zero(x)
                 for n = 1:k

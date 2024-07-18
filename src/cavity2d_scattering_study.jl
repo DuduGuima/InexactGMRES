@@ -1,5 +1,6 @@
 ## Load Inti and prepare the environment with weak dependencies
-
+# using CSV
+# using DataFrames
 using Inti
 Inti.stack_weakdeps_env!(; update = false)
 
@@ -22,7 +23,7 @@ using BenchmarkTools
 
 #Inexact
 using InexactGMRES
-using InexactGMRES.rel_to_eps
+#using InexactGMRES.rel_to_eps
 
 
 
@@ -121,6 +122,10 @@ L = Inti.assemble_hmatrix(Lop; rtol = ε)
 Id = sparse((0.5 + 0*im)I,size(L))
 axpy!(1.0,Id,L) # in place sum of L
 
+L_matrix = Lop + 0.5*Matrix(I,size(Lop))
+_,vals,_ = svd(L_matrix)
+order_term = vals[length(vals)]
+
 # δL = Inti.adaptive_correction(Lop;tol=1e-4,maxdist=5*meshsize)
 # axpy!(1.0,δL,L) # in place sum of L
 
@@ -137,29 +142,44 @@ rel_error_sol = Vector{Float64}()
 
 y_approx = similar(g)
 σ = 1e-6 # choosing the best tolerance in the test results
-y_approx,res_approx,it_approx = igmres(L,g,tol=σ)
-y_exact,history = gmres(L,g;log=true, reltol=σ)
-
-res_exact = history[:resnorm]
+bound_left44,bound_right44,bound_left54,bound_right54,H_svalues,residuals,iterations = InexactGMRES.igmres_tolstudy(L,g,tol=σ)
 
 
-prodct_res = map(x->InexactGMRES.rel_to_eps(x,σ),res_approx)
+# res_exact = history[:resnorm]
 
-theoric_bound = σ./res_approx
 
-p1 = Plots.scatter(1:it_approx,[res_approx prodct_res theoric_bound], title="Relative error evolution",label=["Residual" "Product tolerance" "Theoric bound"],legend=true,yaxis=:log)
+_,vals,_=svd(L_matrix)
+smallest_sv =vals[length(vals)]
+
+prodct_res = map(x->InexactGMRES.rel_to_eps(x,σ),residuals[1:(length(residuals)-1)])
+
+theoric_bound_A = ((smallest_sv./iterations)*σ)./residuals[1:(length(residuals)-1)]
+
+theoric_bound_H = (H_svalues*σ)./residuals[1:(length(residuals)-1)]
+
+# df = DataFrame("Product Tolerance"=>prodct_res, "Theoric Bound"=>theoric_bound)
+# CSV.write("output_teste.csv",df)
+
+p1 = Plots.scatter(1:iterations,[prodct_res theoric_bound_A theoric_bound_H], title="Product tolerance evolution",label=["Article bound" "Theoric bound with A"  "Theoric bound with H"],legend=:bottomright,yaxis=:log)
 Plots.xlabel!(p1,"Iteration number")
 Plots.ylabel!(p1,"Relative Error")
 Plots.ylims!(p1,10.0^(-10),10.0^(-1))
-#Plots.yticks!(p1,range_values)
-#Plots.xticks!(p1,1:it_approx)
+Plots.yticks!(p1,range_values)
+Plots.xticks!(p1,1:4:iterations)
+
+p2 = Plots.scatter(1:iterations,[bound_left44 bound_right44 ], title="Bound evolution",label=["(4.4) left side" "(4.4) right side"],legend=:bottomright,yaxis=:log)
+Plots.xlabel!(p2,"Iteration number")
+Plots.ylabel!(p2,"Bounds")
+Plots.ylims!(p2,10.0^(-10),10.0^(-1))
+Plots.yticks!(p2,range_values)
+Plots.xticks!(p2,1:4:iterations)
+
+p3 = Plots.scatter(1:iterations,[bound_left54 bound_right54 ], title="Bound evolution",label=["(5.4) left side" "(5.4) right side"],legend=true,yaxis=:log)
+Plots.xlabel!(p3,"Iteration number")
+Plots.ylabel!(p3,"Bounds")
+# Plots.ylims!(p3,10.0^(-10),10.0^(-1))
+# Plots.yticks!(p3,range_values)
+Plots.xticks!(p3,1:4:iterations)
 
 
-
-
-######
-#Rel error between solutions x Matrix size and residual x iteration number
-
-# bigger_size = length(res_exact) > length(res_approx) ? length(res_approx) : length(res_exact)
-
-Plots.plot(p1)
+Plots.plot(p2,p3,layout=(2,1))

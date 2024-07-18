@@ -16,18 +16,17 @@ using IterativeSolvers
 using LinearMaps
 using SpecialFunctions
 using SparseArrays
-using Plots
 using BenchmarkTools
 #-
 
 #Inexact
 using InexactGMRES
 
-
+BLAS.set_num_threads(1)
 
 
 ## Physical parameters
-λ = 0.25 #
+λ = 0.05 #
 k = 2π / λ # wavenumber
 θ = π / 4 # angle of incident wave
 
@@ -49,7 +48,7 @@ end
 
 
 ## Mesh parameters
-meshsize = λ / 300 # mesh size
+meshsize = λ / 10 # mesh size
 gorder = 2 # polynomial order for geometry
 qorder = 4 # quadrature order
 
@@ -103,8 +102,16 @@ axpy!(1.0,Id,L) # in place sum of L
 range_values= [10.0^(-i) for i in 2:Int(-log10(ε))]
 
 
-results_exact = zeros(length(range_values))
-results_approx = zeros(length(range_values))
+results_exact_mean = zeros(length(range_values))
+results_approx_mean = zeros(length(range_values))
+
+results_exact_std = zeros(length(range_values))
+results_approx_std = zeros(length(range_values))
+
+results_exact_min = zeros(length(range_values))
+results_approx_min = zeros(length(range_values))
+
+
 results_itn = zeros(length(range_values))
 rel_error_sol = Vector{Float64}()
 
@@ -112,17 +119,47 @@ rel_error_sol = Vector{Float64}()
 y_exact = similar(g)
 y_approx = similar(g)
 
+
+H_iprod = HMatrices.ITerm(L, 0.0)
+
+# mul!(y_approx, H_iprod.hmatrix, g, 1, 0)
+# mul!(y_exact, L, g, 1, 0)
+
+# @assert y_exact == y_approx 
+# ##
+# b1 = @benchmark mul!($y_approx, $H_iprod, $g, 1, 0)
+# b2 = @benchmark mul!($y_exact, $L, $g, 1, 0)
+# ##
+
+# H_iprod.rtol=ε
+
+# b3 = @benchmark mul!($y_approx, $H_iprod, $g, 1, 0)
+
+# H_iprod.rtol=Inf
+
+# b4 = @benchmark mul!($y_approx, $H_iprod, $g, 1, 0)
+
+# H_iprod.rtol=1e-6
+# b5 = @benchmark mul!($y_approx, $H_iprod, $g, 1, 0)
+
+##
+
 for i=1:length(range_values)
     benchr_approx = @benchmark igmres($L,$g,tol=range_values[$i]) 
     benchr_exact = @benchmark InexactGMRES.test_gmres($L,$g,tol=range_values[$i])
     #benchr_exact = @benchmark gmres($L,$g;reltol=range_values[$i])
     
 
-    results_approx[i] = mean(benchr_approx).time
-    results_exact[i] = mean(benchr_exact).time
+    results_approx_mean[i] = mean(benchr_approx).time
+    results_exact_mean[i] = mean(benchr_exact).time
 
-  
-    
+    results_exact_std[i] = std(benchr_exact).time
+    results_approx_std[i] = std(benchr_approx).time
+
+    results_exact_min[i] = minimum(benchr_exact).time
+    results_approx_min[i] = minimum(benchr_approx).time
+
+
     y_exact = gmres(L,g;reltol=range_values[i])
     
     y_approx,res_aprox,it = igmres(L,g,tol=range_values[i])
@@ -133,31 +170,33 @@ end
 
 
 
-speed_up = (results_exact ) ./ results_approx
+speed_up = (results_exact_min ) ./ results_approx_min
+
+df = DataFrame("Rel. error" => rel_error_sol, "Speed up" => speed_up, "Iterations"=>results_itn)
+CSV.write("Cavity_results.csv", df)
+
+# p1 = Plots.scatter(range_values, rel_error_sol, title="Relative error between solutions",legend=false,yaxis=:log,xaxis=:log)
+# Plots.xlabel!(p1,"Overall Tolerance σ")
+# Plots.ylabel!(p1,"Relative Error")
+# Plots.ylims!(p1,10.0^(-10),10.0^(-1))
+# Plots.yticks!(p1,range_values)
+# Plots.xticks!(p1,range_values)
 
 
-p1 = Plots.scatter(range_values, rel_error_sol, title="Relative error between solutions",legend=false,yaxis=:log,xaxis=:log)
-Plots.xlabel!(p1,"Overall Tolerance σ")
-Plots.ylabel!(p1,"Relative Error")
-Plots.ylims!(p1,10.0^(-10),10.0^(-1))
-Plots.yticks!(p1,range_values)
-Plots.xticks!(p1,range_values)
+# p2 = Plots.plot(range_values,speed_up, title="Speed up", legend=false,xaxis=:log)
+# Plots.xlabel!(p2,"Overall Tolerance σ")
+# Plots.ylabel!(p2,"Speed up")
+# Plots.xticks!(p2,range_values)
 
 
-p2 = Plots.plot(range_values,speed_up, title="Speed up", legend=false,xaxis=:log)
-Plots.xlabel!(p2,"Overall Tolerance σ")
-Plots.ylabel!(p2,"Speed up")
-Plots.xticks!(p2,range_values)
-
-
-p3 = Plots.plot(range_values,results_itn, title="Number of Iterations", legend=false,xaxis=:log)
-Plots.xlabel!(p3,"Overall Tolerance σ")
-Plots.ylabel!(p3,"Iterations")
-Plots.xticks!(p3,range_values)
+# p3 = Plots.plot(range_values,results_itn, title="Number of Iterations", legend=false,xaxis=:log)
+# Plots.xlabel!(p3,"Overall Tolerance σ")
+# Plots.ylabel!(p3,"Iterations")
+# Plots.xticks!(p3,range_values)
 
 ######
 #Rel error between solutions x Matrix size and residual x iteration number
 
 # bigger_size = length(res_exact) > length(res_approx) ? length(res_approx) : length(res_exact)
 
-Plots.plot(p1,p2,layout = (2,1))
+# Plots.plot(p1,p2,layout = (2,1))

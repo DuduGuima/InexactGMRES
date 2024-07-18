@@ -1,3 +1,5 @@
+using CSV
+using DataFrames
 using Test
 using Inti
 using HMatrices
@@ -10,8 +12,9 @@ using HMatrices: RkMatrix
 using LoopVectorization
 using IterativeSolvers
 using InexactGMRES
-using Plots
 using SpecialFunctions
+
+BLAS.set_num_threads(1)
 
 #using HMatrices: laplace_matrix
 
@@ -19,12 +22,12 @@ include(joinpath(HMatrices.PROJECT_ROOT, "test", "testutils.jl"))
 
 
 ## Physical parameters
-λ = 0.25 #
+λ = 0.01 #
 k = 2π / λ # wavenumber
 θ = π / 4 # angle of incident wave
 
 ## Mesh parameters
-meshsize = λ / 600 # mesh size
+meshsize = λ / 10 # mesh size
 gorder = 2 # polynomial order for geometry
 qorder = 4 # quadrature order
 
@@ -96,8 +99,8 @@ for k=1:length(range_values)
     benchr_exact = @benchmark mul!($y_exact,$H_iprod,$g,1,0) 
     
 
-    results_approx[k] = mean(benchr_approx).time
-    results_exact[k] = mean(benchr_exact).time
+    results_approx[k] = minimum(benchr_approx).time
+    results_exact[k] = minimum(benchr_exact).time
 
     H_iprod.rtol = range_values[k]
     mul!(y_exact,L,g,1,0)
@@ -110,23 +113,25 @@ end
 
 speed_up = (results_exact ) ./ results_approx
 
+df = DataFrame("Rel. error" => rel_error_sol, "Speed up" => speed_up)
+CSV.write("Helmholtz_product_results.csv", df)
 
-p1 = Plots.scatter(range_values, rel_error_sol, title="Relative error between products",legend=false,yaxis=:log,xaxis=:log)
-Plots.xlabel!(p1,"Product Tolerance σ")
-Plots.ylabel!(p1,"Relative Error")
-Plots.ylims!(p1,10.0^(-10),10.0^(-1))
-Plots.yticks!(p1,range_values)
-Plots.xticks!(p1,range_values)
+# p1 = Plots.scatter(range_values, rel_error_sol, title="Relative error between products",legend=false,yaxis=:log,xaxis=:log)
+# Plots.xlabel!(p1,"Product Tolerance σ")
+# Plots.ylabel!(p1,"Relative Error")
+# Plots.ylims!(p1,10.0^(-10),10.0^(-1))
+# Plots.yticks!(p1,range_values)
+# Plots.xticks!(p1,range_values)
 
 
-p2 = Plots.plot(range_values,speed_up, title="Speed up", legend=false,xaxis=:log)
-Plots.xlabel!(p2,"Product Tolerance σ")
-Plots.ylabel!(p2,"Speed up")
-Plots.xticks!(p2,range_values)
+# p2 = Plots.plot(range_values,speed_up, title="Speed up", legend=false,xaxis=:log)
+# Plots.xlabel!(p2,"Product Tolerance σ")
+# Plots.ylabel!(p2,"Speed up")
+# Plots.xticks!(p2,range_values)
 
-######
-#Rel error between solutions x Matrix size and residual x iteration number
+# ######
+# #Rel error between solutions x Matrix size and residual x iteration number
 
-# bigger_size = length(res_exact) > length(res_approx) ? length(res_approx) : length(res_exact)
+# # bigger_size = length(res_exact) > length(res_approx) ? length(res_approx) : length(res_exact)
 
-Plots.plot(p1,p2,layout = (2,1))
+# Plots.plot(p1,p2,layout = (2,1))

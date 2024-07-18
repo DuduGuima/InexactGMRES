@@ -1,3 +1,5 @@
+using CSV
+using DataFrames
 using Test
 using Inti
 using HMatrices
@@ -10,21 +12,21 @@ using HMatrices: RkMatrix
 using LoopVectorization
 using IterativeSolvers
 using InexactGMRES
-using Plots
 using SpecialFunctions
 
+BLAS.set_num_threads(1)
 #using HMatrices: laplace_matrix
 
 include(joinpath(HMatrices.PROJECT_ROOT, "test", "testutils.jl"))
 
 
 ## Physical parameters
-λ = 0.25 #
+λ = 0.01 #
 k = 2π / λ # wavenumber
 θ = π / 4 # angle of incident wave
 
 ## Mesh parameters
-meshsize = λ / 600 # mesh size
+meshsize = λ / 10 # mesh size, chose to have ~85% of compression
 gorder = 2 # polynomial order for geometry
 qorder = 4 # quadrature order
 
@@ -94,8 +96,8 @@ for i=1:length(range_values)
     #benchr_exact = @benchmark gmres($L,$g;reltol=range_values[$i])
     
 
-    results_approx[i] = mean(benchr_approx).time
-    results_exact[i] = mean(benchr_exact).time
+    results_approx[i] = minimum(benchr_approx).time
+    results_exact[i] = minimum(benchr_exact).time
 
   
     
@@ -111,29 +113,32 @@ end
 
 speed_up = (results_exact ) ./ results_approx
 
-
-p1 = Plots.scatter(range_values, rel_error_sol, title="Relative error between solutions",legend=false,yaxis=:log,xaxis=:log)
-Plots.xlabel!(p1,"Overall Tolerance σ")
-Plots.ylabel!(p1,"Relative Error")
-Plots.ylims!(p1,10.0^(-10),10.0^(-1))
-Plots.yticks!(p1,range_values)
-Plots.xticks!(p1,range_values)
+df = DataFrame("Rel. error" => rel_error_sol, "Speed up" => speed_up)
+CSV.write("Helmholtz_gmres_results.csv", df)
 
 
-p2 = Plots.plot(range_values,speed_up, title="Speed up", legend=false,xaxis=:log)
-Plots.xlabel!(p2,"Overall Tolerance σ")
-Plots.ylabel!(p2,"Speed up")
-Plots.xticks!(p2,range_values)
+# p1 = Plots.scatter(range_values, rel_error_sol, title="Relative error between solutions",legend=false,yaxis=:log,xaxis=:log)
+# Plots.xlabel!(p1,"Overall Tolerance σ")
+# Plots.ylabel!(p1,"Relative Error")
+# Plots.ylims!(p1,10.0^(-10),10.0^(-1))
+# Plots.yticks!(p1,range_values)
+# Plots.xticks!(p1,range_values)
 
 
-p3 = Plots.plot(range_values,results_itn, title="Number of Iterations", legend=false,xaxis=:log)
-Plots.xlabel!(p3,"Overall Tolerance σ")
-Plots.ylabel!(p3,"Iterations")
-Plots.xticks!(p3,range_values)
+# p2 = Plots.plot(range_values,speed_up, title="Speed up", legend=false,xaxis=:log)
+# Plots.xlabel!(p2,"Overall Tolerance σ")
+# Plots.ylabel!(p2,"Speed up")
+# Plots.xticks!(p2,range_values)
+
+
+# p3 = Plots.plot(range_values,results_itn, title="Number of Iterations", legend=false,xaxis=:log)
+# Plots.xlabel!(p3,"Overall Tolerance σ")
+# Plots.ylabel!(p3,"Iterations")
+# Plots.xticks!(p3,range_values)
 
 ######
 #Rel error between solutions x Matrix size and residual x iteration number
 
 # bigger_size = length(res_exact) > length(res_approx) ? length(res_approx) : length(res_exact)
 
-Plots.plot(p1,p2,layout = (2,1))
+# Plots.plot(p1,p2,layout = (2,1))
