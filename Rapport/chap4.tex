@@ -33,8 +33,12 @@ For the last test, the mesh is made from a cavity $.geo$ file avaiable in \cite{
     \label{fig:cavity_fig}
 \end{figure}
 
+A good way to infer the maximum acceleration possible for the inexact products would be using only admissible rank 1 blocks and measuring its execution time. Although such thing would not happen in a practical situation, it gives a maximum bound for the speed up we should expect.
+For doing that, the product tolerance is changed to \textit{Infinity}, and the product will be realised with only rank-1 blocks, since it's programmed to get the first aproximation lower than its given tolerance.
 
 \section{Laplace's results}
+
+Setting our product tolerance to \textit{Infinity} and using only rank-1 blocks in the product, we got a () speedup.
 
 All results are contained in \ref{fig:laplace_results}, showing the evolution of the residual with the product tolerance aswell as the speedup to each of these values.
 
@@ -47,6 +51,7 @@ All results are contained in \ref{fig:laplace_results}, showing the evolution of
 
 \section{Helmholtz's results}
 
+For a maximum speedup bound in the product, the infinity tolerance brought a () speedup.
 
 For the unitary circle boundary the results can be seen in \ref{fig:Helmholtz_circle_results}.
 
