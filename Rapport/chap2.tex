@@ -101,7 +101,17 @@ When the inexact matrix-vector product is the one being made, the left side of \
 \end{align}
 Where $W_{m} = Q_{m+1}H_{m}$ from this point foward.
 
-Now the subspace spawn by the vectors of $Q_{k}$ is not the Krylov's subspace $\mathcal{K}_{k}(A,b)$ , but these are still orthonormal. The expression \ref{eq:new_projection} also shows that $Q_{k}$ becomes a basis for a new Krylov's subspace, $\mathcal{K}_{k}(A+\mathcal{E}_{k},b)$, made by a big pertubation in $A$, that gets updated in each iteration.
+Now the subspace spawn by the vectors of $Q_{k}$ is not the Krylov's subspace $\mathcal{K}_{k}(A,b)$ , but these are still orthonormal.  To see what kind of subspace our new $Q$ spams, \ref{eq:new_projection} is looked into in \ref{eq:q_basis}.
+
+\begin{align}\label{eq:q_basis}
+    \begin{split}
+        (A + E_{k})q_{k}=\mathcal{A}_{k} q_{k} = h_{1,k}q_{1} + h_{2,k}q_{2} + \dots + h_{k+1,k}q_{k+1}
+    \end{split}
+\end{align}
+
+For $k=1$, we have that $q_{2}$ is a combination of the vectors $\mathcal{A}_{1}b$ and $b$ (since $q_{1}$ = b). For $k=2$ we see that $q_{3}$ is a combination that involves $\mathcal{A}_{2} \mathcal{A}_{1}b$ and so forth.
+
+Expression \ref{eq:new_projection} then shows that $Q_{k}$ becomes a basis for a new Krylov's subspace, $\mathcal{K}_{k}(A+\mathcal{E}_{k},b)$ $= \spn \{b,\mathcal{A}_{1}b,\dots, \mathcal{A}_{k}\dots\mathcal{A}_{1}b \}$, made by a big pertubation in $A$, that gets updated in each iteration.
 
 A new distinction should also be made between the two types of residues appearing in the process: $r_{k}$, the exact residue of an iteration, and $\tilde{r}_{k}$, the one that will really be calculated. A detailed definition for both and a measure of how distant they are is in \ref{eq:res_relation}.
 
