@@ -1,7 +1,7 @@
 
 \section{Low-rank Matrices}
     
-In reality, most matrices are big, so storing each element is not efficient, or even possible. If $A \in \mathbb{C}^{n\times m}$ has a rank \textit{k} such that $k \leq m$ and $k(n+m) < n*m$ (\textit{A} is low-rank), \textit{A} can be written in outer product form, as a product between the matrices $U \in \mathbb{C}^{n\times k} $ and $V \in \mathbb{C}^{m\times k}$, which can be see in \ref{eq::outer_product}, where $u_{i}, v_{i}$ are the column vectors of \textit{U} and \textit{V}.
+In reality, most matrices are large, so storing each element is not efficient, or even possible. If $A \in \mathbb{C}^{n\times m}$ has a rank \textit{k} such that $k \leq m$ and $k(n+m) < n*m$ (\textit{A} is low-rank), \textit{A} can be written in outer product form, as a product between the matrices $U \in \mathbb{C}^{n\times k} $ and $V \in \mathbb{C}^{m\times k}$, which can be see in \ref{eq::outer_product}, where $u_{i}, v_{i}$ are the column vectors of \textit{U} and \textit{V}.
 
 \begin{equation}\label{eq::outer_product}
     A = UV^{H} = \sum_{i=1} ^{k} u_{i} v_{i} ^{*}
@@ -22,7 +22,7 @@ If $ A_{k} $ is the approximation obtained after taking the first k elements of 
 
 If the spectral norm , $\norm{.}_{2} $ is used instead, the error in \ref{eq:error_lowrank} is given by $\sigma_{k+1}$. For Frobenius's norm, $\norm{.}_{F}$, the error becomes $\sum^{n}_{l=k+1} \sigma^{2}_{l}$.
 
-Instead of approximating big matrices entirely, it's better to think in approximations made to each of their blocks. Blocks that appear after the discretization of elliptic operators also have the possibility of being approximated by matrices that decay exponentially with k, $S_{k}$, as in \ref{eq:exp_matrix}.
+Instead of approximating large matrices entirely, it's better to think in approximations made to each of their blocks. Blocks that appear after the discretization of elliptic operators also have the possibility of being approximated by matrices that decay exponentially with k, $S_{k}$, as in \ref{eq:exp_matrix}.
 
 \begin{equation}\label{eq:exp_matrix}
     \norm{A-S_{k}}_{2} < q^{k}\norm{A}_{2}
@@ -37,9 +37,9 @@ That way, the rank and the precision are related in a logarithmic manner, and th
 
 \section{ACA Method(Adaptative Cross Approximation)}
 
-As shown in the last section, the SVD methods gives us an approximation of $A$ given a certain $\epsilon$, through the relation in \ref{eq:error_lowrank}. Nevertheless, this is an expensive method, where the complexity becomes too big for some calculations.
+As shown in the last section, the SVD methods gives us an approximation of $A$ given a certain $\epsilon$, through the relation in \ref{eq:error_lowrank}. Nevertheless, this is an expensive method, where the complexity becomes too heavy for some calculations.
 
-The algorithm for the method is in \ref{alg:aca_method}, where $a_{ij}$ are the elements of a matrix $A \in \mathbb{R}^{n\times m}$. The main objective is to approximate $A$ as $A=S_{k} + R_{k}$, $S_{k} = \sum_{l=1}^{k} u_{l}v_{l}^{t}$ and $R_{k}$ is the residue.
+The algorithm for the method is in \ref{alg:aca_method}, where $a_{ij}$ are the elements of a matrix $A \in \mathbb{R}^{n\times m}$. The main objective is to approximate $A$ as $A=S_{k} + R_{k}$, $S_{k} = \sum_{l=1}^{k} u_{l}v_{l}^{t}$ and $R_{k}$ is the residual.
 
 
 
