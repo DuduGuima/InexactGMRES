@@ -111,7 +111,7 @@ It can be shown that $g_{m}$ also contains the residual of each iteration \cite{
     \end{split}
 \end{align}
 
-Since $y_{m}$ is a solution to the system, the norm in \ref{eq:proof_residual} is defined by $\norm{\gamma_{m+1} - (R_{m})_{m+1,1:m} y_{m}}$. 
+Since $y_{m}$ is a solution to the system, the norm in \ref{eq:proof_residual} is defined by $\norm{\gamma_{m+1} - (R_{m})_{m+1,1:m} y_{m}}$.
 
 But since the last row in $R_{m}$ is composed by zeros, we have that $\norm{b - Ax_{m}} = |\gamma_{m+1}|$, which gives a more efficient way to obtain the residuals during each iteration.
 
@@ -171,7 +171,7 @@ Considering $y_{k} = [\eta_{1}^{(k)} \dots \eta_{n}^{(k)} ] $, upper index to cl
     \end{split}
 \end{align}
 
-Where the fact that $q_{i}$ are unitary was used between the last two lines. The bound on $\delta$ is then found in \ref{eq:borne_delta}.
+Where the fact that $q_{i}$ are unitary was used between the last two lines. The bound on $\delta_{k}$ is then found in \ref{eq:borne_delta}.
 
 
 \begin{equation}\label{eq:borne_delta}
@@ -183,13 +183,13 @@ Where the fact that $q_{i}$ are unitary was used between the last two lines. The
 
 The problem is $y_{k}$ is only found after the construction of $E_{k}$, so an upper bound must be also found for its value.
 
-Knowing $y_{k}$ is the solution of the minimization of $ \norm{H_{k}y_{k} - e_{1}\beta} $, we consider $V_{k}^{t} =\Omega_{k} \Omega_{k-1} \dots \Omega_{1}$ where each $\Omega$ represents a Givens rotation as shown in \ref{eq:givens}, so $\Omega_{k} = G(k,k+1)$.
+Knowing $y_{k}$ is the solution of the minimization of $ \norm{H_{k}y_{k} - e_{1}\beta} $, we consider $\Omega_{k} =G(k,k+1) G(k-1,k) \dots G(1,2)$ where each $G$ represents a Givens rotation as shown in \ref{eq:givens}, so $\Omega_{k}$ is the matrix that transforms $H_{k}$ into an upper triangular matrix.
 
-The aplication of $V_{k}$ in either side of $H_{k}y_{k}  = e_{1}\beta$ gives us \ref{eq:y_limit_start}.
+The aplication of $\Omega_{k}$ in either side of $H_{k}y_{k}  = e_{1}\beta$ gives us \ref{eq:y_limit_start}.
 
 \begin{align}\label{eq:y_limit_start}
     \begin{split}
-        V_{k}H_{k}y_{k}&=V_{k}e_{1}\beta\\
+        \Omega_{k}H_{k}y_{k}&=\Omega_{k}e_{1}\beta\\
         R_{k}y_{k}&=g_{k}\\
         y_{k}&=R^{-1}_{k}g_{k}
     \end{split}
@@ -202,7 +202,7 @@ Being an upper triangular matrix, the first $i-1$ elements of its ith line are z
     (R^{-1}_{k})_{i,1:k}(g_{k})_{1:k} = (R^{-1}_{k})_{i,i:k}(g_{k})_{i:k}
 \end{equation}
 
-Using this last result in \ref{eq:y_limit_start} gives
+Using this last result in \ref{eq:y_limit_start} gives \ref{eq:y_limit}.
 
 \begin{align}\label{eq:y_limit}
     \begin{split}
@@ -218,7 +218,7 @@ Since $\norm{e_{k}R^{-1}_{k}} \leq \norm{R^{-1}_{k}} = \sigma_{k}(H_{k})^{-1}$ a
     \norm{\eta_{i}^{(k)}} \leq \frac{1}{\sigma_{k}(H_{k})} \norm{\tilde{r}_{i-1}}
 \end{equation}
 
-Putting \ref{eq:bound_yinexact} in \ref{eq:borne_delta} gives the results \ref{eq:boundE_intermediate}. Setting $\delta_{k} \leq \epsilon$ and determining a bound for each $\norm{E_{i}}$ gets us \ref{eq:bound_E}.
+Putting \ref{eq:bound_yinexact} in \ref{eq:borne_delta} gives the results in \ref{eq:boundE_intermediate}. Setting $\delta_{k} \leq \epsilon$ and determining a bound for each $\norm{E_{i}}$ gets us \ref{eq:bound_E}.
 
 
 \begin{equation}\label{eq:boundE_intermediate}
@@ -229,12 +229,14 @@ Putting \ref{eq:bound_yinexact} in \ref{eq:borne_delta} gives the results \ref{e
     \norm{E_{i}} \leq \frac{\sigma_{k}(H_{k})\epsilon}{k\norm{\tilde{r}_{i-1}}}
 \end{equation}
 
-Since $H_{k}$ is also one of the matrices being constructed throuhout the method, a workaround is necessary to apply find these bounds in a pratical situation. Either using an estimation of $\sigma_{k}(H_{k})$ with the singular values of $A$ or grouping all uncalculated terms in a $\ell_{k}$ that will be estimated empirically \cite{simoncini2003theory}, obtaining \ref{eq:boundE_final}.
+Since $H_{k}$ is also one of the matrices being constructed throughout the method, a workaround is necessary to apply find these bounds in a pratical situation. Either using an estimation of $\sigma_{k}(H_{k})$ with the singular values of $A$ or grouping all uncalculated terms in a $\ell_{k}$ that will be estimated empirically \cite{simoncini2003theory}, obtaining \ref{eq:boundE_final}.
 
 \begin{equation}\label{eq:boundE_final}
     \norm{E_{i}} \leq \ell_{k} \frac{1}{\norm{\tilde{r}_{i-1}}} \epsilon
 \end{equation}
 
-It should be noted \cite{simoncini2003theory} that some of the initial bounds found aren't really sharp, mainly \ref{eq:res_rightside} and \ref{eq:bound_yinexact}, and further empirical analysis of these bounds could show a better theoretical bound can be found for both.
+It should be noted \cite{simoncini2003theory} that some of the initial bounds found aren't really sharp, mainly \ref{eq:res_rightside} and \ref{eq:bound_yinexact}, and further empirical analysis of these bounds could show a better theoretical bound can be found for both. A plot of these bounds for the cavity problem that will be studied is shown later.
 
-It should also be noted that $\tilde{r}_{i}$, after the Givens's  Rotations, is also found in the $i+1$'th element of $g_{m}$ in \ref{eq:y_limit_start}. The demonstration follow the same proof as for $g_{m}$ in \ref{eq:after_givens}.
+It should also be noted that $\tilde{r}_{i}$, after the Givens's  Rotations, is also found in the $i+1$'th element of $g_{m}$ in \ref{eq:y_limit_start}. The demonstration follow the same proof as for $g_{m}$ in \ref{eq:after_givens}, given that $y_{m}$ is a solution to a linear system that involves an upper triangular matrix.
+
+The remaining theory in this report explains the basics of Hierarchical Matrices, the structure that will be used to compress the matrices $A$ that appear in the discretization of integral operators, since these usually appear in large dimensions, but also to construct each $E_{k}$. As it will be explained later, at each iteration a $E_{k}$ will be indirectly constructed during the inexact product $\mathcal{A}_{k}q$, mainly using the residues that appear during this structure's construction, in the iterations of the $ACA Method$.
