@@ -3,10 +3,10 @@
 %Iterative methods appear as an alternative to exact solution methods, where the true solution is not desired and a good approximation is enough.
 
 %Iterative methods appear as an alternative to direct solution methods, where the true/exact solution to a problem is only desired up to a certaion tolerance, usually used when the exact methods need heavy computing power and/or are inefficient in the current context.
-Iterative methods appear as an alternative to direct solution methods, where the direct solution to a problem usually scales with $\mathcal{O}(m^{3})$ complexity, where $m$ is the dimension of the input matrix. Since larger matrices are usually employed in practice, the direct algorithms become inefficient and a more reliable approach is desired.
+Iterative methods appear as an alternative to direct solution methods, where the direct solution to a problem usually scales with $\mathcal{O}(m^{3})$ complexity, where $m$ is the dimension of the input matrix. Since larger matrices are usually employed in practice, the direct algorithms become inefficient, and we require a more reliable approach.
 
 
-The idea of the iterable methods is to find, after a certain number of iterations, a sequence ${x_{k}}$ that converges to $x$, the exact solution of the problem \ref{eq:suite}, all while making the large-scale computations faster, i.e. obtaining a complexity smaller than $\mathcal{O}(m^{3})$, and keeping a maximum tolerance between the iterable solution and the exact one.
+The idea of the iterable methods is to find, after a certain number of iterations, a sequence ${x_{k}}$ that converges to $x$, the exact solution of the problem \ref{eq:suite}. This should be done while making the large-scale computations faster, i.e., obtaining a complexity smaller than $\mathcal{O}(m^{3})$, and keeping a maximum tolerance between the iterable solution and the exact one.
 
 
 \begin{equation}\label{eq:suite}
@@ -22,7 +22,7 @@ The method stops after $k$ iterations, where $x_{k}$ is the fist element of the 
 \end{equation}
 Where $\epsilon$ is a tolerance defined by who is applying the algorithm.
 
-Usually $x$ isn't known, so \ref{eq:ch1_it} gets modified for \ref{eq:residual}, where $A$ is the system's matrix and $b$ is the RHS(right hand side).
+Usually $x$ isn't known, so \ref{eq:ch1_it} gets modified for \ref{eq:residual}, where $A$ is the system's matrix and $b$ is the RHS(right-hand side).
 
 \begin{equation}\label{eq:residual}
     \frac{||Ax_{k} - b||}{||b||} \leq \epsilon
@@ -30,7 +30,7 @@ Usually $x$ isn't known, so \ref{eq:ch1_it} gets modified for \ref{eq:residual},
 
 (I'm thinking about removing this part completely)
 
-The first iterative methods used a decomposition of $A$ as a combination of two matrices \ref{eq:A-comb}, where $A_{1}$ isn't singular, and each iteration is defined as \ref{eq:A_it}.
+The first iterative methods used a decomposition of $A$ as a combination of two matrices \ref{eq:A-comb}, where $A_{1}$ isn't singular, and we define each iteration as \ref{eq:A_it}.
 
 \begin{equation}\label{eq:A-comb}
     A = A_{1} - A_{2}
@@ -45,7 +45,7 @@ With a substitution of the others $x_{k}$, \ref{eq:A_it} gives \ref{eq:it_fin}, 
 \begin{equation}\label{eq:it_fin}
     x_{k+1} = A_{1}^{-1}(b + A_{2}x_{k}) = A_{1}^{-1}(b + A_{2}A_{1}^{-1}(b + A_{2}x_{k-1}))... = A_{1}^{-1} \left[ \sum_{i=0}^{k} (A_{2}A_{1}^{-1})^{i}b\right]
 \end{equation}
-If $A_{1} = I$ and $A_{2} = I - A$ in \ref{eq:A-comb}, the sequence found in \ref{eq:it_fin} is: $x_{1} = b$,$x_{2} = 2b- Ab$, $x_{3} = 3b-3Ab+A^{2}b$ , $\dots$
+If $A_{1} = I$ and $A_{2} = I - A$ in \ref{eq:A-comb}, the sequence found in \ref{eq:it_fin} is: $x_{1} = b$,$x_{2} = 2b- Ab$, $x_{3} = 3b-3Ab+A^{2}b$, $\dots$
 
 Even if the condition $\rho(A-I) \leq 1$ is strong \cite{bonnet}, it shows that one approximation $x_{k}$ could be represented as \ref{eq:xkry}.
 
@@ -54,7 +54,7 @@ Even if the condition $\rho(A-I) \leq 1$ is strong \cite{bonnet}, it shows that 
 \end{equation}
 
 \subsection{Krylov's Subspace}
-Be $A \in \mathbb{K}^{n \times n}$ a matrix and $b\in \mathbb{K}^{n}$. To each $k\leq n$ the Krylov's Subspace $\mathcal{K}_{k}=\mathcal{K}_{k}(A,b)$ associated to A,b is defined as \ref{eq:krylov}.
+Be $A \in \mathbb{K}^{n \times n}$ a matrix and $b\in \mathbb{K}^{n}$. To each $k\leq n$ the Krylov's Subspace $\mathcal{K}_{k}=\mathcal{K}_{k}(A,b)$ associated to A, b is defined as \ref{eq:krylov}.
 
 \begin{equation}\label{eq:krylov}
     \mathcal{K}_{k}(A,b) = \spn(b,Ab,A^{2}b,\dots , A^{k-1}b)
@@ -68,7 +68,7 @@ The problem with using ${A^{k}b}, k \in {0,1,2,\dots}$ as a base comes from the 
 
 \subsection{Arnoldi's Method}
 
-With the task of obtaining an orthonormal basis to $\mathcal{K}_{k}(A,b)$, the method searches for a unitary matrix $Q$ for which the expression \ref{eq:init_arnoldi} is valid. $H_{k}={h_{ij}}$ is an Hessenberg's matrix.
+With the task of obtaining an orthonormal basis to $\mathcal{K}_{k}(A,b)$, the method searches for a unitary matrix $Q$ for which the expression \ref{eq:init_arnoldi} is valid. $H_{k}={h_{ij}}$ is a Hessenberg's matrix.
 
 
 \begin{equation} \label{eq:init_arnoldi}

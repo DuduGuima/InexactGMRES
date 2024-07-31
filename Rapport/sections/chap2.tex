@@ -1,5 +1,5 @@
 
-A projection in $\mathcal{K}_{k}(A,b)$, where the different approximations are taken as in \ref{eq:init_gmres}, where $Q_{m}$ is the vector in \ref{eq:init_arnoldi}.
+A projection in $\mathcal{K}_{k}(A,b)$, where we take the different approximations as in \ref{eq:init_gmres}, where $Q_{m}$ is the vector in \ref{eq:init_arnoldi}.
 \begin{equation}\label{eq:init_gmres}
     x = x_{0} + Q_{m}y
 \end{equation}
@@ -23,7 +23,7 @@ Thus, $y$ which appears in \ref{eq:init_gmres}, is found as the solution of the 
     y = \min_{y} \norm{\beta e_{1} - H_{m}y}
 \end{equation}
 
-An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 consist of the Arnoldi's Method presented in \ref{alg:arnoldi}.
+An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 contain the Arnoldi's Method presented in \ref{alg:arnoldi}.
 
 \begin{algorithm}
     \caption{Initial GMRES}\label{alg:gmres_init}
@@ -48,11 +48,11 @@ An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 co
     \end{algorithmic}
 \end{algorithm}
 
-However, \ref{alg:gmres_init} doesn't present an efficient way of finding the residual in each iteration. To solve this problem and also to find a more efficient way of solving the least squares problem in \ref{eq:y_gmres}, a transformation is applied to $H_{m}$, turning it into a triangular matrix.
+However, \ref{alg:gmres_init} doesn't present an efficient way of finding the residual in each iteration. To solve this problem and also to find a more efficient way of solving the least squares in \ref{eq:y_gmres}, we apply a transformation to $H_{m}$, turning it into a triangular matrix.
 
 \subsection{Givens's Rotation}
 
-Givens's operator, $G(i,i+1)$, is an unitary matrix such that the column vector $a = Gb$ has the elements $a(i) = r \in \mathbb{R}$ and $a(i+1)=0$. It has a structure as in \ref{eq:givens}. The coefficients $c_{i},s_{i}$ only appear in the rows $i$ et $i+1$.
+Givens's operator, $G(i,i+1)$, is a unitary matrix such that the column vector $a = Gb$ has the elements $a(i) = r \in \mathbb{R}$ and $a(i+1)=0$. It has a structure as in \ref{eq:givens}. The coefficients $c_{i},s_{i}$ only appear in the rows $i$ et $i+1$.
 
 \begin{equation}\label{eq:givens}
     G(i,i+1)=
@@ -74,7 +74,7 @@ This operator offers a way to transform the columns in $H_{m}$, \textit{zeroing}
 \end{equation}
 
 
-Thus, the new problem \ref{eq:after_givens} can be solved with a simple backwards substitution. If $g_{m} = [\gamma_{1} \dots \gamma_{m+1}]^{t}$, a $m+1$ column vector, and $\{ R_{m} \}_{ij} = r_{ij}$ a $m+1$ by $m$ upper triangular matrix with $r_{ii} \neq 0$ and its last row filed with zeros, each element of $y_{m} = [y_{1} \dots y_{m}]$ is given by \ref{eq:triangular_system}.
+Thus, the new problem \ref{eq:after_givens} can be solved with a simple backwards substitution. If $g_{m} = [\gamma_{1} \dots \gamma_{m+1}]^{t}$, an $m+1$ column vector, and $\{ R_{m} \}_{ij} = r_{ij}$ an $m+1$ by $m$ upper triangular matrix with $r_{ii} \neq 0$ and its last row filed with zeros, each element of $y_{m} = [y_{1} \dots y_{m}]$ is given by \ref{eq:triangular_system}.
 
 \begin{align}\label{eq:triangular_system}
     \begin{split}
@@ -102,7 +102,7 @@ A simple algorithm to this end can be written as \ref{alg:triang_system}.
 
 
 
-It can be shown that $g_{m}$ also contains the residual of each iteration \cite{saad2003iterative}. Since it's a $m+1$ column vector, we have, with $\Omega_{m}$ being the necessary Givens's Rotations to make $H_{m}$ upper triangular \ref{eq:proof_residual}.
+It can be shown that $g_{m}$ also contains the residual of each iteration \cite{saad2003iterative}. Since it's an $m+1$ column vector, we have, with $\Omega_{m}$ being the necessary Givens's Rotations to make $H_{m}$ upper triangular \ref{eq:proof_residual}.
 
 \begin{align}\label{eq:proof_residual}
     \begin{split}
@@ -126,7 +126,7 @@ The heaviest part in the code is in the matrix-vector product \ref{alg:arnoldi},
 
 Where \textit{E} in \ref{eq:aprox_Aq} is a \textit{pertubation matrix} that changes with each iteration and will be written as $E_{k}$ for iteration k.
 
-When the inexact matrix-vector product is the one being made, the left side of \ref{eq:init_arnoldi} must be changed by \ref{eq:new_projection}.
+When we realise the inexact matrix-vector product, instead of the regular one, the left side of \ref{eq:init_arnoldi} must be changed by \ref{eq:new_projection}.
 
 
 \begin{align} \label{eq:new_projection}
@@ -138,7 +138,7 @@ When the inexact matrix-vector product is the one being made, the left side of \
 \end{align}
 Where $W_{m} = Q_{m+1}H_{m}$ from this point foward.
 
-Now the subspace spawn by the vectors of $Q_{k}$ is not the Krylov's subspace $\mathcal{K}_{k}(A,b)$ , but these are still orthonormal.  To see what kind of subspace our new $Q$ spams, \ref{eq:new_projection} is looked into in \ref{eq:q_basis}.
+Now the subspace spawn by the vectors of $Q_{k}$ is not the Krylov's subspace $\mathcal{K}_{k}(A,b)$, but these are still orthonormal.  To see what kind of subspace our new $Q$ spams, \ref{eq:new_projection} is looked into in \ref{eq:q_basis}.
 
 \begin{align}\label{eq:q_basis}
     \begin{split}
@@ -171,7 +171,7 @@ Considering $y_{k} = [\eta_{1}^{(k)} \dots \eta_{n}^{(k)} ] $, upper index to cl
     \end{split}
 \end{align}
 
-Where the fact that $q_{i}$ are unitary was used between the last two lines. The bound on $\delta_{k}$ is then found in \ref{eq:borne_delta}.
+We use the fact that $q_{i}$ are unitary between the last two lines. The bound on $\delta_{k}$ is then found in \ref{eq:borne_delta}.
 
 
 \begin{equation}\label{eq:borne_delta}
@@ -183,7 +183,7 @@ Where the fact that $q_{i}$ are unitary was used between the last two lines. The
 
 The problem is $y_{k}$ is only found after the construction of $E_{k}$, so an upper bound must be also found for its value.
 
-Knowing $y_{k}$ is the solution of the minimization of $ \norm{H_{k}y_{k} - e_{1}\beta} $, we consider $\Omega_{k} =G(k,k+1) G(k-1,k) \dots G(1,2)$ where each $G$ represents a Givens rotation as shown in \ref{eq:givens}, so $\Omega_{k}$ is the matrix that transforms $H_{k}$ into an upper triangular matrix.
+Knowing $y_{k}$ is the solution of the minimisation of $ \norm{H_{k}y_{k} - e_{1}\beta} $, we consider $\Omega_{k} =G(k,k+1) G(k-1,k) \dots G(1,2)$ where each $G$ represents a Givens rotation as shown in \ref{eq:givens}, so $\Omega_{k}$ is the matrix that transforms $H_{k}$ into an upper triangular matrix.
 
 The aplication of $\Omega_{k}$ in either side of $H_{k}y_{k}  = e_{1}\beta$ gives us \ref{eq:y_limit_start}.
 
@@ -196,7 +196,7 @@ The aplication of $\Omega_{k}$ in either side of $H_{k}y_{k}  = e_{1}\beta$ give
 \end{align}
 
 Since $R_{k}$, the transformation of a Hessenberg matrix by a series of Givens rotations, is upper triangular, then its inverse also is.
-Being an upper triangular matrix, the first $i-1$ elements of its ith line are zeros, so using Matlab index notation in \ref{eq:R_elements}
+Being an upper triangular matrix, the first $i-1$ elements of its ith line are zeros, so using Matlab index notation in \ref{eq:R_elements}.
 
 \begin{equation}\label{eq:R_elements}
     (R^{-1}_{k})_{i,1:k}(g_{k})_{1:k} = (R^{-1}_{k})_{i,i:k}(g_{k})_{i:k}
@@ -229,14 +229,15 @@ Putting \ref{eq:bound_yinexact} in \ref{eq:borne_delta} gives the results in \re
     \norm{E_{i}} \leq \frac{\sigma_{k}(H_{k})\epsilon}{k\norm{\tilde{r}_{i-1}}}
 \end{equation}
 
-Since $H_{k}$ is also one of the matrices being constructed throughout the method, a workaround is necessary to apply find these bounds in a pratical situation. Either using an estimation of $\sigma_{k}(H_{k})$ with the singular values of $A$ or grouping all uncalculated terms in a $\ell_{k}$ that will be estimated empirically \cite{simoncini2003theory}, obtaining \ref{eq:boundE_final}.
+Since $H_{k}$ is also one of the matrices being constructed throughout the method, a workaround is necessary to apply find these bounds in a pratical situation. Either using an estimation of $\sigma_{k}(H_{k})$ with the singular values of $A$ or grouping all uncalculated terms in an $\ell_{k}$ that will be estimated empirically \cite{simoncini2003theory}, obtaining \ref{eq:boundE_final}.
 
 \begin{equation}\label{eq:boundE_final}
     \norm{E_{i}} \leq \ell_{k} \frac{1}{\norm{\tilde{r}_{i-1}}} \epsilon
 \end{equation}
 
-It should be noted \cite{simoncini2003theory} that some of the initial bounds found aren't really sharp, mainly \ref{eq:res_rightside} and \ref{eq:bound_yinexact}, and further empirical analysis of these bounds could show a better theoretical bound can be found for both. A plot of these bounds for the cavity problem that will be studied is shown later.
+It should be noted \cite{simoncini2003theory} that among te initial bounds, some aren't really sharp, mainly \ref{eq:res_rightside} and \ref{eq:bound_yinexact}, and further empirical analysis of these bounds could show a better theoretical bound can be found for both. A plot of these bounds for the cavity problem that will be studied is shown later.
 
-It should also be noted that $\tilde{r}_{i}$, after the Givens's  Rotations, is also found in the $i+1$'th element of $g_{m}$ in \ref{eq:y_limit_start}. The demonstration follow the same proof as for $g_{m}$ in \ref{eq:after_givens}, given that $y_{m}$ is a solution to a linear system that involves an upper triangular matrix.
+It should also be noted that $\tilde{r}_{k}$, after the transformation of $H_{k}$ into an upper triangular matrix, is also found in the $i+1$'th element of $g_{m}$ in \ref{eq:y_limit_start}. The demonstration follow the same proof as for $g_{m}$ in \ref{eq:after_givens}, given that $y_{m}$ is a solution to a linear system that involves an upper triangular matrix.
 
-The remaining theory in this report explains the basics of Hierarchical Matrices, the structure that will be used to compress the matrices $A$ that appear in the discretization of integral operators, since these usually appear in large dimensions, but also to construct each $E_{k}$. As it will be explained later, at each iteration a $E_{k}$ will be indirectly constructed during the inexact product $\mathcal{A}_{k}q$, mainly using the residues that appear during this structure's construction, in the iterations of the $ACA Method$.
+The remaining theory in this report also explains the basics of Hierarchical Matrices, the structure that will be used to compress the matrices used in the algorithm, since $A$ appears in the discretization of integral operators and uses large dimensions.
+It's also though these strucures each $E_{k}$ will be made. As it will be explained later, at each iteration an $E_{k}$ will be indirectly constructed during the inexact product $\mathcal{A}_{k}q$, mainly using the residues that appear during this structure's construction, in the iterations of the $ACA Method$.
