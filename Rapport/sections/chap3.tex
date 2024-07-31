@@ -1,0 +1,93 @@
+
+\subsection{Low-rank Matrices}
+
+In reality, most matrices are large, so storing each element is not efficient, or even possible. If $A \in \mathbb{C}^{n\times m}$ has a rank \textit{k} such that $k \leq m$ and $k(n+m) < n*m$ (\textit{A} is low-rank), \textit{A} can be written in outer product form, as a product between the matrices $U \in \mathbb{C}^{n\times k} $ and $V \in \mathbb{C}^{m\times k}$, which can be see in \ref{eq::outer_product}, where $u_{i}, v_{i}$ are the column vectors of \textit{U} and \textit{V}.
+
+\begin{equation}\label{eq::outer_product}
+    A = UV^{H} = \sum_{i=1} ^{k} u_{i} v_{i} ^{*}
+\end{equation}
+
+
+Therefore, storing $k(n+m)$ elements to write $A$, and not $n\times m$. A matrix \textit{A} that can be represented as \ref{eq::outer_product} is an element of $\mathbb{C}^{n\times m}_{k}$.
+
+The representation in \ref{eq::outer_product} also facilitates other operations with $A$, like matrix-vector products $Ab$ that are always present in methods like GMRES \cite{bebendorf2008hierarchical} and different kinds of norms, like $\norm{A}_{F}, \norm{A}_{2}$ \cite{bebendorf2008hierarchical}.
+
+However, even full rank matrices can be approximated by matrices with lower rank. A theorem \cite{bebendorf2008hierarchical} establishes that the closest matrix from $\mathbb{C}^{n\times m}_{k}$ of a matrix from $\mathbb{C}^{n\times m}$ can be obtained from the SVD $A = U \Sigma V^{H}$, where $\Sigma$ contains the singular valuers $\sigma_{1} \geq \sigma_{2} \dots \sigma_{m} \geq 0$ and $U,V$ are unitary.
+
+If $ A_{k} $ is the approximation obtained after taking the first k elements of $\Sigma$ (creating the matrix $ \Sigma_{k} $ ), the error between $ A $ and $ A_{k} $ is \ref{eq:error_lowrank}.
+
+\begin{equation}\label{eq:error_lowrank}
+    \norm{A-A_{k}} = \norm{U\Sigma V^{H} - U^{'} \Sigma_{k} V_{' H}} = \norm{\Sigma - \Sigma_{k}}
+\end{equation}
+
+If the spectral norm , $\norm{.}_{2} $ is used instead, the error in \ref{eq:error_lowrank} is given by $\sigma_{k+1}$. For Frobenius's norm, $\norm{.}_{F}$, the error becomes $\sum^{n}_{l=k+1} \sigma^{2}_{l}$.
+
+Instead of approximating large matrices entirely, it's better to think in approximations made to each of their blocks. Blocks that appear after the discretization of elliptic operators also have the possibility of being approximated by matrices that decay exponentially with k, $S_{k}$, as in \ref{eq:exp_matrix}.
+
+\begin{equation}\label{eq:exp_matrix}
+    \norm{A-S_{k}}_{2} < q^{k}\norm{A}_{2}
+\end{equation}
+
+
+That way, the rank and the precision are related in a logarithmic manner, and the rank required by a certain $\epsilon$ is \ref{eq:exp_error}.
+
+\begin{equation}\label{eq:exp_error}
+    k(\epsilon) = min\{ k \in \mathbb{N} : \sigma_{k+1} < \epsilon\sigma_{1}\}
+\end{equation}
+
+\subsection{ACA Method(Adaptative Cross Approximation)}
+
+As shown in the last section, the SVD methods gives us an approximation of $A$ given a certain $\epsilon$, through the relation in \ref{eq:error_lowrank}. Nevertheless, this is an expensive method, where the complexity becomes too heavy for some calculations.
+
+The algorithm for the method is in \ref{alg:aca_method}, where $a_{ij}$ are the elements of a matrix $A \in \mathbb{R}^{n\times m}$. The main objective is to approximate $A$ as $A=S_{k} + R_{k}$, $S_{k} = \sum_{l=1}^{k} u_{l}v_{l}^{t}$ and $R_{k}$ is the residual.
+
+
+
+\begin{algorithm}
+    \caption{ACA Method}\label{alg:aca_method}
+    \begin{algorithmic}[1]
+        \State $k=1$ et $\mathbf{Z} = \emptyset $
+        \Repeat
+        \State TFind $i_{k}$
+        \State $\hat{v}_{k} = a_{i_{k},1:m} $
+        \For{$l=1,\dots , k-1$}
+        \State $\hat{v}_{k} = \hat{v}_{k} - (u_{l})_{i_{k}}v_{l} $
+        \EndFor
+        \State $Z = Z \bigcup \{ i_{k} \} $
+
+        \If{$\hat{v}_{k}$ doesn't disappear}
+        \State $j_{k} = argmax_{j}|(\hat{v}_{k})_{j}|$ ; $v_{k} = (\hat{v}_{k})^{-1}_{j_{k}} \hat{v}_{k}$
+        \State $u_{k}=a_{1:n,j_{k}}$
+
+        \For{$l=1,\dots,k-1$}
+        \State $u_{k}=u_{k} - (v_{l})_{j_{k}}u_{l}$
+        \EndFor
+        \State $k=k+1$
+
+        \EndIf
+
+
+        \Until{$\norm{u_{k}}\norm{v_{k}} \leq \epsilon$}
+
+    \end{algorithmic}
+\end{algorithm}
+
+Considering $I,J \in \mathbb{N}$ the index set of a given matrix and $\mathbf{T}_{I \times J}$ the cluster block tree that contains an admissible partition \textit{P} of $ I \times J$ in its leaves, $\mathfrak{L}(\mathbf{T}_{I \times J})$. The set of hierarchical matrices in $\mathbf{T}_{I \times J}$ rank k for each block $A_{b}$ defined in \ref{eq:matrix_hier}.
+
+\begin{equation}\label{eq:matrix_hier}
+    \mathfrak{H}(\mathbf{T}_{I \times J},k) = \left\{  A\in \mathbb{C}^{I\times J} : rankA_{b} \leq k, \forall b \in P \right\}
+\end{equation}
+
+
+In practise, \ref{alg:aca_method} works with $\epsilon$ given by the user during the assembling of the Hierarchical Matrix, and the compression acts in each of the admissible blocks that will then be represented as low rank matrices, shown in \ref{eq::outer_product}. We also store each one of the residuals obtained in the outer loop of \ref{alg:aca_method}. 
+
+After giving a tolerance $\sigma$ for an inexact product, the algorithm has, for each admissible block of the cluster tree, use the right amount of columns of the outer product representation of the block as to reach the desired tolerance, what can be infered by the list of residuals of the ACA Method.
+
+So, the different pertubations $E_{k}$ used in \ref{eq:new_projection}, are the matrices that when added to $A$, leave each admissible block with the right amount $k^{'}$ of columns in \ref{eq::outer_product} so the product of the admissible block $B_{k}$ and $q$ be approximated by the tolerance $\sigma$. Calling this approximation of each block $B_{k}$ as $\tilde{B}_{k}$, we have \ref{eq:inexact_productblock}.
+
+\begin{equation}\label{eq:inexact_productblock}
+    \frac{\norm{B_{k}q - \tilde{B}_{k}q }}{\norm{B_{k}q}} \leq \sigma, \hspace{0.3in} \tilde{B}_{k} = \sum_{i=1} ^{k^{'}} u_{i} v_{i} ^{*}
+\end{equation}
+
+
+

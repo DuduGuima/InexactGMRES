@@ -1,121 +1,278 @@
-\documentclass[a4paper, 15pt]{report}
-
-\usepackage[top=4cm, bottom=3cm, left=3cm, right=3cm]{geometry}
+\documentclass[twoside, 12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{abstract,lipsum}
+\usepackage[english]{babel}
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={160mm,247mm},
+ left=30mm,
+ top=30mm,
+ asymmetric
+ }
+\usepackage{graphicx}
+\usepackage{eso-pic}
+\usepackage{color, xcolor, colortbl}
+\usepackage{enumitem}
+\usepackage{dsfont}
+\usepackage{ragged2e}
+\usepackage{makecell}
+\usepackage{fancyhdr}
+\usepackage[nottoc, notlof, notlot,numbib]{tocbibind}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage{booktabs}
 \usepackage{amsmath, amsfonts, amssymb}
 \usepackage{algorithm,algpseudocode}
-\usepackage[english]{babel}
-\usepackage{iflang}
-
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{lmodern}
-
-\usepackage{graphicx}
-\usepackage[pdftex]{hyperref}
-\usepackage{url}
+\usepackage{graphicx} % Allows including images
+\usepackage{booktabs} % Allows the use of \toprule, \midrule and \bottomrule in tables
+\usepackage{float}
+\usepackage{appendix}
 \usepackage{svg}
-
-\usepackage{color, xcolor, colortbl}
-\usepackage{dsfont}
-\usepackage{enumitem}
-\usepackage{fancyhdr}
 \usepackage{listings}
-\usepackage{makecell}
-\usepackage{ragged2e}
 \usepackage{sectsty}
 \usepackage{setspace}
 \usepackage{slantsc}
-\usepackage{caption}
-\usepackage{subcaption}
+\usepackage{url}
 \usepackage{titlesec}
+\lstset { %
+    language=python, % set backgroundcolor
+    basicstyle=\footnotesize,% basic font setting
+}
 
-% ------------------------------------------
+\newcommand{\mycode}{                               % Name after the Language used
+    \lstset{
+        basicstyle=\ttfamily\small,                 % Code Font Size
+        keywordstyle=\color{darkpurple}\bfseries,   % Color Key Word
+        stringstyle=\color{darkblue},               % Color String
+        identifierstyle=\color{teal},
+        commentstyle=\color{darkgreen},             % Color Comment
+        morecomment=[s][\color{blue}]{/**}{*/},     % Color Comment
+        tabsize=2,                                  % Tab Size
+        captionpos=b,                               % Caption Position
+        showtabs=false,                             % Show Tabs within Strings
+        showspaces=false,                           % Show Spaces Code
+        showstringspaces=false,                     % Show Spaces Strings
+        stepnumber=1,                               % Line Number Step
+        numbers=left,                               % Line Number Position
+        numbersep=5pt,                              % Line Number Distance from Code
+        numberstyle=\tiny\color{gray},              % Line Number Style
+        frame=single,                               % Frame
+        rulecolor=\color{black},                    % Frame Color
+        xleftmargin=10pt,                            % Left Margin
+        backgroundcolor=\color{white},              % Background Color
+        breaklines=true,                            % Break Automatic Line
+        breakatwhitespace=true,                     % Break Automatic Spaces 
+        breakautoindent=false,                      % Break Automatic Indent
+        extendedchars=true,                         % 
+        inputencoding=latin1,                       % Encoding
+        literate=                                   % Including Especial Charects To Write in French
+                {é}{{\'{e}}}1
+                {è}{{\`{e}}}1
+                {ê}{{\^{e}}}1
+                {ë}{{\¨{e}}}1
+                {É}{{\'{E}}}1
+                {Ê}{{\^{E}}}1
+                {û}{{\^{u}}}1
+                {ù}{{\`{u}}}1
+                {ú}{{\'{u}}}1
+                {â}{{\^{a}}}1
+                {à}{{\`{a}}}1
+                {á}{{\'{a}}}1
+                {ã}{{\~{a}}}1
+                {ä}{{\"{a}}}1
+                {Á}{{\'{A}}}1
+                {Â}{{\^{A}}}1
+                {Ã}{{\~{A}}}1
+                {Ä}{{\"{A}}}1
+                {ç}{{\c{c}}}1
+                {Ç}{{\c{C}}}1
+                {õ}{{\~{o}}}1
+                {ó}{{\'{o}}}1
+                {ô}{{\^{o}}}1
+                {ö}{{\"{o}}}1
+                {Õ}{{\~{O}}}1
+                {Ó}{{\'{O}}}1
+                {Ô}{{\^{O}}}1
+                {Ö}{{\"{O}}}1
+                {î}{{\^{i}}}1
+                {Î}{{\^{I}}}1
+                {í}{{\'{i}}}1
+                {Í}{{\~{Í}}}1
+                {ü}{{\"{u}}}1
+                {Ü}{{\"{U}}}1
+    }
+}
 
-\graphicspath{ {images/} }
+%\usepackage[alf,bibjustif,abnt-etal-cite=3,abnt-etal-list=0,abnt-repeated-author-omit=yes]{abntex2cite}
+%\bibliographystyle{abntex2-alf}
 
-\setstretch{1.25}
+\makeatletter
+\renewenvironment{titlepage}
+ {%
+  \if@twocolumn
+    \@restonecoltrue\onecolumn
+  \else
+    \@restonecolfalse\newpage
+  \fi
+  \thispagestyle{plain}%
+ }
+ {%
+  \if@restonecol
+    \twocolumn
+  \else
+    \newpage
+  \fi
+ }
+\makeatother
 
-% ------------------------------------------
+\providecommand{\keywords}[1]
+{
+  \small	
+  \textbf{\textit{Keywords---}} #1
+}
+
+\newcommand{\source}[1]{\caption*{Source: {#1}} }
 
 \renewcommand{\indent}[1]{\setlength{\parindent}{#1}}
 \DeclareMathOperator{\spn}{span}
 \newcommand{\sepline}{\vspace{-1mm} \line(1,0){60} \vspace{-1mm}}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
-% ------------------------------------------
 
+%\title{Projet de Recherche (PRe}
+\author{nomenome}
+\date{May 2024}
+
+% -----------------------------------------------------------------
+% Top and bottom of the pages are set here
+% -----------------------------------------------------------------
 \pagestyle{fancy}
-\lhead{Research Project}
-\rhead{ENSTA Paris 2A 2023\hspace{0.5mm}-24}
-\lfoot{Hierarchical Matrices and Inexact GMRES}
+\fancyhf{}
+\fancyhead[CO]{fancyhead: Innovative Energy Solutions: A Study on Arc Reactor Technology}
+\fancyhead[CE]{\rightmark}
+\cfoot{cfoot: GUIMARAES Eduardo - POEMS Laboratory \break \color{red} This work is non confidential}
 \rfoot{\thepage}
-\cfoot{}
 
-\renewcommand{\footrulewidth}{0.4pt}
-
-% ------------------------------------------
-
-%% Document
 \begin{document}
-\selectlanguage{english}
 
-\thispagestyle{empty}
-\addtocounter{page}{-1}
+% -------------------------------------------
+% Title Page
+% -------------------------------------------
 
-\indent{0mm} \newgeometry{top=3cm, bottom=2cm}
+\begin{titlepage}
+    \thispagestyle{empty}
 
-\begin{minipage}{\linewidth}
-    \includesvg[width=8cm]{images/ensta_logo.svg}
-\end{minipage}
+    \begin{figure}[h]
+    \centering
+    \begin{minipage}[b]{0.45\textwidth}
+        \raggedright
+        \includesvg[height=0.4\textwidth]{images/ensta_logo.svg} 
+    \end{minipage}
+    \hfill
+    \begin{minipage}[b]{0.4\textwidth}
+        \raggedleft
+        \includesvg[height=0.4\textwidth]{images/poems_logo.svg}
+    \end{minipage}
+    \end{figure}
+    
+    \vfill
+    
+    \centering{\LARGE \textbf{Research Internship (PRe)}} \\
+    \hfill\\
+    \centering{\large \textbf{Field of Study: Applied Maths}}\\
+    \centering{\large \textbf{Scholar Year : 2023-2024}} \\
+    \hfill\\
+    \vfill
+    \centering{\huge \textbf{Hierarchical Matrices and \\ Inexact GMRES}}
+    \vfill
+     \color{red} \noindent  \fbox{%
+     \parbox{\textwidth}{%
+        \centering{\LARGE \textbf{Confidentiality Notice}}\\
+        \centering{\normalsize Non-confidential and publishable report}
+        }%
+    }
+    \vfill
+    \color{black}
+    \large \textbf{Author: GUIMARAES Eduardo \hfill Promotion: 2025}\\
+    \vspace{5mm}
+    \FlushLeft{\normalsize \textbf{
+   \begin{tabular}{rl}
+    ENSTA Paris Tutor: &FARIAS Luiz \\ &MARCHAND Pierre
+    \end{tabular}
+    }} \\
+    \normalsize \textbf{Host Organism Tutor: CHAPOUTOT Alexandre}
+    
+    \vfill
+    \centering{\normalsize \textbf{Internship from 13/05/2024 to 15/08/2024}} \\
+    \vspace{1cm}
+    \centering{\normalsize \textbf{POEMS}} \\
+    \centering{\normalsize \textbf{Address: 828, Boulevard des Maréchaux, 91762 Palaiseau France}}
+\end{titlepage}
 
-\vspace{5cm}
 
+% -------------------------------------------
+% Blank page (?)
+% -------------------------------------------
+\section*{}
+\vfill
+\paragraph{}
 \begin{center}
-    \fontsize{16pt}{24pt} \selectfont{\textbf{Hierarchical Matrices and \\ Inexact GMRES}}
-
-    \vspace{1.8cm} \line(1,0){60} \vspace{2cm}
-
-    \fontsize{12pt}{18pt} \selectfont{
-        \begin{tabular}{rl}
-            Sudent:              &           \\
-            GUIMARÃES            & Eduardo   \\
-            Advisors:            &           \\
-            FARIA                & Luiz      \\
-            MARCHAND             & Pierre    \\
-            Enseignant-Référent: &           \\
-            CHAPOUTOT            & Alexandre
-        \end{tabular}
-
-        \vfill Palaiseau, 13th May 2024}
+    This page was intentionally left blank.
 \end{center}
+\vfill
 
-\newpage \restoregeometry
+% -------------------------------------------
+% Confidentialy Notice
+% -------------------------------------------
+\newpage
 
-\tableofcontents \newpage
+\section*{Confidentialy Notice}
+\vfill
+\paragraph{}
+This present document is not confidential. It can be communicated outside in paper format
+or distributed in electronic format.
+\vfill
 
-\chapter{Iterative Methods and Krylov's Subspace}
-\input{chap1.tex}
+% -------------------------------------------------------------------
+% Writing part
+% -------------------------------------------------------------------
 
-\chapter{GMRES}
-
-\input{chap2.tex}
-
-%Mudar para aproximacao lwo rank 
-\chapter{Hierarchical Matrices and ACA Method}
-\input{chap3.tex}
-
-\chapter{First results}
-\input{chap4.tex}
+\include{sections/abstract}
+\include{sections/aknowledge}
 
 
 \newpage
+\tableofcontents
 
-\addcontentsline{toc}{chapter}{\bibname}
+\newpage
+\listoffigures
 
+\fancyhead[CE]{\leftmark}
 
+\newpage
+\section{Iterative Methods and Krylov's Subspace}
+\input{sections/chap1.tex}
+
+\newpage
+\section{GMRES}
+\input{sections/chap2.tex}
+
+\newpage
+\section{Hierarchical Matrices and ACA Method}
+\input{sections/chap3.tex}
+
+\newpage
+\section{First results}
+\input{sections/chap4.tex}
+
+\cleardoublepage % coloca o número de página correto das referências bibliográficas no sumário
+\phantomsection % faz o link para a página correta das referências bibliográficas
+\addcontentsline{}{section}{References}
 \bibliography{bibliografia}
 \bibliographystyle{plain}
 \nocite{*}
 
-
+%\include{Sections/A-Apendix}
 
 \end{document}
