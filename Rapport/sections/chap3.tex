@@ -1,5 +1,5 @@
 
-\subsection{Low-rank Matrices}
+\section{Low-rank Matrices}
 
 In reality, most matrices are large, so storing each element is not efficient, or even possible. If $A \in \mathbb{C}^{n\times m}$ has a rank \textit{k} such that $k \leq m$ and $k(n+m) < n*m$ (\textit{A} is low-rank), \textit{A} can be written in outer product form, as a product between the matrices $U \in \mathbb{C}^{n\times k} $ and $V \in \mathbb{C}^{m\times k}$, which can be seen in \ref{eq::outer_product}, where $u_{i}, v_{i}$ are the column vectors of \textit{U} and \textit{V}.
 
@@ -35,7 +35,7 @@ That way the rank, and precision are related logarithmically, and the rank requi
     k(\epsilon) = \min\{ k \in \mathbb{N} : \sigma_{k+1} < \epsilon\sigma_{1}\}
 \end{equation}
 
-\subsection{ACA Method(Adaptative Cross Approximation)}
+\section{ACA Method(Adaptative Cross Approximation)}
 
 As shown in the last section, the SVD methods gives us an approximation of $A$ given a certain $\epsilon$, through the relation in \ref{eq:error_lowrank}. Nevertheless, this is an expensive method, where the complexity becomes too heavy for some calculations.
 

@@ -1,4 +1,4 @@
-\documentclass[twoside, 12pt]{article}
+\documentclass[twoside, 12pt]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{abstract,lipsum}
 \usepackage[english]{babel}
@@ -250,25 +250,25 @@ or distributed in electronic format.
 
 \fancyhead[CE]{\leftmark}
 
-\newpage
-\section{Iterative Methods and Krylov's Subspace}
+%\newpage
+\chapter{Iterative Methods and Krylov's Subspace}
 \input{sections/chap1.tex}
 
-\newpage
-\section{GMRES}
+%\newpage
+\chapter{GMRES}
 \input{sections/chap2.tex}
 
-\newpage
-\section{Hierarchical Matrices and ACA Method}
+%\newpage
+\chapter{Hierarchical Matrices and ACA Method}
 \input{sections/chap3.tex}
 
-\newpage
-\section{First results}
+\chapter{First results}
 \input{sections/chap4.tex}
 
 \cleardoublepage % coloca o número de página correto das referências bibliográficas no sumário
 \phantomsection % faz o link para a página correta das referências bibliográficas
-\addcontentsline{}{section}{References}
+
+%\addcontentsline{toc}{chapter}{References}
 \bibliography{bibliografia}
 \bibliographystyle{plain}
 \nocite{*}

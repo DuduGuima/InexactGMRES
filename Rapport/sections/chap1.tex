@@ -1,4 +1,4 @@
-\subsection{Iterative Methods and motivation}
+\section{Iterative Methods and motivation}
 
 %Iterative methods appear as an alternative to exact solution methods, where the true solution is not desired and a good approximation is enough.
 
@@ -34,7 +34,7 @@ The method we employ in our problems is the GMRES, explained later in the report
 
 Explained in more detail below.
 
-\subsection{Krylov's Subspace}
+\section{Krylov's Subspace}
 Be $A \in \mathbb{K}^{n \times n}$ a matrix and $b\in \mathbb{K}^{n}$. To each $k\leq n$ the Krylov's Subspace $\mathcal{K}_{k}=\mathcal{K}_{k}(A,b)$ associated to A, b is defined as \ref{eq:krylov}.
 
 \begin{equation}\label{eq:krylov}
@@ -47,7 +47,7 @@ The subspace $\mathcal{K}_{k}(A,b)$ is also the subspace of all the vectors from
 
 The problem with using ${A^{k}b}, k \in {0,1,2,\dots}$ as a base comes from the fact that successive products of $A$ make vectors that are \textit{approximately colinear}, since those are really close of the eigenvector with the largest eigenvalue of $A$.
 
-\subsection{Arnoldi's Method}
+\section{Arnoldi's Method}
 
 
 Arnoldi's Method is an orthogonal projection method used to find an orthonormal basis ${q_{1}, \dots, q_{k}}$ to $\mathcal{K}_{k}(A,b)$. An algorithm for the method can be found in \ref{alg:arnoldi}.

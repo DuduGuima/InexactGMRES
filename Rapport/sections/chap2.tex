@@ -50,7 +50,7 @@ An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 co
 
 However, \ref{alg:gmres_init} doesn't present an efficient way of finding the residual in each iteration. To solve this problem and also to find a more efficient way of solving the least squares in \ref{eq:y_gmres}, we apply a transformation to $H_{m}$, turning it into a triangular matrix.
 
-\subsection{Givens's Rotation}
+\section{Givens's Rotation}
 
 Givens's operator, $G(i,i+1)$, is a unitary matrix such that the column vector $a = Gb$ has the elements $a(i) = r \in \mathbb{R}$ and $a(i+1)=0$. It has a structure as in \ref{eq:givens}. The coefficients $c_{i},s_{i}$ only appear in the rows $i$ et $i+1$.
 
@@ -116,7 +116,7 @@ Since $y_{m}$ is a solution to the system, the norm in \ref{eq:proof_residual} i
 But since the last row in $R_{m}$ is composed by zeros, we have that $\norm{b - Ax_{m}} = |\gamma_{m+1}|$, which gives a more efficient way to obtain the residuals during each iteration.
 
 
-\subsection{Inexact GMRES}
+\section{Inexact GMRES}
 
 The heaviest part in the code is in the matrix-vector product \ref{alg:arnoldi}, line 4. Therefore, one approach to accelerate the iterations involves an approximation of $Aq $, instead of using the exact answer, as shown in \ref{eq:aprox_Aq}.
 
