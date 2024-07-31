@@ -3,7 +3,7 @@
 %Iterative methods appear as an alternative to exact solution methods, where the true solution is not desired and a good approximation is enough.
 
 %Iterative methods appear as an alternative to direct solution methods, where the true/exact solution to a problem is only desired up to a certaion tolerance, usually used when the exact methods need heavy computing power and/or are inefficient in the current context.
-Iterative methods appear as an alternative to direct solution methods, where the direct solution to a problem usually scales with $\mathcal{O}(m^{3})$ complexity, where $m$ is the dimension of the input matrix. Since larger matrices are usually employed in practise, the direct algorithms become inefficient and a more reliable approach is desired.
+Iterative methods appear as an alternative to direct solution methods, where the direct solution to a problem usually scales with $\mathcal{O}(m^{3})$ complexity, where $m$ is the dimension of the input matrix. Since larger matrices are usually employed in practice, the direct algorithms become inefficient and a more reliable approach is desired.
 
 
 The idea of the iterable methods is to find, after a certain number of iterations, a sequence ${x_{k}}$ that converges to $x$, the exact solution of the problem \ref{eq:suite}, all while making the large-scale computations faster, i.e. obtaining a complexity smaller than $\mathcal{O}(m^{3})$, and keeping a maximum tolerance between the iterable solution and the exact one.
@@ -50,14 +50,14 @@ If $A_{1} = I$ and $A_{2} = I - A$ in \ref{eq:A-comb}, the sequence found in \re
 Even if the condition $\rho(A-I) \leq 1$ is strong \cite{bonnet}, it shows that one approximation $x_{k}$ could be represented as \ref{eq:xkry}.
 
 \begin{equation}\label{eq:xkry}
-    x_{k} \in span(b,Ab,A^{2}b,...,A^{k-1}b)
+    x_{k} \in \spn(b,Ab,A^{2}b,...,A^{k-1}b)
 \end{equation}
 
 \subsection{Krylov's Subspace}
 Be $A \in \mathbb{K}^{n \times n}$ a matrix and $b\in \mathbb{K}^{n}$. To each $k\leq n$ the Krylov's Subspace $\mathcal{K}_{k}=\mathcal{K}_{k}(A,b)$ associated to A,b is defined as \ref{eq:krylov}.
 
 \begin{equation}\label{eq:krylov}
-    \mathcal{K}_{k}(A,b) = span(b,Ab,A^{2}b,\dots , A^{k-1}b)
+    \mathcal{K}_{k}(A,b) = \spn(b,Ab,A^{2}b,\dots , A^{k-1}b)
 \end{equation}
 
 These Subspaces also have the following property: $k<l \to \mathcal{K}^{k} \subset \mathcal{K}^{l}$ \cite{bonnet}.

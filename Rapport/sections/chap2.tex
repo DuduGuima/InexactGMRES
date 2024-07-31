@@ -20,10 +20,10 @@ With \ref{eq:init_gmres} and \ref{eq:init_arnoldi} the residual becomes \ref{eq:
 Thus, $y$ which appears in \ref{eq:init_gmres}, is found as the solution of the residual's minimisation problem  in \ref{eq:final_gmres}.
 
 \begin{equation}\label{eq:y_gmres}
-    y = min_{y} \norm{\beta e_{1} - H_{m}y}
+    y = \min_{y} \norm{\beta e_{1} - H_{m}y}
 \end{equation}
 
-An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 bring the Arnoldi's Method presented in \ref{alg:arnoldi}.
+An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 consist of the Arnoldi's Method presented in \ref{alg:arnoldi}.
 
 \begin{algorithm}
     \caption{Initial GMRES}\label{alg:gmres_init}
@@ -41,14 +41,14 @@ An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 br
         \State $h_{j+1,j}=\norm{q_{j+1}}$
         \State $q_{j+1} = \frac{q_{j+1}}{h_{j+1,j}}$
         \EndFor
-        \State Find $y = min_{y} \norm{\beta e_{1} - H_{m}y}$
+        \State Find $y = \min_{y} \norm{\beta e_{1} - H_{m}y}$
         \State $x = Q_{k}y$
         \State \textbf{Stop} if the residual is smaller than the tolerance
         \EndFor
     \end{algorithmic}
 \end{algorithm}
 
-However, \ref{alg:gmres_init} doesn't bring an efficient way of finding the residual in each iteration. To solve this problem and also to find a more efficient way of solving the least squares problem in \ref{eq:y_gmres}, a transformation is applied to $H_{m}$, turning it into a triangular matrix.
+However, \ref{alg:gmres_init} doesn't present an efficient way of finding the residual in each iteration. To solve this problem and also to find a more efficient way of solving the least squares problem in \ref{eq:y_gmres}, a transformation is applied to $H_{m}$, turning it into a triangular matrix.
 
 \subsection{Givens's Rotation}
 
@@ -70,7 +70,7 @@ Givens's operator, $G(i,i+1)$, is an unitary matrix such that the column vector 
 This operator offers a way to transform the columns in $H_{m}$, \textit{zeroing} the elements outside the main diagonal. Since a product of unitary operators is still unitary, \ref{eq:y_gmres} can be written as \ref{eq:after_givens}, where $R_{m}$ and $g_{m}$ are the results from the application of multiple Givens's operators to $H_{m}$ and $\beta e_{1}$.
 
 \begin{equation}\label{eq:after_givens}
-    y = min_{y} \norm{\beta e_{1} - H_{m}y} = min_{y} \norm{g_{m} - R_{m}y}
+    y = \min_{y} \norm{\beta e_{1} - H_{m}y} = \min_{y} \norm{g_{m} - R_{m}y}
 \end{equation}
 
 

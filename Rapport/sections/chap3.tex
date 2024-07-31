@@ -32,7 +32,7 @@ Instead of approximating large matrices entirely, it's better to think in approx
 That way, the rank and the precision are related in a logarithmic manner, and the rank required by a certain $\epsilon$ is \ref{eq:exp_error}.
 
 \begin{equation}\label{eq:exp_error}
-    k(\epsilon) = min\{ k \in \mathbb{N} : \sigma_{k+1} < \epsilon\sigma_{1}\}
+    k(\epsilon) = \min\{ k \in \mathbb{N} : \sigma_{k+1} < \epsilon\sigma_{1}\}
 \end{equation}
 
 \subsection{ACA Method(Adaptative Cross Approximation)}
@@ -79,7 +79,7 @@ Considering $I,J \in \mathbb{N}$ the index set of a given matrix and $\mathbf{T}
 \end{equation}
 
 
-In practise, \ref{alg:aca_method} works with $\epsilon$ given by the user during the assembling of the Hierarchical Matrix, and the compression acts in each of the admissible blocks that will then be represented as low rank matrices, shown in \ref{eq::outer_product}. We also store each one of the residuals obtained in the outer loop of \ref{alg:aca_method}. 
+In practice, \ref{alg:aca_method} works with $\epsilon$ given by the user during the assembling of the Hierarchical Matrix, and the compression acts in each of the admissible blocks that will then be represented as low rank matrices, shown in \ref{eq::outer_product}. We also store each one of the residuals obtained in the outer loop of \ref{alg:aca_method}. 
 
 After giving a tolerance $\sigma$ for an inexact product, the algorithm has, for each admissible block of the cluster tree, use the right amount of columns of the outer product representation of the block as to reach the desired tolerance, what can be infered by the list of residuals of the ACA Method.
 
