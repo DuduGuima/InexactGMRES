@@ -17,12 +17,12 @@ However, even full rank matrices can be approximated by matrices with lower rank
 If $ A_{k} $ is the approximation obtained after taking the first k elements of $\Sigma$ (creating the matrix $ \Sigma_{k} $), the error between $ A $ and $ A_{k} $ is \ref{eq:error_lowrank}.
 
 \begin{equation}\label{eq:error_lowrank}
-    \norm{A-A_{k}} = \norm{U\Sigma V^{H} - U^{'} \Sigma_{k} V_{' H}} = \norm{\Sigma - \Sigma_{k}}
+    \norm{A-A_{k}} = \norm{U\Sigma V^{H} - U^{'} \Sigma_{k} V^{' H}} = \norm{\Sigma - \Sigma_{k}}
 \end{equation}
 
-If the spectral norm, $\norm{.}_{2} $ is used instead, the error in \ref{eq:error_lowrank} is given by $\sigma_{k+1}$. For Frobenius's norm, $\norm{.}_{F}$, the error becomes $\sum^{n}_{l=k+1} \sigma^{2}_{l}$.
+If the spectral norm, $\norm{.}_{2} $ is used instead, the error in \ref{eq:error_lowrank} is given by $\sigma_{k+1}$. For Frobenius's norm, $\norm{.}_{F}$, the error becomes $\sqrt{\sum^{n}_{l=k+1} \sigma^{2}_{l}}$.
 
-Instead of approximating large matrices entirely, it's better to think in approximations made to each of their blocks. Blocks that appear after the discretization of elliptic operators also have the possibility of being approximated by matrices that decay exponentially with k, $S_{k}$, as in \ref{eq:exp_matrix}.
+If a problem involves a large matrix that is not low-rank, it can have sub-blocks that can be approximated by matrices of this kind. Blocks that appear after the discretization of elliptic operators also have the possibility of being approximated by matrices that decay exponentially with k, $S_{k}$, as in \ref{eq:exp_matrix}.
 
 \begin{equation}\label{eq:exp_matrix}
     \norm{A-S_{k}}_{2} < q^{k}\norm{A}_{2}
@@ -37,7 +37,7 @@ That way the rank, and precision are related logarithmically, and the rank requi
 
 \section{ACA Method(Adaptative Cross Approximation)}
 
-As shown in the last section, the SVD methods gives us an approximation of $A$ given a certain $\epsilon$, through the relation in \ref{eq:error_lowrank}. Nevertheless, this is an expensive method, where the complexity becomes too heavy for some calculations.
+As shown in the last section, the SVD methods gives us an approximation of $A$ given a certain $\epsilon$, through the relation in \ref{eq:error_lowrank}. Nevertheless, this is an expensive method. Not only having a large complexity, but also requiring knowledge of every element of the block going to be compressed.
 
 The algorithm for the method is in \ref{alg:aca_method}, where $a_{ij}$ are the elements of a matrix $A \in \mathbb{R}^{n\times m}$. The main objective is to approximate $A$ as $A=S_{k} + R_{k}$, $S_{k} = \sum_{l=1}^{k} u_{l}v_{l}^{t}$ and $R_{k}$ is the residual.
 
@@ -72,14 +72,62 @@ The algorithm for the method is in \ref{alg:aca_method}, where $a_{ij}$ are the 
     \end{algorithmic}
 \end{algorithm}
 
-Considering $I,J \in \mathbb{N}$ the index set of a given matrix and $\mathbf{T}_{I \times J}$ the cluster block tree that contains an admissible partition \textit{P} of $ I \times J$ in its leaves, $\mathfrak{L}(\mathbf{T}_{I \times J})$. The set of hierarchical matrices in $\mathbf{T}_{I \times J}$ rank k for each block $A_{b}$ defined in \ref{eq:matrix_hier}.
+\section{Hierarchical Matrices}
+
+Going a little more in depth about the use of low-rank approximations in larger matrices that are not really low-rank themselves, we present the concepts of \textit{partition} and \textit{admissibility}.
+
+As mentionned in the first section of this chapter, $A \in \mathbb{C}^{m x n} $ can be approximated by low-rank matrices only in its sub-blocks, more specifically, in the sub-blocks of a proper partition $P$ of the matrix indices.
+
+Using $I = {1,2, \dots, m}$ and $J={1,2, \dots, n}$, a subset $P$ from the set of subsets of $I \times J$ is called a partition if:
+
+\begin{equation}\label{eq:union_partition}
+    I \times J = \bigcup_{b \in P} b
+\end{equation}
+
+Where if $b_{1} \cap b_{2} \neq \varnothing $ then $b_{1} = b_{2}$.
+
+From here on out we also use the notation $A_{b}$ or $A_{ts}$ for the restriction of a matrix $A$ to the indices in $b= t \times s$ where $b \in P$, $t \in I$ and $s \in J$.
+
+The many algorithms that compress a given matrix have to make sure $A_{b}$ will either be approximated by a low-rank block or is very small(making sure storing its elements will not be expensive). The number of blocks compressed in a matrix also should not be large.
+
+The problem of knowing wether a block can be compressed comes from the abstract concept of \textit{admissibility}, usually relying on the specific problem we solve. Nevertheless, \textit{adimissability conditions} can be stablished that each one of the compressed blocks need to satisfy:
+
+\begin{itemize}
+    \item if \textit{b} is admissible, then its singular values decay exponentially, just as in \ref{eq:exp_error};
+    \item the admissibility condition for a block $t \times s$ can be veryfied with $\mathcal{O}(|t| + |s|)$;
+    \item if $b$ is admissible, then $b^{'} \in b$ also is.
+\end{itemize}
+
+A partition $P$ is said admissible if every one of its blocks are either admissble or small, i.e., $|t|, |s|$, with $t \in I, s \in J$, satisfy $\min\{|t|,|s| \} \leq n_{min}$ for a given $n_{min} \in \mathbb{N}$.
+
+Although the partition P has been mentioned multiple times throughout the text, we have not disclosed how such partition could be made.
+
+It's obvious searching the entire set of partitions $P$ of $I \times J$ is unfeasible, so the partitions are usually  recursive subdivisions of both $I$ and $J$. And it's shown such partitions can lead to linear complexity \cite{bebendorf2008hierarchical}.
+
+The result of the recursive division of a set results in a hierarchy of partitions that can be represented as a \textit{cluster tree}.
+
+A tree $T_{I} = (V,E)$ with vertices $V$ and edges $E$ is called a cluster tree of a set $I\subset \mathbb{N}$ if it follows the conditions:
+
+\begin{enumerate}
+    \item $I$ is the root of $T_{I}$;
+    \item $\varnothing \neq t = \bigcup_{t^{'} \in S(t)} t^{'} $ for all $t \in V \setminus   \mathfrak{L}(T_{I}) $;
+    \item the degree $\deg t := |S(t)| \geq 2$ of each vertex $t \in V \setminus \mathfrak{L}(T_{I})$ is bounded from below.
+\end{enumerate}
+
+$S(t)={t^{'} \in V : (t,t^{'})\in E}$ is the set of sons of $t$ and $\mathfrak{L}(T_{I})$ denotes the leaves of $T_{I}$.
+
+The cluster tree $T_{I \times J}$ for $I \times J$ is called a block cluster tree. This structure contains an admissible partition \textit{P} of $ I \times J$ in its leaves, $\mathfrak{L}(\mathbf{T}_{I \times J})$.
+
+ The set of hierarchical matrices in $\mathbf{T}_{I \times J}$ with rank k for each block $A_{b}$ is defined in \ref{eq:matrix_hier}.
 
 \begin{equation}\label{eq:matrix_hier}
     \mathfrak{H}(\mathbf{T}_{I \times J},k) = \left\{  A\in \mathbb{C}^{I\times J} : rankA_{b} \leq k, \forall b \in P \right\}
 \end{equation}
 
+(figure of a H matrix?)
 
-In practice, \ref{alg:aca_method} works with $\epsilon$ given by the user during the assembling of the Hierarchical Matrix, and the compression acts in each of the admissible blocks that will then be represented as low rank matrices, shown in \ref{eq::outer_product}. We also store each one of the residuals obtained in the outer loop of \ref{alg:aca_method}. 
+
+In practice, \ref{alg:aca_method} works with $\epsilon$ given by the user during the assembling of the Hierarchical Matrix, and the compression acts in each of the admissible blocks that will then be represented as low rank matrices, shown in \ref{eq::outer_product}. We also store each one of the residuals obtained in the outer loop of \ref{alg:aca_method}.
 
 After giving a tolerance $\sigma$ for an inexact product, the algorithm, for each admissible block of the cluster tree, uses the right amount of columns of the outer product representation of the block as to reach the desired tolerance. The number of columns can be infered by using the list of residuals of the ACA Method.
 
