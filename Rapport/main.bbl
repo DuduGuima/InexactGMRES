@@ -1,7 +1,7 @@
 \begin{thebibliography}{1}
 
 \bibitem{git_dudu}
-Dépôt github.
+Github's repository.
 \newblock \url{https://github.com/DuduGuima/InexactGMRES.git}.
 
 \bibitem{git-hmatrices}
@@ -34,8 +34,7 @@ Yousef Saad.
 
 \bibitem{simoncini2003theory}
 Valeria Simoncini and Daniel~B Szyld.
-\newblock Theory of inexact krylov subspace methods and applications to
-  scientific computing.
+\newblock Theory of inexact krylov subspace methods and applications to scientific computing.
 \newblock {\em SIAM Journal on Scientific Computing}, 25(2):454--477, 2003.
 
 \bibitem{trefethen1998numerical}
