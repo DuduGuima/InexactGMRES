@@ -1,0 +1,11 @@
+# ignore latex auxiliary files
+*.log
+*.aux
+*.bbl
+*.blg
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.lof
