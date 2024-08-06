@@ -72,6 +72,12 @@ The algorithm for the method is in \ref{alg:aca_method}, where $a_{ij}$ are the 
     \end{algorithmic}
 \end{algorithm}
 
+And then, for the Frobenius Norm, it can be show \cite{trefethen1998numerical}(Section 3.4.1) that:
+
+\begin{equation}\label{eq:stop_ACA}
+    \frac{\norm{A - S_{k}}_{F}}{\norm{A}_{F}} = \epsilon
+\end{equation}
+
 \section{Hierarchical Matrices}
 
 Going a little more in depth about the use of low-rank approximations in larger matrices that are not really low-rank themselves, we present the concepts of \textit{partition} and \textit{admissibility}.
@@ -118,7 +124,7 @@ $S(t)={t^{'} \in V : (t,t^{'})\in E}$ is the set of sons of $t$ and $\mathfrak{L
 
 The cluster tree $T_{I \times J}$ for $I \times J$ is called a block cluster tree. This structure contains an admissible partition \textit{P} of $ I \times J$ in its leaves, $\mathfrak{L}(\mathbf{T}_{I \times J})$.
 
- The set of hierarchical matrices in $\mathbf{T}_{I \times J}$ with rank k for each block $A_{b}$ is defined in \ref{eq:matrix_hier}.
+The set of hierarchical matrices in $\mathbf{T}_{I \times J}$ with rank k for each block $A_{b}$ is defined in \ref{eq:matrix_hier}.
 
 \begin{equation}\label{eq:matrix_hier}
     \mathfrak{H}(\mathbf{T}_{I \times J},k) = \left\{  A\in \mathbb{C}^{I\times J} : rankA_{b} \leq k, \forall b \in P \right\}
@@ -138,4 +144,17 @@ So, the different pertubations $E_{k}$ used in \ref{eq:new_projection} are the m
 \end{equation}
 
 
+And then, since the Fobrenius norm of the hierarchical matrix is \cite{hackbusch2015hierarchical}(Section 3.5.1):
 
+\begin{equation}
+    \norm{E_{k}}_{F}= \norm{\mathcal{A}_{k} - A} = \sqrt{\sum_{b \in P} \norm{B_{b} - \tilde{B}_{b}}_{F}^{2} }
+\end{equation}
+
+But from the ACA Method \ref{eq:stop_ACA}, we know the method stops as to make each blocks' approximation inferior to $\epsilon B_{b}$, then:
+
+\begin{equation}
+    \norm{E_{k}}_{F} = \sqrt{\sum_{b \in P} \norm{B_{b} - \tilde{B}_{b}}_{F}^{2} } \leq \sqrt{\sum_{b\in P}\epsilon^{2}\norm{B_{b}}_{F}^{2}} = \epsilon \sqrt{\sum_{b \in P}\norm{B_{b}}_{F}^{2}}
+    = \epsilon \norm{A}_{F}
+\end{equation}
+
+So, with the use of the relative errors and the Frobenius norm, $\norm{E_{i}}$ appearing in the bounds of section 2.2 can be exchanged by $\epsilon_{i}$, the tolerance used for that specific approximation in the ienxact products.

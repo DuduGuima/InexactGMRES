@@ -1,12 +1,12 @@
 \section{Iterative Methods and motivation}
 
-We begin with the usual problem of solving a linear system, with $A \in \mathbb{C}^{m \times n}$, $b \in \mathbb{C}^{m}$ and $x\in \mathbb{C}^{n}$:
+We begin with the usual problem of solving a linear system, with $A \in \mathbb{C}^{m \times n}$ an invertible matrix, $b \in \mathbb{C}^{m}$ our right-hand side and $x\in \mathbb{C}^{n}$ a vector of unknowns:
 
 \begin{equation}\label{eq:linear_systinit}
     Ax=b
 \end{equation}
 
-And the system can be solved by direct methods, like \textit{Gaussian elimination} and \textit{LU decomposition}. The problem with such approaches comes with their complexity: direct methods usually have $\mathcal{O}(m^{3})$ complexity, where $m$ is the dimension of the input matrix. Since larger matrices are usually employed in practice, the direct algorithms become inefficient, and we require a more reliable approach.
+And the system can be solved by direct methods, like \textit{Gaussian elimination} and \textit{LU decomposition}. The problem with such approaches comes with their complexity: direct methods usually have $\mathcal{O}(m^{3})$ complexity \cite{trefethen1998numerical}, where $m$ is the dimension of the input matrix. Since larger matrices are usually employed in practice, the direct algorithms become inefficient, and we require a more reliable approach.
 
 
 The idea of the iterable methods is to find, after a certain number of iterations, a sequence ${x_{k}}$ that converges to $x$, the exact solution of the problem \ref{eq:linear_systinit}. This should be done while making the large-scale computations faster, i.e., obtaining a complexity smaller than $\mathcal{O}(m^{3})$, and keeping a maximum tolerance between the iterable solution and the exact one.
