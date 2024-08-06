@@ -1,26 +1,51 @@
 
-A projection in $\mathcal{K}_{k}(A,b)$, where we take the different approximations as in \ref{eq:init_gmres}, where $Q_{m}$ is the vector in \ref{eq:init_arnoldi}.
-\begin{equation}\label{eq:init_gmres}
-    x = x_{0} + Q_{m}y
+As mentioned above, GMRES is the iterative method chosen to solve the linear system in \ref{eq:linear_systinit}. This will mainly be done by approximating, at each iteration $k$, the answer $x$ to an element in the lower dimentional Krylov subspace $\mathcal{K}_{k}(A,b)$, $A$ being the matrix associated to the linear system and $b$ its right-hand side.
+
+Defining the residual of iteration $k$ as:
+
+\begin{equation}
+    r_{k} = \norm{b - Ax_{k}}
 \end{equation}
 
-With \ref{eq:init_gmres} and \ref{eq:init_arnoldi} the residual becomes \ref{eq:final_gmres}, where $x_{0} = 0$, $\beta=\norm{b}$ and $Q_{m+1}^{t}b=(\norm{b} 0 \hspace{0.05in} 0\dots)^{t}$ since the columns of $Q_{m+1}$ are orthonormal vectors and $q_{1} = \frac{b}{\norm{b}}$.
+Our $x_{k}$, the $k-th$ approximation to $x$, if chosen as the answer of the minisation problem of $r_{k}$. Since we make the projections in $\mathcal{K}_{k}(A,b)$, $x_{k} = K_{k}y_{k}$, our answer is given by the problem:
+
+\begin{equation}
+    \min_{x \in \mathcal{K}_{k}(A,b)} \norm{b - Ax} = \min_{y \in \mathbb{C}^{n}} \norm{b - AK_{k}y}
+\end{equation}
+
+Where $K_{k}$ is the Krylov matrix with columns equal to the vectors that span the Krylov subspace of the current iteration:
+
+\begin{equation}
+    K_{k} = \left[b, Ab, A^{2}b, \dots, A^{k}b \right]
+\end{equation}
+
+But as said in the previus chapters,${b,Ab, \dots, A^{k}b}$ has approximately colinear vectors, and we choose the base from the Arnoldi's Method instead.
+
+Then, we take a projection in $\mathcal{K}_{k}(A,b)$, where we take the different approximations as in \ref{eq:init_gmres}, where $Q_{m}$ is the vector in \ref{eq:init_arnoldi}.
+
+Using the projections $Q_{k}$ from \ref{eq:init_arnoldi}:
+
+\begin{equation}\label{eq:init_gmres}
+    x_{k} = x_{0} + Q_{k}y_{k}
+\end{equation}
+
+With \ref{eq:init_gmres} and \ref{eq:init_arnoldi} the residual becomes \ref{eq:final_gmres}, where $x_{0} = 0$, $\beta=\norm{b}$ and $Q_{k+1}^{t}b=(\norm{b} 0 \hspace{0.05in} 0\dots)^{t}$ since the columns of $Q_{k+1}$ are orthonormal vectors and $q_{1} = \frac{b}{\norm{b}}$.
 
 \begin{align} \label{eq:final_gmres}
     \begin{split}
-        r(y) &= \norm{b - Ax}\\
-        &= \norm{b - A(Q_{m}y)}\\
-        &= \norm{b-Q_{m+1}H_{m}y} \\
-        &= \norm{Q_{m+1}(Q_{m+1}^{t}b-H_{m}y)} \\
-        &= \norm{\beta e_{1} - H_{m}y}
+        r_{k} &= \norm{b - Ax_{k}}\\
+        &= \norm{b - A(Q_{k}y_{k})}\\
+        &= \norm{b-Q_{k+1}H_{k}y_{k}} \\
+        &= \norm{Q_{k+1}(Q_{k+1}^{t}b-H_{k}y_{k})} \\
+        &= \norm{\beta e_{1} - H_{k}y_{k}}
     \end{split}
 \end{align}
 
 
-Thus, $y$ which appears in \ref{eq:init_gmres}, is found as the solution of the residual's minimisation problem  in \ref{eq:final_gmres}.
+Thus, $y_{k}$ which appears in \ref{eq:init_gmres}, is found as the solution of the residual's minimisation problem  in \ref{eq:final_gmres}:
 
 \begin{equation}\label{eq:y_gmres}
-    y = \min_{y} \norm{\beta e_{1} - H_{m}y}
+    y_{k} = \min_{y \in \mathbb{C}^{k}} \norm{\beta e_{1} - H_{k}y}
 \end{equation}
 
 An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 contain the Arnoldi's Method presented in \ref{alg:arnoldi}.
@@ -48,7 +73,7 @@ An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 co
     \end{algorithmic}
 \end{algorithm}
 
-However, \ref{alg:gmres_init} doesn't present an efficient way of finding the residual in each iteration. To solve this problem and also to find a more efficient way of solving the least squares in \ref{eq:y_gmres}, we apply a transformation to $H_{m}$, turning it into a triangular matrix.
+However, \ref{alg:gmres_init} doesn't present an efficient way of finding the residual in each iteration. To solve this problem and also to find a more efficient way of solving the least squares in \ref{eq:y_gmres}, we apply a transformation to $H_{k}$, turning it into a triangular matrix.
 
 \section{Givens's Rotation}
 
