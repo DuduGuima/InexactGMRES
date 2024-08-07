@@ -1,36 +1,21 @@
 
-(Not results in the cluster, left to remake them after finishing the discussions we had about residuals)
-(I thought about changing the beggining of this chapter as a whole small chapter about BEM)
+%FIXME: put results of the cluster and oprganize residuals part
+By this point, the report brought up all the tools we need for an application of the InexactGMRES algorithm, from the algorithm itself to the way we generate the coefficient matrices used in the linear equations.
 
-(Also, I thought about using the graphs with the bounds of each expression in the article, but I'm not shure if we put them here or with the Inexact theory chapter above)
+Before we use the main algorithm directly in a more complex problem, we start out with simpler geometries, and first validating the speedup obtained in a simple matrix-vector product with different tolerances.
 
-Before using the inexact product in more complex problems, simpler examples are used to validate the approach and fix minor parameters in the scheme.
+For the first test, we use Laplace's equation (first line in \ref{eq:pde_model}) to generate our coefficient matrix. The other examples will use Helmholtz's equation:
 
-The two firsts tests evaluate the speedup in the product of a Hierarchical Matrix and a vector and an exection of the Inexact GMRES with few iterations, using the operators obtained through 2nd type Equations of Laplace and Helmholtz \ref{eq:pde_helmlaplace}, where the last one is a scaterring problem, where $\Delta$ is the Laplace operator and everything is suposed to be solved in two dimentions. The last test will use a cavity problem to test the speedup of the algorithm in a situation with more iterations.
-
-\begin{align}\label{eq:pde_helmlaplace}
-    \begin{split}
-        \Delta u &= 0 \\
-        \Delta u + k^{2}u &= 0
-    \end{split}
-\end{align}
-
-Reformulationg both equations as a Boundary Integral Equation, the simple \textit{direct} formulation is used to write the solution as \ref{eq:direct_formulation}, where $\Gamma$ is boudnary of the domain, \textit{S} and \textit{D} are the single and double layer operators, defined as \ref{eq:single_double}, and $G(x,y)$ is the fundamental solution of the desired PDE.
-
-\begin{equation}\label{eq:direct_formulation}
-    -\frac{u(x)}{2} + D[u](x) = S[\partial_{\nu }u] (x), \hspace{0.3in} x \in \Gamma
+\begin{equation}\label{eq:helmholtz}
+    \Delta u + k^{2}u = 0
 \end{equation}
 
-\begin{align}\label{eq:single_double}
-    \begin{split}
-        S[\sigma](x) &= \int_{\Gamma} G(x,y) \sigma(y)  \,ds(y) \\
-        D[\sigma](x) &= \int_{\Gamma} \frac{\partial G}{\partial \nu_{y}}(x,y) \sigma(y)  \,ds(y)
-    \end{split}
-\end{align}
+For the first two matrix-vector product examples, we choose a unit circle around the origin as the boundary, using the Inti library \cite{git-inti} to create the mesh.
 
-For the first to examples, a unit circle around the origin is used as the boundary to generate the operators, with the mesh being created with the Inti library \cite{git-inti}.
+%FIXME: Put a figure of the unite circle?
 
-For the last test, the mesh is made from a cavity $.geo$ file avaiable in \cite{git_dudu}. A view of the figure can be seen in \ref{fig:cavity_fig}. The incident wave' angle is chosen to be $\frac{\pi}{4}$ rad.
+For the complex problem, we choose a cavity scattering problem. The mesh uses a $.geo$ file
+avaiable in \cite{git_dudu} and a figure of the whole geometry can be seen in \ref{fig:cavity_fig}. We choose the incident wave's angle as $\frac{\pi}{4}$ rad.
 
 \begin{figure}[h!]
     \centering
@@ -39,11 +24,47 @@ For the last test, the mesh is made from a cavity $.geo$ file avaiable in \cite{
     \label{fig:cavity_fig}
 \end{figure}
 
-A good way to infer the maximum acceleration possible for the inexact products would be using only admissible rank 1 blocks and measuring its execution time. Although such thing would not happen in a practical situation, it gives a maximum bound for the speed up we should expect.
-For doing that, the product tolerance is changed to \textit{Infinity}, and the product will be realised with only rank-1 blocks, since it's programmed to get the first aproximation lower than its given tolerance.
+
+Since the solution we search is the scattered field, $u$, produced by the incident wave $u_{i} = \exp^{ik(\vec{d}.\vec{x})}$, we still need to find the correct boundary condition in $\Gamma$ to obtain a unique solution.
+
+Assuming the total field, $u_{t} = u_{i} + u $ satisfies a homogenous Neumann condition and that $u$ satisfies the Sommerfeld radiation condition, we have the following equations to the problem:
+
+\begin{align}\label{eq:cavity_pdes}
+    \begin{split}
+        \Delta u + k^{2}u &= 0\\
+        \partial_{n} u &= -\partial_{n}u_{i}\hspace{0.2in}, x \in \Gamma
+    \end{split}
+\end{align}
+
+Which gives us, with \ref{eq:sol_bem}, all the mathematical formulation we need to continue with the applications.
+
+Before going into each one of the results, we talk a little about both extremes of the performance evaluation in the inexact GMRES and matrix-vector problem.
+
+If making the matrix-vector product's tolerance as 0 implies the use of the “original” matrix(remember we are always using hierarchical matrices, which are already a compression and therefore, not the orignal matrix), and then, an expected 0$\%$ speedup, how to give an upper bound to the acceleration we expect?
+
+A good way to infer the maximum acceleration possible for the inexact products would be using only admissible rank 1 blocks and measuring its execution time.
+
+For doing that, we change the product tolerance to \textit{Infinity}, and the product will be realised with only rank-1 blocks, since it's programmed to get the first aproximation lower than its given tolerance.
+
+Of course, such thing would not happen in a practical situation, but it gives an upper bound for the speedup we should expect.
+
+\section{Tolerance heuristic}
+
+We mentioned the inexact product's tolerance multiple times throughout this study, but haven't really disclosed \textbf{how} to obtain it.
+%FIXME: I forgot to add the article in the bibliography to cite them here...
+As told in \autoref{chap:hmatrices}, the inexact matrix-vector product is adjusted with the number of columns used by each one of the subblocks during the operation. To convert one of the expressions in \autoref{eq:bound_E} or in \autoref{eq:boundE_final} to an integer, we use the following heuristic:
+
+\begin{equation}
+    n_{k} = \min \left(\frac{\epsilon}{\min(\tilde{r}_{k-1},1)},1 \right)
+\end{equation}
+
+Where $\tilde{r}_{k-1}$ is the residual of the previous iteration and $\epsilon$ the overall tolerance given to the inexact GMRES algorithm.
+
+This expression is equivalent to take $\ell_{k} = 1$ in \autoref{eq:boundE_final}. Any of the other bounds showed in \autoref{chap:gmres} can be made by multiplying this expression by $\frac{\sigma_{k}(H_{k})}{k}$, $\frac{\sigma_{n}(A)}{k}$ or other values of $\ell_{k}$. A comparison between these different heuristics in the problem of a cavity scattering can be found below \ref{fig:bound_study}.
 
 \section{Laplace's results}
 
+%FIXME: put the correct values here
 Setting our product tolerance to \textit{Infinity} and using only rank-1 blocks in the product, we got a () speedup.
 
 All results are contained in \ref{fig:laplace_results}, showing the evolution of the residual with the product tolerance aswell as the speedup to each of these values.
@@ -55,11 +76,15 @@ All results are contained in \ref{fig:laplace_results}, showing the evolution of
     \label{fig:laplace_results}
 \end{figure}
 
-\section{Helmholtz's results}
+And since the matrix-product is accelerated, we should expect some speedup in the algorithm as well.
 
+It should be noted that the acceleration is highly dependent on the compression of the coefficient matrix. Matrices with low maximum rank of each block would not receive a big boost, since the number of columns used for each subblock might not vary much with each different tolerance.
+
+\section{Helmholtz's results}
+%FIXME: Values here
 For a maximum speedup bound in the product, the infinity tolerance brought a () speedup.
 
-For the unitary circle boundary the results can be seen in \ref{fig:Helmholtz_circle_results}.
+For the unitary circle boundary the results can be seen in \ref{fig:Helmholtz_circle_results}, for both the matrix-vector product and an application of the Inexact GMRES with few iterations.
 
 \begin{figure}[h!]
     \centering
@@ -75,8 +100,35 @@ For the unitary circle boundary the results can be seen in \ref{fig:Helmholtz_ci
     \label{fig:Helmholtz_circle_results}
 \end{figure}
 
+\subsection{Cavity scattering}
 
-For the cavity, \ref{fig:cavity_results}.
+For the cavity, we start out by running smaller examples and study the bounds found of \autoref{chap:gmres}.
+
+First we view the variations of the norms \ref{eq:bound_E} and \ref{eq:boundE_final}, shown in \autoref{fig:bound_study}.
+
+\begin{figure}[h!]
+    \centering
+    \includesvg[width=0.7\linewidth]{images/bound_study.svg}
+    \caption{Evolution for each of the pertubation's bounds found in \autoref{chap:gmres}.}
+    \label{fig:bound_study}
+\end{figure}
+
+% As we can see, choosing $\ell_{k} =1 $ in \ref{eq:boundE_final} gives a bigger tolerance to the product
+
+For the bounds in \ref{eq:borne_delta}, we have \autoref{fig:bound_44}.
+
+\begin{figure}[h!]
+    \centering
+    \includesvg[width=0.7\linewidth]{images/bounds_44.svg}
+    \caption{Evolution for each of the residual's bounds found in \autoref{chap:gmres}.}
+    \label{fig:bound_44}
+\end{figure}
+
+As we can look from both \autoref{fig:bound_study} and \autoref{fig:bound_44}, even if choosing $\ell_{k} = 1$ makes the inexact product's tolerance bigger, it still follows the restriction in the bound \ref{eq:borne_delta}. A test with these different choices for the product tolerance did not show a big variation between the iterations necessary for each one of them.
+
+It could mean less strict tolerances can still lead to the algorithm's convergence, what can be used to accelerate the algorithm even further.
+
+As for the speedup results, we have \autoref{fig:cavity_results}.
 
 \begin{figure}[h!]
     \centering
@@ -94,9 +146,5 @@ An evolution of the number of iterations in face of the different tolerances pas
     \label{fig:cavity_iterations}
 \end{figure}
 
-
-%Fazer analise dos dois extremos
-
-To start assessing the maximum gain possible, we start by initiating the product tolerance as infitine and seeing the result. Choosing an infinite tolerance grants us the all admissible block used in the products will have rank 1.
 
 

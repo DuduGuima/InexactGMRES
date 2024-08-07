@@ -1,0 +1,151 @@
+\section{Boundary Element Methods}
+
+Until now, we've disclosed most of the tools used in the projet. From the basic problem of solving a linear system in \ref{eq:linear_systinit}, the algorithm in use and some of its details in \autoref{chap:gmres} and also the data struture permiting to make the inexact approximations in \autoref{chap:hmatrices}, a great deal of ground was covered, but we haven't talked on \textbf{how} obtaining $A$ and $b$ in \ref{eq:linear_systinit}.
+
+Therefore, we dedicate a small chapter to elaborate how the Boundary Element Methods work, more specifically, how to generate the components of our linear systeam.
+
+\section{Mathematical model and Integral Equations}
+
+Boundary Element Methods(BEM) are numerical approximations of Boundary Integral equations, which themselves are tools for analysing of boundary value problems for partial differential equations(PDEs). BEM do present some advantages, like the fact that only the boundary gets discretized and how boundary values of the solution can be directly obtained, but also some shortcomings. The necessity of knowing a fundamental solution to the differential equation and the problems arising from non-smooth boundaries may require that application of alternative methods, like FEM, or maybe a mixture of both \cite{costabel1987principles}.
+
+Starting out with the PDE, we use Laplace's equation as an illustration. For the boundary problem, we'll start out with Dirichlet conditions:
+
+%FIXME: maybe talk a little bit more about the boundary?
+
+\begin{align}\label{eq:pde_model}
+    \begin{split}
+        \nabla u &= 0 \hspace{0.2in} \text{in a domain} \Omega \in \mathbb{R}^{n}\\
+        u &= g \hspace{0.2in} \text{on the boundary} \Gamma := \partial \Omega
+    \end{split}
+\end{align}
+
+As said before, we need to know the \textit{fundamental solution} to the differential equation. Considering $\mathbb{R}^{2}$ the fundamental solution of the Laplace equation is:
+
+\begin{equation}
+    \gamma (x,y) = \frac{-1}{2\pi} \log |x-y| \hspace{0.2in} (x,y \in \mathbb{R}^{2})
+\end{equation}
+
+
+We then represente the solution of the differential equation by using a representation formula. Since Laplace's equation's is known, we write Green's third identity for the solution:
+
+\begin{equation}\label{eq:green_3id}
+    u(x) = \int_{\Gamma} \partial_{n_{y}} \gamma (x,y) [u(y)]_{\Gamma} \,d\Gamma y - \int_{\Gamma} \gamma(x,y) [\partial_{n_{y}}u(y)]_{\Gamma} \,d\Gamma y \hspace{0.2in}, x \in \mathbb{R}^{2} \backslash \Gamma
+\end{equation}
+
+Where $\partial_{n_{y}}$ denotes the derivative taken with respect to the exterior normal of $\Gamma$(pointing outwards), and $u$ is harmonic, regular in the interior and exterior domains.
+
+The term $[]_{\Gamma}$ represents the jump value of a function across $\Gamma$:
+
+\begin{equation}
+    [v(x)]_{\Gamma} = v_{|R^{2} \backslash \Omega}(x) - v_{|\overline{\Omega}}(x)
+\end{equation}
+
+This step also brings one of the many choices we have to make to get different forms of the BEM. All of these depend on the choice on the assumptions we make about $u$ in $\mathbb{R}^{2} \backslash \Omega$.
+
+We use here the \textit{direct method}, choosing $u_{|\mathbb{R}^{2}\backslash \Omega} = 0 $, obtaining the new expression:
+
+\begin{equation}\label{eq:solinit_bem}
+    u(x) = - \int_{\Gamma} \partial_{n_{y}} \gamma(x,y) u(y) \,d\Gamma y +  \int_{\Gamma} \gamma(x,y)\partial_{n_{y}} u(y) \,d\Gamma y \hspace{0.2in}, x \in \Omega
+\end{equation}
+
+Where each one of the terms on the right side of this equation are called the double and single layer, respectively. Their densities, the function appearing in the integrand other than the fundamental solution $\gamma(x,y)$, are the solution and its normal derivative, both on the boundary.
+
+But \ref{eq:solinit_bem} is written for values in the domain $\Omega$, we need a relation for values in $\Gamma$. The single layer potential $\int_{\Gamma} \gamma(x,y)v(y) \,d\Gamma y$ is continuous across $\Gamma$, then its extension becomes \cite{sauter-bem}(Chapter 3):
+
+\begin{equation}\label{eq:singlelayer_pot}
+    S[v](x) = \int_{\Gamma} \gamma(x,y)v(y) \,d\Gamma y \hspace{0.2in}, x \in \Gamma
+\end{equation}
+
+If in \ref{eq:green_3id} we had chosen $[u]_{F}$ instead, the single layer would be the only term remaining and we would have $S[u](x) = g$ in the boundarey, a Fredholm integral equation of the first kind.
+
+The double layer potential, $\int_{\Gamma}  \partial_{n_{y}}\gamma(x,y) v(y) \,d\Gamma y$, has the following extention \cite{sauter-bem}(Chapter 3) to the boundary:
+
+\begin{equation}\label{eq:double_extension}
+    \int_{\Gamma}  \partial_{n_{y}}\gamma(x,y) v(y) \,d\Gamma y = \frac{-v(x)}{2} + \int_{\Gamma} \partial_{n_{y}}\gamma(x,y)v(y) \,d\Gamma y = (\frac{-1}{2} + D)v(x)\hspace{0.2in}, x \in \Gamma
+\end{equation}
+
+Where:
+
+\begin{equation}\label{eq:doublelayer_pot}
+    D[v](x) = \int_{\Gamma} \partial_{n_{y}}\gamma(x,y)v(y) \,d\Gamma \hspace{0.2in}, x \in \Gamma
+\end{equation}
+
+If in \ref{eq:green_3id} we had chosen $[\partial_{n}u]_{\Gamma} = 0$, the double layer expression would result in $(\frac{-1}{2} + D)u = g$ in the boundary, a Fredholm integral equation of the second kind.
+
+
+Using \ref{eq:singlelayer_pot}, \ref{eq:double_extension} and \ref{eq:doublelayer_pot} in \ref{eq:solinit_bem}, we have:
+
+\begin{align}\label{eq:sol_bem}
+    \begin{split}
+        u(x) & = \frac{u(x)}{2} - D[u](x) + S[\partial_{n}u](x)\\
+        (\frac{1}{2} + D) u & = S(\partial_{n}u)
+    \end{split}
+\end{align}
+
+Now, the last line in \ref{eq:sol_bem}, coupled with the boundary conditions in \ref{eq:pde_model} can be used to find $\partial_{n}u(x)$ and then the final answer.
+
+If instead of a Dirichlet problem, we had a Neumann's one, where $\partial_{n}u(x)$'s values are specified at the boundary, we would then find $u(x)$ directly through \ref{eq:sol_bem}.
+
+\section{Discretization and Linear System}
+
+The expressions found in the section above, even though they contain the answers we need, are still continuous. To obtain the linear systems we'll be working on, a discretization process is necessary.
+
+We start, as mentioned before, by assuming $\Gamma$ can be decomposed into a finite number of subsets, each one represented by a parameter in $\mathbb{R}^{n-1}$(noting that we used n=2 in the last section as a mere illustation). Then we choose a partition of this parameter domain and correponding finite element functions.
+
+We start with a boundary integral equation as in \ref{eq:sol_bem}:
+
+\begin{equation}\label{eq:bem_system}
+    Au = f \hspace{0.2in}, x \in \Gamma
+\end{equation}
+
+And we search for an approximate solution:
+
+\begin{equation}\label{eq:approx_sol}
+    u_{h}(x) = \sum_{j=1}^{N}\alpha_{j} \mu_{h}^{j}(x)
+\end{equation}
+
+With the basis functions $\mu_{h}^{j}={\mu_{h}^{j}|j=1, \dots, N}$ and ${\alpha_{j}|j=1, \dots, N}$ the unknown coefficients.
+
+The linear system can be obtained by three methods: Collocation, Galerkin's Method and least squares method.
+
+\subsection{Collocation method}
+
+Collocation method starts out by choosing a set of points ${x_{j}|j=1, \dots, N} \subset \Gamma$ of collocation points and assumes \ref{eq:bem_system} is satisfied in those.
+
+Using \ref{eq:approx_sol} with the collocation points $x_{k}$ and \ref{eq:bem_system}:
+
+\begin{equation}\label{eq:collocation}
+    \sum_{j=1}^{N} (A \mu_{h}^{j})(x_{k}) \alpha_{j} = f(x_{k}) \hspace{0.2in}, k=1,2, \dots, N
+\end{equation}
+
+\subsection{Galerkin's Method}
+
+In this method, we use \ref{eq:bem_system} with \ref{eq:approx_sol} and take the product of the equation with a set of test functions of a finite dimensional function space.
+
+If we use, for the test functions, the same set of basis functions in \ref{eq:approx_sol}, we have:
+
+\begin{equation}\label{eq:galerkin}
+    \sum_{j=1}^{N} \left<\mu_{h}^{k} ,A\mu_{h}^{j}\right> \alpha_{j} = \left< \mu_{h}^{k},f\right> \hspace{0.2in}, k = 1, \dots, N
+\end{equation}
+
+Where $<.,.>$ denotes the inner product in $\mathbf{L}^{2}(\Gamma) $:
+
+\begin{equation}
+    \left<f,g\right>:= \int_{\Gamma} \overline{f(x)} g(x) \,d \Gamma x
+\end{equation}
+
+
+\subsection{Least squares method}
+
+In this method we  minimize $A\mu_{h} - f$ in the $\mathbf{L}^{2}(\Gamma)$ norm, resulting in the equation:
+
+\begin{equation}
+    \sum_{j=1}^{N} \left< A \mu_{h}^{k},A \mu_{h}^{j} \right>\alpha_{j} = \left<A \mu_{h}^{k},f \right> \hspace{0.2in}, k=1, \dots, N
+\end{equation}
+
+With all integrals solved numerically.
+
+
+We then return to a linear system, as in \ref{eq:linear_systinit}.
+
+
