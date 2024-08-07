@@ -76,6 +76,7 @@ An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 co
 However, \ref{alg:gmres_init} doesn't present an efficient way of finding the residual in each iteration. To solve this problem and also to find a more efficient way of solving the least squares in \ref{eq:y_gmres}, we apply a transformation to $H_{k}$, turning it into a triangular matrix.
 
 \section{Givens's Rotation}
+%FIXME: maybe a little text about plane rotations and householder transformations
 
 Givens's operator, $G(i,i+1)$, is a unitary matrix such that the column vector $a = Gb$ has the elements $a(i) = r \in \mathbb{R}$ and $a(i+1)=0$. It has a structure as in \ref{eq:givens}. The coefficients $c_{i},s_{i}$ only appear in the rows $i$ et $i+1$.
 
