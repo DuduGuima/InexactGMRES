@@ -130,18 +130,23 @@ function igmres_tolstudy(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,
 
     x = zeros(T, size(b))#will hold answer
     #residuals = zeros(real(T), maxiter) # will hold residuals
-    residuals = Vector{Float64}()
+    residuals_true = Vector{Float64}()
+    residuals_tilde = Vector{Float64}()
+    residuals_tilde_true = Vector{Float64}()
     it = 0
     bheta = norm(b)
     m = restart
     res = bheta
-    push!(residuals,res)
+    push!(residuals_true,res)
+    push!(residuals_tilde_true,res)
+    push!(residuals_tilde,res)
     current_perror = Float64
     A_iterable = HMatrices.ITerm(A,res)
 
     H_singvalues = Vector{Float64}()
     bound_left4 = Vector{Float64}()
     bound_right4 = Vector{Float64}()
+    bound_right4H = Vector{Float64}()
 
     bound_left5 = Vector{Float64}()
     bound_right5 = Vector{Float64}()
@@ -163,21 +168,22 @@ function igmres_tolstudy(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,
 
 
             ###Transformation of current residue and overall tolerance in the new error we'll use
-            current_perror = rel_to_eps(res,tol)
-            A_iterable.rtol = current_perror
+            if k==1
+                current_perror = rel_to_eps(res,tol)
+            else
+                current_perror = rel_to_eps(H_singvalues[k-1],res,tol)
+            end
+                A_iterable.rtol = current_perror
             ###Arnold's iteration inside GMRES to use Q,H from past iterations
             #----------------------------------------------
             my_arnoldi!(Q, H, A_iterable, k)#no new vector is created, everything is done directly in H and Q
             #---------------------------#
 
-            ###First bound study, using (4.4) from the article, before the transformation of H into a upper triangular matrix
-            dummy_left = zero(v)
+            ###First bound study, using (4.4) from the article, before the transformation of H into a upper triangular matrix            
             dummy_right = 0
             for n=1:k
-                mul!(dummy_left,I,Q[n],x[n]*rel_to_eps(residuals[n],tol),1)
-                dummy_right+=rel_to_eps(residuals[n],tol)*abs(x[n])
+                dummy_right+=rel_to_eps(residuals_tilde[n],tol)*abs(x[n])
             end
-            push!(bound_left4,norm(dummy_left))
             push!(bound_right4,dummy_right)
 
             ###We now store the smallest singular value of H before its transformation into a triangular matrix
@@ -189,6 +195,11 @@ function igmres_tolstudy(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,
             smalles_svd = vals[length(vals)]
             push!(H_singvalues,smalles_svd/k)
 
+            dummy_right = 0
+            for n=1:k
+                dummy_right+=rel_to_eps(H_singvalues[k],residuals_tilde[n],tol)*abs(x[n])
+            end
+            push!(bound_right4H,dummy_right)
 
 
             ###Givens rotation
@@ -201,9 +212,25 @@ function igmres_tolstudy(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,
 
             #Residuals are always stored in the last element of e1
             res = norm(e1[k+1])
-            #residuals[it] = res/bheta
-            push!(residuals,res/bheta)
+            push!(residuals_tilde,res/bheta)
 
+            ##calculating true residual ||Ay - b||
+            y=zero(b)
+            for i=1:length(Q)
+                y+=Q[i]*x[i]
+            end
+            push!(residuals_true,norm(A*y - b)/norm(b))
+            ##
+            ##calculating true tile residual ||ro - Vm+1Hmxm||
+            y=zero(b)
+            for i=1:k
+                for j=1:length(H[i])
+                    y[j] += H[i][j] * x[i]
+                end
+            end
+            push!(residuals_tilde_true,norm(e1[1:k+1]-y[1:k+1])/norm(b))
+
+            ##
             it += 1
             if see_r
                 println("Iteration: ", it, " Current residual: ", res)
@@ -215,9 +242,9 @@ function igmres_tolstudy(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,
                     y += Q[n] * x[n]
                 end
                 bound_left5=map(v->abs(v),y[1:k])
-                bound_right5=(1/smalles_svd).*residuals[1:(length(residuals)-1)]
+                bound_right5=(1/smalles_svd).*residuals_tilde[1:(length(residuals_tilde)-1)]
                 # println("Finished at iteration: ", it + 1, " Final residual: ", res)
-                return bound_left4,bound_right4,bound_left5,bound_right5, H_singvalues, residuals, it
+                return bound_right4H,bound_right4,bound_left5,bound_right5, H_singvalues,residuals_true,residuals_tilde,residuals_tilde_true, it
             end
         end
     end #main while loop

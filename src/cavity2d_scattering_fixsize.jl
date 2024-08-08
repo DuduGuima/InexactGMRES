@@ -99,8 +99,12 @@ axpy!(1.0,Id,L) # in place sum of L
 # axpy!(1.0,δL,L) # in place sum of L
 
 #arrays to store results
-range_values= [10.0^(-i) for i in 2:Int(-log10(ε))]
+range_values = Vector{Float64}()
+push!(range_values,Inf)
 
+for i=2:Int(-log10(ε))
+    push!(range_values,10.0^(-i))
+end
 
 results_exact_mean = zeros(length(range_values))
 results_approx_mean = zeros(length(range_values))
