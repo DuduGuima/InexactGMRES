@@ -1,5 +1,5 @@
 
-As mentioned above, GMRES is the iterative method chosen to solve the linear system in \ref{eq:linear_systinit}. This will mainly be done by approximating, at each iteration $k$, the answer $x$ to an element in the lower dimentional Krylov subspace $\mathcal{K}_{k}(A,b)$, $A$ being the matrix associated to the linear system and $b$ its right-hand side.
+As mentioned above, GMRES is the iterative method chosen to solve the linear system in \ref{eq:linear_systinit}. This will mainly be done by approximating, at each iteration $k$, the solution $x$ to an element in the lower dimensional Krylov subspace $\mathcal{K}_{k}(A,b)$, $A$ being the matrix associated to the linear system and $b$ its right-hand side.
 
 Defining the residual of iteration $k$ as:
 
@@ -7,7 +7,7 @@ Defining the residual of iteration $k$ as:
     r_{k} = \norm{b - Ax_{k}}
 \end{equation}
 
-Our $x_{k}$, the $k-th$ approximation to $x$, if chosen as the answer of the minisation problem of $r_{k}$. Since we make the projections in $\mathcal{K}_{k}(A,b)$, $x_{k} = K_{k}y_{k}$, our answer is given by the problem:
+Our $x_{k}$, the $k-th$ approximation to $x$, if chosen as the solution of the minimization problem of $r_{k}$. Since we make the projections in $\mathcal{K}_{k}(A,b)$, $x_{k} = K_{k}y_{k}$, our solution is given by the problem:
 
 \begin{equation}
     \min_{x \in \mathcal{K}_{k}(A,b)} \norm{b - Ax} = \min_{y \in \mathbb{C}^{n}} \norm{b - AK_{k}y}
@@ -19,7 +19,7 @@ Where $K_{k}$ is the Krylov matrix with columns equal to the vectors that span t
     K_{k} = \left[b, Ab, A^{2}b, \dots, A^{k}b \right]
 \end{equation}
 
-But as said in the previus chapters,${b,Ab, \dots, A^{k}b}$ has approximately colinear vectors, and we choose the base from the Arnoldi's Method instead.
+But as said in the previous chapters,${b,Ab, \dots, A^{k}b}$ has approximately collinear vectors, and we choose the base from the Arnoldi's Method instead.
 
 Then, we take a projection in $\mathcal{K}_{k}(A,b)$, where we take the different approximations as in \ref{eq:init_gmres}, where $Q_{m}$ is the vector in \ref{eq:init_arnoldi}.
 
@@ -42,10 +42,10 @@ With \ref{eq:init_gmres} and \ref{eq:init_arnoldi} the residual becomes \ref{eq:
 \end{align}
 
 
-Thus, $y_{k}$ which appears in \ref{eq:init_gmres}, is found as the solution of the residual's minimisation problem  in \ref{eq:final_gmres}:
+Thus, $y_{k}$ which appears in \ref{eq:init_gmres}, is found as the solution of the residual's minimization problem  in \ref{eq:final_gmres}:
 
 \begin{equation}\label{eq:y_gmres}
-    y_{k} = \min_{y \in \mathbb{C}^{k}} \norm{\beta e_{1} - H_{k}y}
+    y_{k} = \argmin_{y \in \mathbb{C}^{k}} \norm{\beta e_{1} - H_{k}y}
 \end{equation}
 
 An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 contain the Arnoldi's Method presented in \ref{alg:arnoldi}.
@@ -96,7 +96,7 @@ Givens's operator, $G(i,i+1)$, is a unitary matrix such that the column vector $
 This operator offers a way to transform the columns in $H_{m}$, \textit{zeroing} the elements outside the main diagonal. Since a product of unitary operators is still unitary, \ref{eq:y_gmres} can be written as \ref{eq:after_givens}, where $R_{m}$ and $g_{m}$ are the results from the application of multiple Givens's operators to $H_{m}$ and $\beta e_{1}$.
 
 \begin{equation}\label{eq:after_givens}
-    y = \min_{y} \norm{\beta e_{1} - H_{m}y} = \min_{y} \norm{g_{m} - R_{m}y}
+    y = \argmin_{y} \norm{\beta e_{1} - H_{m}y} = \argmin_{y} \norm{g_{m} - R_{m}y}
 \end{equation}
 
 
@@ -141,26 +141,26 @@ It can be shown that $g_{m}$ also contains the residual of each iteration \cite{
 
     And since $\Omega_{m}^{t}$ is a rotation matrix, its unitary and $\norm{\Omega_{m}^{t} (g_{m} - R_{m}y_{m})}=\norm{g_{m} - R_{m}y_{m}}$.
 
-    For any vector $y$, as the last line in \ref{eq:proof_residual} is fileld with zeros:
+    For any vector $y$, as the last line in \ref{eq:proof_residual} is field with zeros:
 
     \begin{equation}
         \norm{g_{m} - R_{m}y_{m}}_{2}^{2} = |\gamma_{m+1}|^{2} + \norm{(g_{m})_{1:m} - (R_{m})_{1:m,1:m} (y_{m})_{1:m}}_{2}^{2}
     \end{equation}
 
-    Since in the minimisation problem, the second term of the right side becomes zero(a triangular system), the residual has its value as $|\gamma_{m+1}|$, which gives a more efficient way to obtain the residuals during each iteration.
+    Since in the minimization problem, the second term of the right side becomes zero(a triangular system), the residual has its value as $|\gamma_{m+1}|$, which gives a more efficient way to obtain the residuals during each iteration.
 \end{proof}
 
 \section{Inexact GMRES}
 
-The heaviest part in the code is in the matrix-vector product \ref{alg:arnoldi}, line 4. Therefore, one approach to accelerate the iterations involves an approximation of $Aq $, instead of using the exact answer, as shown in \ref{eq:aprox_Aq}.
+The most expensive part in the code is in the matrix-vector product \ref{alg:arnoldi}, line 4. Therefore, one approach to accelerate the iterations involves an approximation of $Aq $, instead of using the exact product, as shown in \ref{eq:aprox_Aq}.
 
 \begin{equation}\label{eq:aprox_Aq}
     \mathcal{A}q = (A + E)q
 \end{equation}
 
-Where \textit{E} in \ref{eq:aprox_Aq} is a \textit{pertubation matrix} that changes with each iteration and will be written as $E_{k}$ for iteration k.
+Where \textit{E} in \ref{eq:aprox_Aq} is a \textit{perturbation matrix} that changes with each iteration and will be written as $E_{k}$ for iteration k.
 
-When we realise the inexact matrix-vector product, instead of the regular one, the left side of \ref{eq:init_arnoldi} must be changed by \ref{eq:new_projection}.
+When we execute the inexact matrix-vector product, instead of the regular one, the left side of \ref{eq:init_arnoldi} must be changed by \ref{eq:new_projection}.
 
 
 \begin{align} \label{eq:new_projection}
@@ -170,9 +170,9 @@ When we realise the inexact matrix-vector product, instead of the regular one, t
         \mathcal{A}_{k}Q_{k} &= W_{k}
     \end{split}
 \end{align}
-Where $W_{m} = Q_{m+1}H_{m}$ from this point foward.
+Where $W_{m} = Q_{m+1}H_{m}$ from this point forward.
 
-Now the subspace spawn by the vectors of $Q_{k}$ is not the Krylov's subspace $\mathcal{K}_{k}(A,b)$, but these are still orthonormal.  To see what kind of subspace our new $Q$ spams, \ref{eq:new_projection} is looked into in \ref{eq:q_basis}.
+Now the subspace spawn by the vectors of $Q_{k}$ is not the Krylov's subspace $\mathcal{K}_{k}(A,b)$, but these are still orthonormal.  To see what kind of subspace our new $Q$ spans, \ref{eq:new_projection} is looked into in \ref{eq:q_basis}.
 
 \begin{align}\label{eq:q_basis}
     \begin{split}
@@ -182,9 +182,12 @@ Now the subspace spawn by the vectors of $Q_{k}$ is not the Krylov's subspace $\
 
 For $k=1$, we have that $q_{2}$ is a combination of the vectors $\mathcal{A}_{1}b$ and $b$ (since $q_{1}$ = b). For $k=2$ we see that $q_{3}$ is a combination that involves $\mathcal{A}_{2} \mathcal{A}_{1}b$ and so forth.
 
-Expression \ref{eq:new_projection} then shows that $Q_{k}$ becomes a basis for a new Krylov's subspace, $\mathcal{K}_{k}(A+\mathcal{E}_{k},b)$ $= \spn \{b,\mathcal{A}_{1}b,\dots, \mathcal{A}_{k}\dots\mathcal{A}_{1}b \}$, made by a large pertubation in $A$, that gets updated in each iteration.
+Expression \ref{eq:new_projection} then shows that $Q_{k}$ becomes a basis for a new Krylov's subspace, $\mathcal{K}_{k}(A+\mathcal{E}_{k},b)$ $= \spn \{b,\mathcal{A}_{1}b,\dots, \mathcal{A}_{k}\dots\mathcal{A}_{1}b \}$, made by a large perturbation in $A$, that gets updated in each iteration.
 
-A new distinction should also be made between the two types of residuals appearing in the process: $r_{k}$, the exact residual of an iteration, and $\tilde{r}_{k}$, the one that will really be calculated. A detailed definition for both and a measure of how distant they are is in \ref{eq:res_relation}.
+%FIXME: I think it's more clear, but we'll read it later for confirmation
+A new distinction should also be made between the two types of residuals appearing in the process. We denote by $r_{k}$ the exact residual of an iteration, defined as $r_{k} = \norm{b - Ax_{k}}$, but too expensive to calculate every time. And $\tilde{r}_{k}=\norm{b-AQ_{k}y_{k}}$, the one that will really be calculated throughout the algorithm. This is analogous to what was done in the conventional GMRES, where the residual being computed each time was $\norm{b-AQ_{k}y_{k}} = \norm{\beta e_{1} - H_{k}y_{k}}$, the difference being that now these two different residuals are \textbf{not} the same, as we will see below in \ref{eq:res_relation}.
+
+% A definition for both and a measure of how distant they are is in \ref{eq:res_relation}.
 
 \begin{align}\label{eq:res_relation}
     \begin{split}
@@ -195,7 +198,7 @@ A new distinction should also be made between the two types of residuals appeari
     \end{split}
 \end{align}
 
-Considering $y_{k} = [\eta_{1}^{(k)} \dots \eta_{n}^{(k)} ] $, upper index to clarify the iteration, an upper bound for $\delta_{k}$ can be found, but before we go through \ref{eq:res_rightside}.
+Considering $y_{k} = [\eta_{1}^{(k)} \dots \eta_{k}^{(k)} ] $, upper index to clarify the iteration, an upper bound for $\delta_{k}$ can be found, but before we go through \ref{eq:res_rightside}.
 
 \begin{align}\label{eq:res_rightside}
     \begin{split}
@@ -212,47 +215,59 @@ We use the fact that $q_{i}$ are orthonormal between the last two lines. The bou
     \delta_{k} = \norm{r_{k} - \tilde{r}_{k}} \leq \sum_{i=1}^{k} \norm{E_{i}} \norm{\eta_{i}^{(k)}}
 \end{equation}
 
-\ref{eq:borne_delta} tells us that in order to keep both residuals close, either the pertubation of $A$, somewhat measured by $\norm{E_{i}}$, or the elements of $y_{i}$ should be kept small. Since we expect to use more \textit{relaxed} approximations of $A$ as the iterations go on, a greater tolerance in $E_{k}$ could be compensated with a sufficiently small $y_{k}$.
+\ref{eq:borne_delta} tells us that in order to keep both residuals close, either the perturbation of $A$, somewhat measured by $\norm{E_{i}}$, or the elements of $y_{i}$ should be kept small. Since we expect to use more \textit{relaxed} approximations of $A$ as the iterations go on, a greater tolerance in $E_{k}$ could be compensated with a sufficiently small $y_{k}$.
 
 
 The problem is $y_{k}$ is only found after the construction of $E_{k}$, so an upper bound must be also found for its value.
 
-Knowing $y_{k}$ is the solution of the minimisation of $ \norm{H_{k}y_{k} - e_{1}\beta} $, we consider $\Omega_{k} =G(k,k+1) G(k-1,k) \dots G(1,2)$ where each $G$ represents a Givens rotation as shown in \ref{eq:givens}, so $\Omega_{k}$ is the matrix that transforms $H_{k}$ into an upper triangular matrix.
+We consider now $\Omega_{k} =G(k,k+1) G(k-1,k) \dots G(1,2)$, where each $G$ represents a Givens rotation as shown in \ref{eq:givens}. So $\Omega_{k}$ is the unitary matrix(since all Givens rotations are themselves unitary) that transforms $H_{k}$ into an upper triangular matrix.
 
-The aplication of $\Omega_{k}$ in either side of $H_{k}y_{k}  = e_{1}\beta$ gives us \ref{eq:y_limit_start}.
+Since $\norm{H_{k}y - \beta e_{1}}=\norm{\Omega_{k}(H_{k}y - \beta e_{1})} $, the application of $\Omega_{k}$ in the norm $ \norm{H_{k}y - e_{1}\beta} $ transforms the problem into a minimization of a triangular linear system with non-zero diagonal elements in its coefficient matrix:
+\begin{equation}
+    y_{k} =\argmin_{y \in \mathbb{C}^{k}} \norm{\Omega_{k}H_{k}y_{k} - \Omega_{k}e_{1}\beta}= \argmin_{y \in \mathbb{C}^{k}} \norm{R_{k}y_{k} - g_{k}}
+\end{equation}
+
+
+
+Knowing $y_{k}$ is the solution of this triangular system, that can be solved by backwards substitution, we have \ref{eq:y_limit_start}:
+
 
 \begin{align}\label{eq:y_limit_start}
     \begin{split}
-        \Omega_{k}H_{k}y_{k}&=\Omega_{k}e_{1}\beta\\
-        R_{k}y_{k}&=g_{k}\\
-        y_{k}&=R^{-1}_{k}g_{k}
+        R_{k}y_{k}&=g_{k}
     \end{split}
 \end{align}
 
-Since $R_{k}$, the transformation of a Hessenberg matrix by a series of Givens rotations, is upper triangular, then its inverse also is.
-Being an upper triangular matrix, the first $i-1$ elements of its ith line are zeros, so using Matlab index notation in \ref{eq:R_elements}.
+Both sides of the equation above are column vectors of $k+1$ elements, since we are still considering $R_{k}$ with its last line filled with zeros. If we denote $\tilde{R_{k}} = (R_{k})_{1:k,1:k}$ and $\tilde{g_{k}}=(g_{k})_{1:k}$, \ref{eq:y_limit_start} can also be written as:
 
-\begin{equation}\label{eq:R_elements}
-    (R^{-1}_{k})_{i,1:k}(g_{k})_{1:k} = (R^{-1}_{k})_{i,i:k}(g_{k})_{i:k}
+\begin{equation}\label{eq:y_limit_startrest}
+    y_{k} = \tilde{R_{k}}^{-1}\tilde{g_{k}}
 \end{equation}
 
-Using this last result in \ref{eq:y_limit_start} gives \ref{eq:y_limit}.
+Since $\tilde{R_{k}}$, the transformation of a Hessenberg matrix by a series of Givens rotations, is upper triangular and has no line full of zeros, then its inverse also is upper triangular.
+Being an upper triangular matrix, the first $i-1$ elements of its i-th line are zeros, so using Matlab index notation in \ref{eq:R_elements}.
+
+\begin{equation}\label{eq:R_elements}
+    (\tilde{R_{k}}^{-1})_{i,1:k}\tilde{g_{k}}_ = (\tilde{R_{k}}^{-1})_{i,i:k}\tilde{g_{k}}
+\end{equation}
+
+Using this last result in \ref{eq:y_limit_startrest} gives \ref{eq:y_limit}.
 
 \begin{align}\label{eq:y_limit}
     \begin{split}
-        |\eta^{(k)}_{i}| &= \norm{(R^{-1}_{k})_{i,i:k}(g_{k})_{i:k}}\\
-        |\eta^{(k)}_{i}| &\leq \norm{e_{k}R^{-1}_{k}} \norm{(g_{k})_{i:k}}\\
-        |\eta^{(k)}_{i}| &\leq \norm{e_{k}R^{-1}_{k}} \norm{(g_{k})_{i:k}}\\
+        |\eta^{(k)}_{i}| &= \norm{(\tilde{R_{k}}^{-1})_{i,i:k}(g_{k})_{i:k}}\\
+        |\eta^{(k)}_{i}| &\leq \norm{e_{k}\tilde{R_{k}}^{-1}} \norm{(g_{k})_{i:k}}\\
+        |\eta^{(k)}_{i}| &\leq \norm{e_{k}\tilde{R_{k}}^{-1}} \norm{(g_{k})_{i:k}}\\
     \end{split}
 \end{align}
 
-Since $\norm{e_{k}R^{-1}_{k}} \leq \norm{R^{-1}_{k}} = \sigma_{k}(H_{k})^{-1}$ and $\norm{(g_{k})_{i:k}} \leq \norm{\tilde{r}_{i-1}}$ \cite{simoncini2003theory}, the bound is given by \ref{eq:bound_yinexact}.
+Since $\norm{e_{k}\tilde{R_{k}}^{-1}} \leq \norm{\tilde{R_{k}}^{-1}} = \sigma_{k}(H_{k})^{-1}$ and $\norm{(g_{k})_{i:k}} \leq \norm{\tilde{r}_{i-1}}$ \cite{simoncini2003theory}, the bound is given by \ref{eq:bound_yinexact}.
 
 \begin{equation}\label{eq:bound_yinexact}
     \norm{\eta_{i}^{(k)}} \leq \frac{1}{\sigma_{k}(H_{k})} \norm{\tilde{r}_{i-1}}
 \end{equation}
 
-Putting \ref{eq:bound_yinexact} in \ref{eq:borne_delta} gives the results in \ref{eq:boundE_intermediate}. Setting $\delta_{k} \leq \epsilon$ and determining a bound for each $\norm{E_{i}}$ gets us \ref{eq:bound_E}.
+Using both results of \ref{eq:bound_yinexact} and \ref{eq:borne_delta} gives the results in \ref{eq:boundE_intermediate}. Thus, a sufficient condition for $\delta_{k} \leq \epsilon$ is given by \ref{eq:bound_E}.
 
 
 \begin{equation}\label{eq:boundE_intermediate}
@@ -263,15 +278,15 @@ Putting \ref{eq:bound_yinexact} in \ref{eq:borne_delta} gives the results in \re
     \norm{E_{i}} \leq \frac{\sigma_{k}(H_{k})\epsilon}{k\norm{\tilde{r}_{i-1}}}
 \end{equation}
 
-Since $H_{k}$ is also one of the matrices being constructed throughout the method, a workaround is necessary to apply find these bounds in a pratical situation. Either using an estimation of $\sigma_{k}(H_{k})$ with the singular values of $A$ or grouping all uncalculated terms in an $\ell_{k}$ that will be estimated empirically \cite{simoncini2003theory}, obtaining \ref{eq:boundE_final}.
+Since $H_{k}$ is also one of the matrices constructed throughout the method, a workaround is necessary to apply these bounds in a practical situation. Either using an estimation of $\sigma_{k}(H_{k})$ with the singular values of $A$ or grouping all uncalculated terms in an $\ell_{k}$ that will be estimated empirically \cite{simoncini2003theory}, obtaining \ref{eq:boundE_final}.
 
 \begin{equation}\label{eq:boundE_final}
     \norm{E_{i}} \leq \ell_{k} \frac{1}{\norm{\tilde{r}_{i-1}}} \epsilon
 \end{equation}
 
-It should be noted \cite{simoncini2003theory} that among te initial bounds, some aren't really sharp, mainly \ref{eq:res_rightside} and \ref{eq:bound_yinexact}, and further empirical analysis of these bounds could show a better theoretical bound can be found for both. A plot of these bounds for the cavity problem that will be studied is shown later.
+It has been noted in \cite{simoncini2003theory} that among the initial bounds, some aren't really sharp, mainly \ref{eq:res_rightside} and \ref{eq:bound_yinexact}, and further empirical analysis of these bounds could show a better theoretical bound can be found for both. A plot of these bounds for the cavity problem will be studied is shown later.
 
-It should also be noted that $\tilde{r}_{k}$, after the transformation of $H_{k}$ into an upper triangular matrix, is also found in the $i+1$'th element of $g_{m}$ in \ref{eq:y_limit_start}. The demonstration follow the same proof as for $g_{m}$ in \ref{eq:after_givens}, given that $y_{m}$ is a solution to a linear system that involves an upper triangular matrix.
+It should also be noted that $\tilde{r}_{k}$, after the transformation of $H_{k}$ into an upper triangular matrix, is also found in the $i+1$-th element of $g_{m}$ in \ref{eq:y_limit_start}. The demonstration follow the same proof as for $g_{m}$ in \ref{eq:after_givens}, given that $y_{m}$ is a solution to a linear system that involves an upper triangular matrix.
 
 The remaining theory in this report also explains the basics of Hierarchical Matrices, the structure that will be used to compress the matrices used in the algorithm, since $A$ appears in the discretization of integral operators and uses large dimensions.
-It's also though these strucures each $\mathcal{A}_{k}$ will be made. As it will be explained later, at each iteration an $E_{k}$ will be indirectly constructed during the inexact product $\mathcal{A}_{k}q$, mainly using the residues that appear during this structure's construction, in the iterations of the $ACA Method$.
+It's also though these structures each $\mathcal{A}_{k}$ will be made. As it will be explained later, at each iteration an $E_{k}$ will be indirectly constructed during the inexact product $\mathcal{A}_{k}q$, mainly using the residues that appear during this structure's construction, in the iterations of the $ACA Method$.
