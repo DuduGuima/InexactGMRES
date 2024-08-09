@@ -1,12 +1,12 @@
 \section{Boundary Element Methods}
 
-Until now, we've disclosed most of the tools used in the projet. From the basic problem of solving a linear system in \ref{eq:linear_systinit}, the algorithm in use and some of its details in \autoref{chap:gmres} and also the data struture permiting to make the inexact approximations in \autoref{chap:hmatrices}, a great deal of ground was covered, but we haven't talked on \textbf{how} obtaining $A$ and $b$ in \ref{eq:linear_systinit}.
+Until now, we've disclosed most of the tools used in the project. From the basic problem of solving a linear system in \ref{eq:linear_systinit}, the algorithm in use and some of its details in \autoref{chap:gmres} and also the data structure permitting to make the inexact approximations in \autoref{chap:hmatrices}, a great deal of ground was covered, but we haven't talked on \textbf{how} obtaining $A$ and $b$ in \ref{eq:linear_systinit}.
 
-Therefore, we dedicate a small chapter to elaborate how the Boundary Element Methods work, more specifically, how to generate the components of our linear systeam.
+Therefore, we dedicate a small chapter to elaborate how the Boundary Element Methods work, more specifically, how to generate the components of our linear system.
 
 \section{Mathematical model and Integral Equations}
 
-Boundary Element Methods(BEM) are numerical approximations of Boundary Integral equations, which themselves are tools for analysing of boundary value problems for partial differential equations(PDEs). BEM do present some advantages, like the fact that only the boundary gets discretized and how boundary values of the solution can be directly obtained, but also some shortcomings. The necessity of knowing a fundamental solution to the differential equation and the problems arising from non-smooth boundaries may require that application of alternative methods, like FEM, or maybe a mixture of both \cite{costabel1987principles}.
+Boundary Element Methods(BEM) are numerical approximations of Boundary Integral equations, which themselves are tools for analyzing of boundary value problems for partial differential equations(PDEs). BEM do present some advantages, like the fact that only the boundary gets discretized and how boundary values of the solution can be directly obtained, but also some shortcomings. The necessity of knowing a fundamental solution to the differential equation and the problems arising from non-smooth boundaries may require that application of alternative methods, like FEM, or maybe a mixture of both \cite{costabel1987principles}.
 
 Starting out with the PDE, we use Laplace's equation as an illustration. For the boundary problem, we'll start out with Dirichlet conditions:
 
@@ -26,7 +26,7 @@ As said before, we need to know the \textit{fundamental solution} to the differe
 \end{equation}
 
 
-We then represente the solution of the differential equation by using a representation formula. Since Laplace's equation's is known, we write Green's third identity for the solution:
+We then represent the solution of the differential equation by using a representation formula. Since Laplace's equation's is known, we write Green's third identity for the solution:
 
 \begin{equation}\label{eq:green_3id}
     u(x) = \int_{\Gamma} \partial_{n_{y}} \gamma (x,y) [u(y)]_{\Gamma} \,d\Gamma y - \int_{\Gamma} \gamma(x,y) [\partial_{n_{y}}u(y)]_{\Gamma} \,d\Gamma y \hspace{0.2in}, x \in \mathbb{R}^{2} \backslash \Gamma
@@ -56,9 +56,9 @@ But \ref{eq:solinit_bem} is written for values in the domain $\Omega$, we need a
     S[v](x) = \int_{\Gamma} \gamma(x,y)v(y) \,d\Gamma y \hspace{0.2in}, x \in \Gamma
 \end{equation}
 
-If in \ref{eq:green_3id} we had chosen $[u]_{F}$ instead, the single layer would be the only term remaining and we would have $S[u](x) = g$ in the boundarey, a Fredholm integral equation of the first kind.
+If in \ref{eq:green_3id} we had chosen $[u]_{F}$ instead, the single layer would be the only term remaining, and we would have $S[u](x) = g$ in the boundary, a Fredholm integral equation of the first kind.
 
-The double layer potential, $\int_{\Gamma}  \partial_{n_{y}}\gamma(x,y) v(y) \,d\Gamma y$, has the following extention \cite{sauter-bem}(Chapter 3) to the boundary:
+The double layer potential, $\int_{\Gamma}  \partial_{n_{y}}\gamma(x,y) v(y) \,d\Gamma y$, has the following extension \cite{sauter-bem}(Chapter 3) to the boundary:
 
 \begin{equation}\label{eq:double_extension}
     \int_{\Gamma}  \partial_{n_{y}}\gamma(x,y) v(y) \,d\Gamma y = \frac{-v(x)}{2} + \int_{\Gamma} \partial_{n_{y}}\gamma(x,y)v(y) \,d\Gamma y = (\frac{-1}{2} + D)v(x)\hspace{0.2in}, x \in \Gamma
@@ -90,7 +90,7 @@ If instead of a Dirichlet problem, we had a Neumann's one, where $\partial_{n}u(
 
 The expressions found in the section above, even though they contain the answers we need, are still continuous. To obtain the linear systems we'll be working on, a discretization process is necessary.
 
-We start, as mentioned before, by assuming $\Gamma$ can be decomposed into a finite number of subsets, each one represented by a parameter in $\mathbb{R}^{n-1}$(noting that we used n=2 in the last section as a mere illustation). Then we choose a partition of this parameter domain and correponding finite element functions.
+We start, as mentioned before, by assuming $\Gamma$ can be decomposed into a finite number of subsets, each one represented by a parameter in $\mathbb{R}^{n-1}$(noting that we used n=2 in the last section as a mere illustration). Then we choose a partition of this parameter domain and corresponding finite element functions.
 
 We start with a boundary integral equation as in \ref{eq:sol_bem}:
 
@@ -117,6 +117,8 @@ Using \ref{eq:approx_sol} with the collocation points $x_{k}$ and \ref{eq:bem_sy
 \begin{equation}\label{eq:collocation}
     \sum_{j=1}^{N} (A \mu_{h}^{j})(x_{k}) \alpha_{j} = f(x_{k}) \hspace{0.2in}, k=1,2, \dots, N
 \end{equation}
+
+Where, in this chapter, $A$ is the integral operator in \autoref{eq:bem_system}.
 
 \subsection{Galerkin's Method}
 
