@@ -284,7 +284,15 @@ Since $H_{k}$ is also one of the matrices constructed throughout the method, a w
     \norm{E_{i}} \leq \ell_{k} \frac{1}{\norm{\tilde{r}_{i-1}}} \epsilon
 \end{equation}
 
-It has been noted in \cite{simoncini2003theory} that among the initial bounds, some aren't really sharp, mainly \ref{eq:res_rightside} and \ref{eq:bound_yinexact}, and further empirical analysis of these bounds could show a better theoretical bound can be found for both. A plot of these bounds for the cavity problem will be studied is shown later.
+It has been noted in \cite{simoncini2003theory} that among the initial bounds, some aren't really sharp, mainly \ref{eq:res_rightside} and \ref{eq:bound_yinexact}, and further empirical analysis of these bounds could show a better theoretical bound can be found for both.
+
+In \cite{simoncini2003theory}(section 5), it also has been shown that $\sigma_{k}(H_{k})$ in \autoref{eq:bound_E} can be approximated by $\sigma_{n}(A)$, the smallest singular value of $A$, through the bound:
+
+\begin{equation}
+    \sigma_{k}(H_{k}) \leq \sigma_{n}(A) - \norm{E_{1}q_{1}, E_{2}q_{2}, \dots, E_{k}q_{k}}
+\end{equation}
+
+Giving another way to evalue $\ell_{k}$ without the need of calculating $\sigma_{k}(H_{k})$ at each iteration. A plot of these bounds for the cavity problem will be studied later.
 
 It should also be noted that $\tilde{r}_{k}$, after the transformation of $H_{k}$ into an upper triangular matrix, is also found in the $i+1$-th element of $g_{m}$ in \ref{eq:y_limit_start}. The demonstration follow the same proof as for $g_{m}$ in \ref{eq:after_givens}, given that $y_{m}$ is a solution to a linear system that involves an upper triangular matrix.
 
