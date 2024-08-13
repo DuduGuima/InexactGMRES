@@ -10,7 +10,7 @@ using StaticArrays
 using LinearAlgebra
 using Meshes
 using Gmsh
-using GLMakie
+#using GLMakie
 using HMatrices
 using IterativeSolvers
 using LinearMaps
@@ -26,7 +26,7 @@ BLAS.set_num_threads(1)
 
 
 ## Physical parameters
-λ = 0.005#
+λ = 0.05#
 k = 2π / λ # wavenumber
 θ = π / 4 # angle of incident wave
 

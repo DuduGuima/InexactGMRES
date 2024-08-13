@@ -55,7 +55,7 @@ K = let
     (t, q) -> laplace(t, q)
 end
 
-ε = 1e-12#initial aproximation to hmatrix
+ε = 1e-8#initial aproximation to hmatrix
 
 Lop = Inti.IntegralOperator(K, Q, Q)
 L = Inti.assemble_hmatrix(Lop; rtol=ε)

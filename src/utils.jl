@@ -66,7 +66,22 @@ function my_arnoldi!(Q, H, A::AbstractMatrix, current_it)
     lmul!(1/H[current_it][current_it+1],Q[current_it+1])
 end
 
+function my_arnolditoltest!(Q,H,A::HMatrices.ITerm,current_it)
+    dummy_v = similar(Q[current_it])
+    mul!(dummy_v,A,Q[current_it],1,0;threads=false)
+    push!(Q, dummy_v) # heavy part should be here
+    for j = 1:current_it
+        H[j,current_it] = (Q[j]') * Q[current_it+1]
+        
+        #mul!(C,A,B,alpha,bheta) : C <- (A*B)alpha + bhetaC
+        mul!(Q[current_it+1],I,Q[j],-H[j,current_it],1)
+    end
+    H[current_it+1,current_it] = norm(Q[current_it+1])
+    
+    #Q[current_it+1] /= H[current_it][current_it+1]
+    lmul!(1/H[current_it+1,current_it],Q[current_it+1])
 
+end
 
 
 
@@ -127,11 +142,236 @@ function igmres_tolstudy(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,
     TA = eltype(A)
     Tb = eltype(b)
     T = promote_type(TA, Tb)
+    x = zeros(T, size(b))#will hold answer
+    #residuals = zeros(real(T), maxiter) # will hold residuals
+    residuals_normal=Vector{Float64}()
+    residuals_true = Vector{Vector{ComplexF64}}()
+    residuals_tilde = Vector{Vector{ComplexF64}}()
+    it = 0
+    bheta = norm(b)
+    m = restart
+    res = bheta
+    push!(residuals_true,copy(b))
+    push!(residuals_tilde,copy(b))
+    push!(residuals_normal,res)
+    current_perror = Float64
+    A_iterable = HMatrices.ITerm(A,res)
+    H_singvalues = Vector{Float64}()
+    bound_right4 = Vector{Float64}()
+    while it < maxiter
+        Q = Vector{Vector{T}}()
+        #H = Vector{Vector{T}}()
+        H = zeros(T,m+1,m)
+        J = Vector{Any}(undef, m)#
+
+        #resduals =
+        e1 = zeros(T, m + 1, 1)
+        e1[1] = bheta
+        v = b / bheta
+        push!(Q, v)
+        for k = 1:m
+            if it > maxiter
+                break
+            end
+
+
+            ###Transformation of current residue and overall tolerance in the new error we'll use
+            
+            current_perror = rel_to_eps(res,tol)
+            
+            A_iterable.rtol = current_perror
+            ###Arnold's iteration inside GMRES to use Q,H from past iterations
+            #----------------------------------------------
+            my_arnolditoltest!(Q, H, A_iterable, k)#no new vector is created, everything is done directly in H and Q
+            #---------------------------#
+
+            ###First bound study, using (4.4) from the article, before the transformation of H into a upper triangular matrix            
+            dummy_right = 0
+            for n=1:k
+                dummy_right+=rel_to_eps(norm(residuals_tilde[n]),tol)*abs(x[n])
+            end
+            push!(bound_right4,dummy_right)
+
+            ###We now store the smallest singular value of H before its transformation into a triangular matrix
+            _,vals,_ = LinearAlgebra.svd(H[1:k+1,1:k])
+            smalles_svd = vals[length(vals)]
+            push!(H_singvalues,smalles_svd/k)
+
+            ###Givens rotation
+            #-----------------------------------
+            #Rotations on H to make it triangular
+            #my_rotation!(H, J, e1, k)
+            #-------------------------------------
+
+            #triangularsquares!(x, H, e1[1:k])
+
+            x[1:k] = H[1:k+1,1:k] \ e1[1:k+1]
+
+            ##calculating true residual ||Ay - b||
+            y=zero(b)
+            for i=1:length(Q)
+                y+=Q[i]*x[i]
+            end
+            push!(residuals_true,b-A*y)
+
+
+            ##
+            ##calculating true tile residual ||ro - Vm+1Hmxm||
+            y=zero(b)
+            for i=1:k
+                for j=1:k+1
+                    y[j] += H[j,i] * x[i]
+                end
+            end
+            y_dummytilde = zero(b)
+            for i=1:length(Q)
+               y_dummytilde += Q[i]*y[i]
+            end
+            push!(residuals_tilde, b - y_dummytilde)
+            res = norm(residuals_tilde[k])
+            push!(residuals_normal,norm(residuals_true[k] - residuals_tilde[k]))
+            it += 1
+            if see_r
+                println("Iteration: ", it, " Current residual: ", res)
+            end
+
+            if res/bheta < tol 
+                y = zero(x)
+                for n = 1:k
+                    y += Q[n] * x[n]
+                end
+                return y,bound_right4, H_singvalues,residuals_tilde, it
+            end
+        end
+    end 
+    throw("Maximum iteration reached")
+end
+
+
+function igmres_tolstudy2(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,2)), see_r=false, tol=sqrt(eps()))
+    #choose type to create vectors and matrices
+    TA = eltype(A)
+    Tb = eltype(b)
+    T = promote_type(TA, Tb)
+    x = zeros(T, size(b))#will hold answer
+    #residuals = zeros(real(T), maxiter) # will hold residuals
+    residuals_normal=Vector{Float64}()
+    residuals_true = Vector{Vector{ComplexF64}}()
+    residuals_tilde = Vector{Vector{ComplexF64}}()
+    it = 0
+    bheta = norm(b)
+    m = restart
+    res = bheta
+    push!(residuals_true,copy(b))
+    push!(residuals_tilde,copy(b))
+    push!(residuals_normal,res)
+    current_perror = Float64
+    A_iterable = HMatrices.ITerm(A,res)
+    H_singvalues = Vector{Float64}()
+    bound_right4 = Vector{Float64}()
+    while it < maxiter
+        Q = Vector{Vector{T}}()
+        #H = Vector{Vector{T}}()
+        H = zeros(T,m+1,m)
+        J = Vector{Any}(undef, m)#
+
+        #resduals =
+        e1 = zeros(T, m + 1, 1)
+        e1[1] = bheta
+        v = b / bheta
+        push!(Q, v)
+        for k = 1:m
+            if it > maxiter
+                break
+            end
+
+
+            ###Transformation of current residue and overall tolerance in the new error we'll use
+            if k==1
+                current_perror = rel_to_eps(res,tol)
+            else
+                current_perror = rel_to_eps(H_singvalues[k-1],res,tol)
+            end
+            A_iterable.rtol = current_perror
+            ###Arnold's iteration inside GMRES to use Q,H from past iterations
+            #----------------------------------------------
+            my_arnolditoltest!(Q, H, A_iterable, k)#no new vector is created, everything is done directly in H and Q
+            #---------------------------#
+
+            ###First bound study, using (4.4) from the article, before the transformation of H into a upper triangular matrix            
+            dummy_right = 0
+            for n=1:k
+                dummy_right+=rel_to_eps(norm(residuals_tilde[n]),tol)*abs(x[n])
+            end
+            push!(bound_right4,dummy_right)
+
+            ###We now store the smallest singular value of H before its transformation into a triangular matrix
+            _,vals,_ = LinearAlgebra.svd(H[1:k+1,1:k])
+            smalles_svd = vals[length(vals)]
+            push!(H_singvalues,smalles_svd/k)
+
+            ###Givens rotation
+            #-----------------------------------
+            #Rotations on H to make it triangular
+            #my_rotation!(H, J, e1, k)
+            #-------------------------------------
+
+            #triangularsquares!(x, H, e1[1:k])
+
+            x[1:k] = H[1:k+1,1:k] \ e1[1:k+1]
+
+            ##calculating true residual ||Ay - b||
+            y=zero(b)
+            for i=1:length(Q)
+                y+=Q[i]*x[i]
+            end
+            push!(residuals_true,b-A*y)
+
+
+            ##
+            ##calculating true tile residual ||ro - Vm+1Hmxm||
+            y=zero(b)
+            for i=1:k
+                for j=1:k+1
+                    y[j] += H[j,i] * x[i]
+                end
+            end
+            y_dummytilde = zero(b)
+            for i=1:length(Q)
+               y_dummytilde += Q[i]*y[i]
+            end
+            push!(residuals_tilde, b - y_dummytilde)
+            res = norm(residuals_tilde[k])
+            push!(residuals_normal,norm(residuals_true[k] - residuals_tilde[k]))
+            it += 1
+            if see_r
+                println("Iteration: ", it, " Current residual: ", res)
+            end
+
+            if res/bheta < tol 
+                y = zero(x)
+                for n = 1:k
+                    y += Q[n] * x[n]
+                end
+                return y,bound_right4, H_singvalues,residuals_tilde, it
+            end
+        end
+    end 
+    throw("Maximum iteration reached")
+end
+
+
+
+function igmres_tolstudy3(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,2)), see_r=false, tol=sqrt(eps()))
+    #choose type to create vectors and matrices
+    TA = eltype(A)
+    Tb = eltype(b)
+    T = promote_type(TA, Tb)
 
     x = zeros(T, size(b))#will hold answer
     #residuals = zeros(real(T), maxiter) # will hold residuals
-    residuals_true = Vector{Float64}()
-    residuals_tilde = Vector{Float64}()
+    residuals_true = Vector{Vector{Float64}}()
+    residuals_tilde = Vector{Vector{Float64}}()
     residuals_tilde_true = Vector{Float64}()
     it = 0
     bheta = norm(b)
@@ -212,14 +452,14 @@ function igmres_tolstudy(A, b;maxiter=size(A, 2), restart=min(length(b), size(A,
 
             #Residuals are always stored in the last element of e1
             res = norm(e1[k+1])
-            push!(residuals_tilde,res/bheta)
+            push!(residuals_tilde,res)
 
             ##calculating true residual ||Ay - b||
             y=zero(b)
             for i=1:length(Q)
                 y+=Q[i]*x[i]
             end
-            push!(residuals_true,norm(A*y - b)/norm(b))
+            push!(residuals_true,norm(A*y - b))
             ##
             ##calculating true tile residual ||ro - Vm+1Hmxm||
             y=zero(b)
