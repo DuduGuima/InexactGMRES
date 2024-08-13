@@ -26,7 +26,7 @@ BLAS.set_num_threads(1)
 
 
 ## Physical parameters
-λ = 0.05 #
+λ = 0.005#
 k = 2π / λ # wavenumber
 θ = π / 4 # angle of incident wave
 
@@ -178,29 +178,3 @@ speed_up = (results_exact_min ) ./ results_approx_min
 
 df = DataFrame("Rel. error" => rel_error_sol, "Speed up" => speed_up, "Iterations"=>results_itn)
 CSV.write("Cavity_results.csv", df)
-
-# p1 = Plots.scatter(range_values, rel_error_sol, title="Relative error between solutions",legend=false,yaxis=:log,xaxis=:log)
-# Plots.xlabel!(p1,"Overall Tolerance σ")
-# Plots.ylabel!(p1,"Relative Error")
-# Plots.ylims!(p1,10.0^(-10),10.0^(-1))
-# Plots.yticks!(p1,range_values)
-# Plots.xticks!(p1,range_values)
-
-
-# p2 = Plots.plot(range_values,speed_up, title="Speed up", legend=false,xaxis=:log)
-# Plots.xlabel!(p2,"Overall Tolerance σ")
-# Plots.ylabel!(p2,"Speed up")
-# Plots.xticks!(p2,range_values)
-
-
-# p3 = Plots.plot(range_values,results_itn, title="Number of Iterations", legend=false,xaxis=:log)
-# Plots.xlabel!(p3,"Overall Tolerance σ")
-# Plots.ylabel!(p3,"Iterations")
-# Plots.xticks!(p3,range_values)
-
-######
-#Rel error between solutions x Matrix size and residual x iteration number
-
-# bigger_size = length(res_exact) > length(res_approx) ? length(res_approx) : length(res_exact)
-
-# Plots.plot(p1,p2,layout = (2,1))

@@ -19,6 +19,7 @@ using SpecialFunctions
 using SparseArrays
 using Plots
 using BenchmarkTools
+using LaTeXStrings
 #-
 
 #Inexact
@@ -142,11 +143,9 @@ rel_error_sol = Vector{Float64}()
 
 y_approx = similar(g)
 σ = 1e-6 # choosing the best tolerance in the test results
-bound_44_H,bound_right44,bound_left54,bound_right54,H_svalues,residuals_true,residuals_tildeelement,residuals_tilde_true,iterations = InexactGMRES.igmres_tolstudy(L,g,tol=σ)
+y, bound_right4_normal, H_singvalues, bound_left4_normal ,iterations = InexactGMRES.igmres_tolstudy(L,g,tol=σ)
 
-# res_exact = history[:resnorm]
-
-bound_left44 = map(x->abs(x), residuals_true .- residuals_tildeelement)
+y, bound_right4_sing, H_singvalues, bound_left4_sing, iterations =  InexactGMRES.igmres_tolstudy2(L,g,tol=σ)
 
 
 _,vals,_=svd(L_matrix)
@@ -154,10 +153,9 @@ smallest_sv =vals[length(vals)]
 
 prodct_res = map(x->InexactGMRES.rel_to_eps(x,σ),residuals_tildeelement[1:(length(residuals_tildeelement)-1)])
 
-theoric_bound_A = ((smallest_sv./iterations)*σ)./residuals_tildeelement[1:(length(residuals_tildeelement)-1)]
-
-theoric_bound_H = (H_svalues*σ)./residuals_tildeelement[1:(length(residuals_tildeelement)-1)]
-
+#theoric_bound_A = ((smallest_sv./iterations)*σ)./residuals_tildeelement[1:(length(residuals_tildeelement)-1)]
+applied_bound = map(x->InexactGMRES.rel_to_eps(norm(x),σ),bound_left4_normal[2:length(bound_left4_normal)])
+theoric_bound_H = map((x,y)->InexactGMRES.rel_to_eps(x,norm(y),σ),H_singvalues,bound_left4_sing[2:length(bound_left4_sing)])
 # df = DataFrame("Product Tolerance"=>prodct_res, "Theoric Bound"=>theoric_bound)
 # CSV.write("output_teste.csv",df)
 
@@ -165,16 +163,18 @@ theoric_bound_H = (H_svalues*σ)./residuals_tildeelement[1:(length(residuals_til
 
 
 
-p1 = Plots.scatter(1:iterations,[prodct_res theoric_bound_A theoric_bound_H], title="Product tolerance evolution",label=["Article bound" "Theoric bound with A"  "Theoric bound with H"],legend=:bottomright,yaxis=:log)
+p1 = Plots.scatter(1:iterations,[applied_bound theoric_bound_H], title=L"\textrm{Upper\ bound\ evolution\ for\ }||E_{k}||",label=[L"\ell_{k} = 1"  L"\ell_{k} = \frac{\sigma_{k}(H_{k})}{k}"],legend=:bottomright,yaxis=:log)
 Plots.xlabel!(p1,"Iteration number")
-Plots.ylabel!(p1,"Relative Error")
+Plots.ylabel!(p1,L"\textrm{Upper\ bound\ of\ }||E_{k}||")
 Plots.ylims!(p1,10.0^(-10),10.0^(-1))
 Plots.yticks!(p1,range_values)
 Plots.xticks!(p1,1:4:iterations)
 
-p2 = Plots.scatter(1:iterations,[norm(g).*bound_left44[1:length(bound_right44)] bound_right44 bound_44_H], title="Bound evolution",label=[L"r_{m} - \tilde{r}_{m}" L"\sum_{k=1}^{m} |η_{k}^{(m)}| \frac{ϵ}{\tilde{r}_{k-1}}" L"\sum_{k=1}^{m} |η_{k}^{(m)}| \frac{\sigma_{m}(H_{m})}{m} \frac{ϵ}{\tilde{r}_{k-1}}"],legend=:bottomright,yaxis=:log)
+s="\$||r_{k} - \tilde{r_{k}}||\$"
+
+p2 = Plots.scatter(1:iterations,[bound_left4_normal[2:iterations+1] norm(Lop).*bound_right4_normal], title=L"\textrm{Evolution\ of\ }||r_{k}-\tilde{r_{k}}||", label=[L"||r_{m} - \tilde{r}_{m}||" L"\sum_{k=1}^{m} |η_{k}^{(m)}|  \frac{||A||ϵ_{k}}{\tilde{r}_{k-1}}"],legend=:bottomright,yaxis=:log)
 Plots.xlabel!(p2,"Iteration number")
-Plots.ylabel!(p2,"Bounds")
+Plots.ylabel!(p2,L" \textrm{Upper\ bound\ in\ } ||r_{k} - \tilde{r_{k}}||")
 Plots.ylims!(p2,10.0^(-10),10.0^(-1))
 Plots.yticks!(p2,range_values)
 Plots.xticks!(p2,1:4:iterations)
