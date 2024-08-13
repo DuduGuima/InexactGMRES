@@ -10,7 +10,7 @@ Boundary Element Methods(BEM) are numerical approximations of Boundary Integral 
 
 Starting out with the PDE, we use Laplace's equation as an illustration. For the boundary problem, we'll start out with Dirichlet conditions:
 
-%FIXME: maybe talk a little bit more about the boundary?
+
 
 \begin{align}\label{eq:pde_model}
     \begin{split}
@@ -106,7 +106,9 @@ And we search for an approximate solution:
 
 With the basis functions $\mu_{h}^{j}={\mu_{h}^{j}|j=1, \dots, N}$ and ${\alpha_{j}|j=1, \dots, N}$ the unknown coefficients.
 
-The linear system can be obtained by three methods: Collocation, Galerkin's Method and least squares method.
+The linear system can be obtained by three methods: Collocation Method.
+
+%FIXME: Start with the quadrature and colocation points 
 
 \subsection{Collocation method}
 
@@ -118,36 +120,11 @@ Using \ref{eq:approx_sol} with the collocation points $x_{k}$ and \ref{eq:bem_sy
     \sum_{j=1}^{N} (A \mu_{h}^{j})(x_{k}) \alpha_{j} = f(x_{k}) \hspace{0.2in}, k=1,2, \dots, N
 \end{equation}
 
+%FIXME:
+
+
 Where, in this chapter, $A$ is the integral operator in \autoref{eq:bem_system}.
 
-\subsection{Galerkin's Method}
-
-In this method, we use \ref{eq:bem_system} with \ref{eq:approx_sol} and take the product of the equation with a set of test functions of a finite dimensional function space.
-
-If we use, for the test functions, the same set of basis functions in \ref{eq:approx_sol}, we have:
-
-\begin{equation}\label{eq:galerkin}
-    \sum_{j=1}^{N} \left<\mu_{h}^{k} ,A\mu_{h}^{j}\right> \alpha_{j} = \left< \mu_{h}^{k},f\right> \hspace{0.2in}, k = 1, \dots, N
-\end{equation}
-
-Where $<.,.>$ denotes the inner product in $\mathbf{L}^{2}(\Gamma) $:
-
-\begin{equation}
-    \left<f,g\right>:= \int_{\Gamma} \overline{f(x)} g(x) \,d \Gamma x
-\end{equation}
-
-
-\subsection{Least squares method}
-
-In this method we  minimize $A\mu_{h} - f$ in the $\mathbf{L}^{2}(\Gamma)$ norm, resulting in the equation:
-
-\begin{equation}
-    \sum_{j=1}^{N} \left< A \mu_{h}^{k},A \mu_{h}^{j} \right>\alpha_{j} = \left<A \mu_{h}^{k},f \right> \hspace{0.2in}, k=1, \dots, N
-\end{equation}
-
-With all integrals solved numerically.
-
-
-We then return to a linear system, as in \ref{eq:linear_systinit}.
+% We then return to a linear system, as in \ref{eq:linear_systinit}.
 
 

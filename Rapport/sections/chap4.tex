@@ -15,7 +15,7 @@ For the first two matrix-vector product examples, we choose a unit circle around
 %FIXME: Put a figure of the unite circle?
 
 For the complex problem, we choose a cavity scattering problem. The mesh uses a $.geo$ file
-avaiable in \cite{git_dudu} and a figure of the whole geometry can be seen in \ref{fig:cavity_fig}. We choose the incident wave's angle as $\frac{\pi}{4}$ rad.
+available in \cite{git_dudu} and a figure of the whole geometry can be seen in \ref{fig:cavity_fig}. We choose the incident wave's angle as $\frac{\pi}{4}$ rad.
 
 \begin{figure}[h!]
     \centering
@@ -38,13 +38,13 @@ Assuming the total field, $u_{t} = u_{i} + u $ satisfies a homogenous Neumann co
 
 Which gives us, with \ref{eq:sol_bem}, all the mathematical formulation we need to continue with the applications.
 
-Before going into each one of the results, we talk a little about both extremes of the performance evaluation in the inexact GMRES and matrix-vector problem.
+Before going into each one of the results, we talk a little about both extremes of the performance evaluation in the inexact GMRES and matrix-vector problem. How to give an upper bound to the acceleration we expect?
 
-If making the matrix-vector product's tolerance as 0 implies the use of the “original” matrix(remember we are always using hierarchical matrices, which are already a compression and therefore, not the orignal matrix), and then, an expected 0$\%$ speedup, how to give an upper bound to the acceleration we expect?
+If making the matrix-vector product's tolerance as 0 implies the use of the “original” matrix(remember using hierarchical matrices is already an approximation and therefore, not the original matrix), then we would expect 0$\%$ speedup.
 
 A good way to infer the maximum acceleration possible for the inexact products would be using only admissible rank 1 blocks and measuring its execution time.
 
-For doing that, we change the product tolerance to \textit{Infinity}, and the product will be realised with only rank-1 blocks, since it's programmed to get the first aproximation lower than its given tolerance.
+For doing that, we change the product tolerance to \textit{Infinity}, and the product will be realized with only rank-1 blocks, since it's programmed to get the first approximation lower than its given tolerance.
 
 Of course, such thing would not happen in a practical situation, but it gives an upper bound for the speedup we should expect.
 
@@ -67,7 +67,7 @@ This expression is equivalent to take $\ell_{k} = 1$ in \autoref{eq:boundE_final
 %FIXME: put the correct values here
 Setting our product tolerance to \textit{Infinity} and using only rank-1 blocks in the product, we got a () speedup.
 
-All results are contained in \ref{fig:laplace_results}, showing the evolution of the residual with the product tolerance aswell as the speedup to each of these values.
+All results are contained in \ref{fig:laplace_results}, showing the evolution of the residual with the product tolerance as well as the speedup to each of these values.
 
 \begin{figure}[h!]
     \centering
@@ -82,6 +82,9 @@ It should be noted that the acceleration is highly dependent on the compression 
 
 \section{Helmholtz's results}
 %FIXME: Values here
+
+\subsection{Matrix-vector product}
+
 For a maximum speedup bound in the product, the infinity tolerance brought a () speedup.
 
 For the unitary circle boundary the results can be seen in \ref{fig:Helmholtz_circle_results}, for both the matrix-vector product and an application of the Inexact GMRES with few iterations.
@@ -102,25 +105,43 @@ For the unitary circle boundary the results can be seen in \ref{fig:Helmholtz_ci
 
 \subsection{Cavity scattering}
 
-For the cavity, we start out by running smaller examples and study the bounds found of \autoref{chap:gmres}.
+For the cavity, we start out by running smaller examples and study the bounds found of \autoref{chap:gmres}, mainly \ref{fig:bound_44} and \ref{eq:boundE_final}. Satisfying these bounds is a guarantee that the residual measured at each $k-th$ iteration, $\tilde{r_{k}}$, is close to the exact one $r_{k} = \norm{b-Ax_{k}}$.
 
-First we view the variations of the norms \ref{eq:bound_E} and \ref{eq:boundE_final}, shown in \autoref{fig:bound_study}.
+%FIXME: Expliquer le setup numerique: qu est ce qu'on met la et qu est ce que ça veut dire
+To verify the bounds found for $\norm{E_{k}}$, the perturbation of the coefficient matrix $A$ at each iteration, found in \ref{eq:bound_E} and \ref{eq:boundE_final}, We start with simple run in a smaller $A$ as to focus on the residues. We use $\sigma = 10^{-6}$ as the overall algorithm's tolerance for the solution, i.e., the iterations stop as soon as $\frac{b - Ax_{k}}{b} \leq sigma$ and the same $A$ that will be used later for a larger resolution cavity problem.
+
+The plots are in \autoref{fig:bound_study}.
 
 \begin{figure}[h!]
     \centering
+    \begin{subfigure}[b]{0.45\linewidth}
+        \includesvg[width=\linewidth]{images/bounds_44_normal.svg}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.45\linewidth}
+        \includesvg[width=\linewidth]{images/bounds_44_normal.svg}
+    \end{subfigure}
+    \caption{Multiple Images}
+    \label{fig:multiple_figs}
+\end{figure}
+
+
+%FIXME: Mettre les deux figures une a cote de l autre
+\begin{figure}[h!]
+    \centering
     \includesvg[width=0.7\linewidth]{images/bound_study.svg}
-    \caption{Evolution for each of the pertubation's bounds found in \autoref{chap:gmres}.}
+    \caption{Evolution for each of the perturbation's bounds found in \autoref{chap:gmres}.}
     \label{fig:bound_study}
 \end{figure}
 
-% As we can see, choosing $\ell_{k} =1 $ in \ref{eq:boundE_final} gives a bigger tolerance to the product
+This figure shows how the different bounds of the perturbation's behave through iterations. Recalling that a greater tolerance means a bigger room to work with larger perturbations of $A$, what can make the inexact matrix-vector product faster.
+
 
 For the bounds in \ref{eq:borne_delta}, we have \autoref{fig:bound_44}.
 
 \begin{figure}[h!]
     \centering
     \includesvg[width=0.7\linewidth]{images/bounds_44.svg}
-    \caption{Evolution for each of the residual's bounds found in \autoref{chap:gmres}.}
+    \caption{Evolution for each of the residual's bounds found in \autoref{chap:gmres}. Blue represents the difference between true and inexact residuals of the GMRES's solution and the other two, bounds this difference must satisfy.}
     \label{fig:bound_44}
 \end{figure}
 
@@ -133,7 +154,7 @@ As for the speedup results, we have \autoref{fig:cavity_results}.
 \begin{figure}[h!]
     \centering
     \includesvg[width=0.6\linewidth]{images/fixed_size_helmholtz_cavity.svg}
-    \caption{Speedup witnessed in the application of the Inexact GMRES in a 50000x50000 matrix.}
+    \caption{Speedup witnessed in the application of the Inexact GMRES in a 50000×50000 matrix.}
     \label{fig:cavity_results}
 \end{figure}
 

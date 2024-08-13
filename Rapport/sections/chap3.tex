@@ -124,9 +124,9 @@ A tree $T_{I} = (V,E)$ with vertices $V$, edges $E$, with $S(t)={t^{'} \in V : (
 
 %FIXME: Cluster tree drawing
 
-To make a hierarchical structure for the \textit{blocks} of a matrix, we extend the notion of this partition tree to $I \times J$, which contains the indices of said matrix. Thus, we have in each of its leaves, the set $\mathfrak{L}(T_{I \times J})$, one admissible block of the partition. 
+To make a hierarchical structure for the \textit{blocks} of a matrix, we extend the notion of this partition tree to $I \times J$, which contains the indices of said matrix. Thus, we have in each of its leaves, the set $\mathfrak{L}(T_{I \times J})$, one admissible block of the partition.
 
-This cluster tree $T_{I \times J}$ for $I \times J$ is called a \textit{block cluster tree}. 
+This cluster tree $T_{I \times J}$ for $I \times J$ is called a \textit{block cluster tree}.
 
 
 The set of hierarchical matrices in $\mathbf{T}_{I \times J}$ with rank k for each block $A_{b}$ is defined in \ref{eq:matrix_hier}.
@@ -140,26 +140,51 @@ The set of hierarchical matrices in $\mathbf{T}_{I \times J}$ with rank k for ea
 
 In practice, \ref{alg:aca_method} works with $\epsilon$ given by the user during the assembling of the Hierarchical Matrix, and the compression acts in each of the admissible blocks that will then be represented as low rank matrices, shown in \ref{eq::outer_product}. We also store each one of the residuals obtained in the outer loop of \ref{alg:aca_method}.
 
-After giving a tolerance $\sigma$ for an inexact product, the algorithm, for each admissible block of the cluster tree, uses the right amount of columns of the outer product representation of the block as to reach the desired tolerance. The number of columns can be inferred by using the list of residuals of the ACA Method.
+After giving a tolerance $\sigma \leq \epsilon$ for an inexact product, the algorithm, for each admissible block of the cluster tree, uses the right amount of columns $k^{'}$ of the outer product representation of the block as to reach the desired tolerance. The number of columns can be inferred by using the list of residuals of the ACA Method. A brief explanation can be found in \ref{alg:inexact_product}.
 
-So, the different perturbations $E_{k}$ used in \ref{eq:new_projection} are the matrices that, when added to $A$, leave each admissible block with the right amount $k^{'}$ of columns in \ref{eq::outer_product}, so the product can be approximated by the tolerance $\sigma$. Calling the approximation of each block $B_{k}$ as $\tilde{B}_{k}$, we have \ref{eq:inexact_productblock}.
+\begin{algorithm}
+    \caption{Inexact Product algorithm.}\label{alg:inexact_product}
+    \begin{algorithmic}[1]
+        \State Be $\sigma \in \mathbb{R}$, $b \in P$ the tolerance for the product,  $A_{b}= \sum_{i=1}^{k}u_{i}v_{i}^{*}$ a restriction of $A$ to one of its admissible blocks and $r \in \mathbb{R^{k}}$ a vector with the residuals obtained in each step of the ACA.
+        \For{$k^{'} \in \{1, \dots, k \}$}
+        \State $\alpha \leftarrow r_{k^{'}}$
+        \If{$\alpha \leq \sigma$}
+        \State $\tilde{A_{b}}=\sum_{i=1}^{k^{'}}u_{i}v_{i}^{*}$
+        \EndIf
+        \EndFor
+
+    \end{algorithmic}
+\end{algorithm}
+
+Where, if no value smaller than $\sigma$ is found, we use all $k$ columns of each block to execute the product.
+
+So, the different perturbations $E_{k}$ used in \ref{eq:new_projection} are the matrices that, when added to $A$, leave each admissible block with the right amount $k^{'}$ of columns in \ref{eq::outer_product}, so the product can be approximated by the tolerance $\sigma$. Calling the approximation of each block $A_{b}$ as $\tilde{A_{b}}$, we have \ref{eq:inexact_productblock}.
 
 \begin{equation}\label{eq:inexact_productblock}
-    \frac{\norm{B_{k}q - \tilde{B}_{k}q }}{\norm{B_{k}q}} \leq \sigma, \hspace{0.3in} \tilde{B}_{k} = \sum_{i=1} ^{k^{'}} u_{i} v_{i} ^{*}
+    \frac{\norm{A_{b}q - \tilde{A_{b}}q }}{\norm{A_{b}q}} \leq \sigma, \hspace{0.3in} \tilde{A_{b}} = \sum_{i=1} ^{k^{'}} u_{i} v_{i} ^{*}
 \end{equation}
 
 
-And then, since the Fobrenius norm of the hierarchical matrix is \cite{hackbusch2015hierarchical}(Section 3.5.1):
+And then, since the Frobenius norm of the hierarchical matrix is \cite{hackbusch2015hierarchical}(Section 3.5.1):
 
 \begin{equation}
-    \norm{E_{k}}_{F}= \norm{\mathcal{A}_{k} - A} = \sqrt{\sum_{b \in P} \norm{B_{b} - \tilde{B}_{b}}_{F}^{2} }
+    \norm{E_{k}}_{F}= \norm{\mathcal{A}_{k} - A} = \sqrt{\sum_{b \in P} \norm{A_{b} - \tilde{A_{b}}}_{F}^{2} }
 \end{equation}
 
-But from the ACA Method \ref{eq:stop_ACA}, we know the method stops as to make each blocks' approximation inferior to $\epsilon B_{b}$, then:
+%this line is completely wrong, ill change it afterwards
+But from the ACA Method \ref{eq:stop_ACA}, we know the method stops as to make each block's successive approximation inferior to previous one by a factor of $\epsilon$, then:
 
 \begin{equation}
-    \norm{E_{k}}_{F} = \sqrt{\sum_{b \in P} \norm{B_{b} - \tilde{B}_{b}}_{F}^{2} } \leq \sqrt{\sum_{b\in P}\epsilon^{2}\norm{B_{b}}_{F}^{2}} = \epsilon \sqrt{\sum_{b \in P}\norm{B_{b}}_{F}^{2}}
-    = \epsilon \norm{A}_{F}
+    \norm{E_{k}}_{F} = \sqrt{\sum_{b \in P} \norm{A_{b} - \tilde{A_{b}}}_{F}^{2} } \leq \sqrt{\sum_{b\in P}\epsilon^{2}\norm{A_{b}}_{F}^{2}} = \epsilon \sqrt{\sum_{b \in P}\norm{A_{b}}_{F}^{2}}
+    \leq \epsilon \norm{A}_{F}
 \end{equation}
 
-So, with the use of the relative errors and the Frobenius norm, $\norm{E_{i}}$ appearing in the bounds of section 2.2 can be exchanged by $\epsilon_{i}$, the tolerance used for that specific approximation in the inexact products.
+
+%FIXME: Fix this, ||Ek|| != e_{k} ||Ek|| prop e_{k} ||A||
+% So, with the use of the relative errors and the Frobenius norm, $\norm{E_{i}}$ appearing in the bounds of section 2.2 can be exchanged by $\epsilon_{i}$, the tolerance used for that specific approximation in the inexact products.
+
+With this result, we can then substitute $\norm{E_{k}}$ appearing in the upper bounds of \autoref{chap:gmres}, using the fact that $E_{k}\propto \epsilon_{k} \norm{A}$, where $\epsilon_{k}$ is the tolerance used in the k-th inexact matrix-vector product.
+
+%FIXME: write sigma = ||(\tilde{B} b) - B b|| relate it to the block approximations
+
+
