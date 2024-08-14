@@ -47,7 +47,7 @@ A good way to infer an upper bound for the inexact products would be using only 
 
 Of course, such thing would not happen in a practical situation, but it gives an upper bound for the speedup we should expect, the maximum value $\frac{t_{exact}}{t_{inexact}}$ could attain.
 
-To assemble both hierarchical matrices, $A_{L}$ and $A_{H}$, we use an overall tolerance $\epsilon$ of $10^{-8}$. The results for the speed-ups and the relative residual for each product tolerance, $\sigma$, are in \autoref{fig:product_results}.
+To assemble both hierarchical matrices, $A_{L}$ and $A_{H}$, we use an overall tolerance $\epsilon$ of $10^{-8}$. The results for the speed-ups and the relative residual for each product tolerance, $\nu$, are in \autoref{fig:product_results}.
 
 \begin{figure}[h!]
     \centering
@@ -63,9 +63,7 @@ To assemble both hierarchical matrices, $A_{L}$ and $A_{H}$, we use an overall t
     \label{fig:product_results}
 \end{figure}
 
-We leave the identity curve in the plot on the right due to compare each inexact product's residual with the minimum accuracy that should be satisfied by its resulting vector.
-
-And since the matrix-product is accelerated, we should expect some speedup in the algorithm as well.
+We leave the identity curve in the plot on the right due to compare each inexact product's residual with the minimum accuracy that should be satisfied by its resulting vector. And since the matrix-product is accelerated, we should expect some speedup in the algorithm as well.
 
 It should be noted that the acceleration is highly dependent on the compression of the coefficient matrix. Matrices with low maximum rank of each block would not receive a big boost, since the number of columns used for each sub-block might not vary much with each different tolerance.
 
@@ -75,21 +73,21 @@ It should be noted that the acceleration is highly dependent on the compression 
 
 \subsection{Tolerance heuristic}
 
-We mentioned the inexact product's tolerance, $\sigma$, multiple times throughout this study, but haven't really disclosed \textbf{how} to obtain it. For the simple example of the matrix-vector product of before, we could simply define it as we please, but the situation changes for the Inexact GMRES. For the latter, everything needs to be made as to give a converging solution, specially to respect all bound found in the inexact session of \autoref{chap:gmres}.
+We mentioned the inexact product's tolerance, $\nu$, multiple times throughout this study, but haven't really disclosed \textbf{how} to obtain it. For the simple example of the matrix-vector product of before, we could simply define it as we please, but the situation changes for the Inexact GMRES. For the latter, everything needs to be made as to give a converging solution, specially to respect all bound found in the inexact session of \autoref{chap:gmres}.
 
 As told in \autoref{chap:hmatrices}, we adjust the inexact matrix-vector product with the number of columns used by each one of the subblocks during the operation.
 
-We use a heuristic to obtain, at each iteration $k$, a product tolerance $\sigma_{k}$ as to keep $||E_{k}||$ lower than the bounds in \autoref{eq:bound_E} or \autoref{eq:boundE_final}. Then $\sigma_{k}$ is later converted to an integer, the number of columns used by each admissible block, through algorithm \ref{alg:inexact_product}.
+We use a heuristic to obtain, at each iteration $k$, a product tolerance $\nu_{k}$ as to keep $||E_{k}||$ lower than the bounds in \autoref{eq:bound_E} or \autoref{eq:boundE_final}. Then $\nu_{k}$ is later converted to an integer, the number of columns used by each admissible block, through algorithm \ref{alg:inexact_product}.
 
 The following formula, used in \cite{wang2016inexactkryloviterationsrelaxation}, is equivalent to setting $\ell_{k}$ in \autoref{eq:boundE_final} as 1.
 
-\begin{equation}
-    \sigma_{k} = \min \left(\frac{\epsilon}{\min(\tilde{r}_{k-1},1)},1 \right)
+\begin{equation}\label{eq:gen_heuristics}
+    \nu_{k} = \min \left(\frac{\epsilon}{\min(\tilde{r}_{k-1},1)},1 \right)
 \end{equation}
 
 Where $\tilde{r}_{k-1}$ is the calculated residual of the previous $k-1-th$ iteration and $\epsilon$ the overall tolerance given to the inexact GMRES algorithm.
 
-Any of the other bounds showed in \autoref{chap:gmres} can be made by multiplying this expression by $\frac{\sigma_{k}(H_{k})}{k}$, $\frac{\sigma_{n}(A)}{k}$ or other values of $\ell_{k}$. A comparison between these different heuristics in the problem of a cavity scattering can be found below \ref{fig:bound_study}.
+Any of the other bounds showed in \autoref{chap:gmres} can be made by multiplying this expression by $\frac{\sigma_{k}(H_{k})}{k}$, $\frac{\sigma_{n}(A)}{k}$ or other values of $\ell_{k}$. A comparison between these different heuristics in the problem of a cavity scattering can be found below \ref{fig:bound44}.
 
 \subsection{Problem and results}
 
@@ -107,7 +105,7 @@ Assuming the total field, $u_{t} = u_{i} + u $ satisfies a homogenous Neumann co
 Which gives us, with \ref{eq:sol_bem}, all the mathematical formulation we need to continue with the application. The final linear system is:
 
 \begin{equation}
-    \left( \frac{I}{2} + D - ikS \right) x = g
+    \left( \frac{I}{2} + D - ikS \right) x = Ax =g
 \end{equation}
 
 With $g$ the application of $\partial_{n} u_{i}$ in each collocation point made for the discretization of the cavity.
@@ -124,11 +122,11 @@ available in \cite{git_dudu} and a figure of the whole geometry can be seen in \
 \end{figure}
 
 
-We begin by running smaller examples and study the bounds found of \autoref{chap:gmres}, mainly \ref{eq:bound_E} and \ref{eq:boundE_final}. Satisfying these bounds is a guarantee that the residual measured at each $k-th$ iteration, $\tilde{r_{k}}$, is close to the exact one $r_{k} =b-Ax_{k}$.
+We begin by running smaller examples and study the bounds found of \autoref{chap:gmres}, mainly \ref{eq:bound_E} and \ref{eq:boundE_final}. Satisfying these bounds is a guarantee that the residual measured at each k-th iteration, $\tilde{r_{k}}$, is close to the exact one $r_{k} =b-Ax_{k}$.
 
 %FIXME: Expliquer le setup numerique: qu est ce qu'on met la et qu est ce que ça veut dire
 
-This test run was executed with a smaller $A$, of dimensions $1650\times 1650$, and we use $\epsilon = 10^{-6}$ to assemble the hierarchical matrix as well as the algorithm's overall tolerance, i.e., the iterations stop as soon as $\frac{\norm{b - Ax_{k}}}{\norm{b}} \leq \epsilon$. The plots are in \autoref{fig:bound44}.
+This test run was executed with a smaller $A$, of dimensions $1650\times 1650$, and we use $\epsilon = 10^{-8}$ to assemble the hierarchical matrix as well as the algorithm's overall tolerance, i.e., the iterations stop as soon as $\frac{\norm{b - Ax_{k}}}{\norm{b}} \leq \epsilon$. The plots are in \autoref{fig:bound44}.
 
 \begin{figure}[h!]
     \centering
@@ -152,13 +150,15 @@ This test run was executed with a smaller $A$, of dimensions $1650\times 1650$, 
     \label{fig:bound44}
 \end{figure}
 
-This figure shows how the different bounds of the perturbation's behave through iterations. Recalling that a greater tolerance means a bigger room to work with larger perturbations of $A$, what can make the inexact matrix-vector product faster.
+The bigger picture in \autoref{fig:bound44} shows how the different bounds of the perturbation's behave through iterations. Recalling that a greater tolerance means a bigger room to work with larger perturbations of $A$, what can make the inexact matrix-vector product faster.
 
-As we can look from the bigger figure in \autoref{fig:bound44} , choosing $\ell_{k} = 1$ makes the inexact product's tolerance bigger, but it still follows the restriction in the bound \ref{eq:borne_delta}. A test with these different choices for the product tolerance did not show a big variation between the iterations necessary for each one of them.
+Even though choosing $\ell_{k} = 1$ makes the inexact product's tolerance bigger, i.e., “allows” for a more perturbed $A$, it stills follows the restriction in the bound \ref{eq:borne_delta}, as we can see on the left smaller plot. This shows bigger tolerances can still be used to achieve higher acceleration, while still maintaining the residual in a proper value.
 
-It could mean less strict tolerances can still lead to the algorithm's convergence, what can be used to accelerate the algorithm even further.
+The different product tolerances at each iteration did not result in big variations in the overall amount of iterations for the Inexact GMRES.
 
-As for the speedup results, we have \autoref{fig:cavity_results}.
+Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is assembled using the overall tolerance $\epsilon = 10^{-8}$. All product tolerances for each iteration, $\nu_{k}$, are obtained through the heuristic in \ref{eq:gen_heuristics}.
+
+For the first batch of tests, we fix $A$'s dimensions and change the overall tolerance passed to the algorithm. The speed-up results for this fixed size test are in \autoref{fig:cavity_results}.
 
 \begin{figure}[h!]
     \centering

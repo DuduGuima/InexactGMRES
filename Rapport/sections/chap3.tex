@@ -83,7 +83,7 @@ And then, for the Frobenius Norm, it can be show \cite{trefethen1998numerical}(S
 
 Going a little more in depth about the use of low-rank approximations in larger matrices that are not really low-rank themselves, we present the concepts of \textit{partition} and \textit{admissibility}.
 
-As mentioned in the first section of this chapter, even if  $A \in \mathbb{C}^{m x n} $ cannot be entirely approximated by a low-rank matrix, in the context we work with it can still be approximated in its sub-blocks. More specifically, in the sub-blocks of a proper partition $P$ of the matrix indices.
+As mentioned in the first section of this chapter, even if  $A \in \mathbb{C}^{m \times n} $ cannot be entirely approximated by a low-rank matrix, in the context we work with it can still be approximated in its sub-blocks. More specifically, in the sub-blocks of a proper partition $P$ of the matrix indices.
 
 Using $I = {1,2, \dots, m}$ and $J={1,2, \dots, n}$, a subset $P$ from the set of subsets of $I \times J$ is called a partition if:
 
@@ -140,15 +140,15 @@ The set of hierarchical matrices in $\mathbf{T}_{I \times J}$ with rank k for ea
 
 In practice, \ref{alg:aca_method} works with $\epsilon$ given by the user during the assembling of the Hierarchical Matrix, and the compression acts in each of the admissible blocks that will then be represented as low rank matrices, shown in \ref{eq::outer_product}. We also store each one of the residuals obtained in the outer loop of \ref{alg:aca_method}.
 
-After giving a tolerance $\sigma \leq \epsilon$ for an inexact product, the algorithm, for each admissible block of the cluster tree, uses the right amount of columns $k^{'}$ of the outer product representation of the block as to reach the desired tolerance. The number of columns can be inferred by using the list of residuals of the ACA Method. A brief explanation can be found in \ref{alg:inexact_product}.
+After giving a tolerance $\nu  \leq \epsilon$ for an inexact product, the algorithm, for each admissible block of the cluster tree, uses the right amount of columns $k^{'}$ of the outer product representation of the block as to reach the desired tolerance. The number of columns can be inferred by using the list of residuals of the ACA Method. A brief explanation can be found in \ref{alg:inexact_product}.
 
 \begin{algorithm}
     \caption{Inexact Product algorithm.}\label{alg:inexact_product}
     \begin{algorithmic}[1]
-        \State Be $\sigma \in \mathbb{R}$, $b \in P$ the tolerance for the product,  $A_{b}= \sum_{i=1}^{k}u_{i}v_{i}^{*}$ a restriction of $A$ to one of its admissible blocks and $r \in \mathbb{R^{k}}$ a vector with the residuals obtained in each step of the ACA.
+        \State Be $\nu \in \mathbb{R}$, $b \in P$ the tolerance for the product,  $A_{b}= \sum_{i=1}^{k}u_{i}v_{i}^{*}$ a restriction of $A$ to one of its admissible blocks and $r \in \mathbb{R^{k}}$ a vector with the residuals obtained in each step of the ACA.
         \For{$k^{'} \in \{1, \dots, k \}$}
         \State $\alpha \leftarrow r_{k^{'}}$
-        \If{$\alpha \leq \sigma$}
+        \If{$\alpha \leq \nu$}
         \State $\tilde{A_{b}}=\sum_{i=1}^{k^{'}}u_{i}v_{i}^{*}$
         \EndIf
         \EndFor
@@ -156,12 +156,12 @@ After giving a tolerance $\sigma \leq \epsilon$ for an inexact product, the algo
     \end{algorithmic}
 \end{algorithm}
 
-Where, if no value smaller than $\sigma$ is found, we use all $k$ columns of each block to execute the product.
+Where, if no value smaller than $\nu$ is found, we use all $k$ columns of each block to execute the product.
 
-So, the different perturbations $E_{k}$ used in \ref{eq:new_projection} are the matrices that, when added to $A$, leave each admissible block with the right amount $k^{'}$ of columns in \ref{eq::outer_product}, so the product can be approximated by the tolerance $\sigma$. Calling the approximation of each block $A_{b}$ as $\tilde{A_{b}}$, we have \ref{eq:inexact_productblock}.
+So, the different perturbations $E_{k}$ used in \ref{eq:new_projection} are the matrices that, when added to $A$, leave each admissible block with the right amount $k^{'}$ of columns in \ref{eq::outer_product}, so the product can be approximated by the tolerance $\nu$. Calling the approximation of each block $A_{b}$ as $\tilde{A_{b}}$, we have \ref{eq:inexact_productblock}.
 
 \begin{equation}\label{eq:inexact_productblock}
-    \frac{\norm{A_{b}q - \tilde{A_{b}}q }}{\norm{A_{b}q}} \leq \sigma, \hspace{0.3in} \tilde{A_{b}} = \sum_{i=1} ^{k^{'}} u_{i} v_{i} ^{*}
+    \frac{\norm{A_{b}q - \tilde{A_{b}}q }}{\norm{A_{b}q}} \leq \nu, \hspace{0.3in} \tilde{A_{b}} = \sum_{i=1} ^{k^{'}} u_{i} v_{i} ^{*}
 \end{equation}
 
 

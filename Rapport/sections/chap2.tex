@@ -132,14 +132,14 @@ It can be shown that $g_{m}$ also contains the residual of each iteration \cite{
 
 \begin{proof}
 
-    Since it's an $m+1$ column vector, we have, with $\Omega_{m}$ being the necessary Givens's Rotations to make $H_{m}$ upper triangular \ref{eq:proof_residual}.
+    Since it's an $m+1$ column vector, we have, with $\Xi_{m}$ being the necessary Givens's Rotations to make $H_{m}$ upper triangular \ref{eq:proof_residual}.
 
 
     \begin{equation}\label{eq:proof_residual}
-        \norm{b - Ax_{m}} = \norm{Q_{m+1}^{t}(\beta e_{1} - H_{m}y_{m})} = \norm{\beta e_{1} - H_{m}y_{m}} = \norm{\Omega_{m}^{t} (g_{m} - R_{m}y_{m})}
+        \norm{b - Ax_{m}} = \norm{Q_{m+1}^{t}(\beta e_{1} - H_{m}y_{m})} = \norm{\beta e_{1} - H_{m}y_{m}} = \norm{\Xi_{m}^{t} (g_{m} - R_{m}y_{m})}
     \end{equation}
 
-    And since $\Omega_{m}^{t}$ is a rotation matrix, its unitary and $\norm{\Omega_{m}^{t} (g_{m} - R_{m}y_{m})}=\norm{g_{m} - R_{m}y_{m}}$.
+    And since $\Xi_{m}^{t}$ is a rotation matrix, its unitary and $\norm{\Xi_{m}^{t} (g_{m} - R_{m}y_{m})}=\norm{g_{m} - R_{m}y_{m}}$.
 
     For any vector $y$, as the last line in \ref{eq:proof_residual} is field with zeros:
 
@@ -220,11 +220,11 @@ We use the fact that $q_{i}$ are orthonormal between the last two lines. The bou
 
 The problem is $y_{k}$ is only found after the construction of $E_{k}$, so an upper bound must be also found for its value.
 
-We consider now $\Omega_{k} =G(k,k+1) G(k-1,k) \dots G(1,2)$, where each $G$ represents a Givens rotation as shown in \ref{eq:givens}. So $\Omega_{k}$ is the unitary matrix(since all Givens rotations are themselves unitary) that transforms $H_{k}$ into an upper triangular matrix.
+We consider now $\Xi_{k} =G(k,k+1) G(k-1,k) \dots G(1,2)$, where each $G$ represents a Givens rotation as shown in \ref{eq:givens}. So $\Xi_{k}$ is the unitary matrix(since all Givens rotations are themselves unitary) that transforms $H_{k}$ into an upper triangular matrix.
 
-Since $\norm{H_{k}y - \beta e_{1}}=\norm{\Omega_{k}(H_{k}y - \beta e_{1})} $, the application of $\Omega_{k}$ in the norm $ \norm{H_{k}y - e_{1}\beta} $ transforms the problem into a minimization of a triangular linear system with non-zero diagonal elements in its coefficient matrix:
+Since $\norm{H_{k}y - \beta e_{1}}=\norm{\Xi_{k}(H_{k}y - \beta e_{1})} $, the application of $\Xi_{k}$ in the norm $ \norm{H_{k}y - e_{1}\beta} $ transforms the problem into a minimization of a triangular linear system with non-zero diagonal elements in its coefficient matrix:
 \begin{equation}
-    y_{k} =\argmin_{y \in \mathbb{C}^{k}} \norm{\Omega_{k}H_{k}y_{k} - \Omega_{k}e_{1}\beta}= \argmin_{y \in \mathbb{C}^{k}} \norm{R_{k}y_{k} - g_{k}}
+    y_{k} =\argmin_{y \in \mathbb{C}^{k}} \norm{\Xi_{k}H_{k}y_{k} - \Xi_{k}e_{1}\beta}= \argmin_{y \in \mathbb{C}^{k}} \norm{R_{k}y_{k} - g_{k}}
 \end{equation}
 
 
@@ -297,4 +297,4 @@ Giving another way to evalue $\ell_{k}$ without the need of calculating $\sigma_
 It should also be noted that $\tilde{r}_{k}$, after the transformation of $H_{k}$ into an upper triangular matrix, is also found in the $i+1$-th element of $g_{m}$ in \ref{eq:y_limit_start}. The demonstration follow the same proof as for $g_{m}$ in \ref{eq:after_givens}, given that $y_{m}$ is a solution to a linear system that involves an upper triangular matrix.
 
 The remaining theory in this report also explains the basics of Hierarchical Matrices, the structure that will be used to compress the matrices used in the algorithm, since $A$ appears in the discretization of integral operators and uses large dimensions.
-It's also though these structures each $\mathcal{A}_{k}$ will be made. As it will be explained later, at each iteration an $E_{k}$ will be indirectly constructed during the inexact product $\mathcal{A}_{k}q$, mainly using the residues that appear during this structure's construction, in the iterations of the $ACA Method$.
+It's also though these structures each $\mathcal{A}_{k}$ will be made. As it will be explained later, at each iteration an $E_{k}$ will be indirectly constructed during the inexact product $\mathcal{A}_{k}q$, mainly using the residues that appear during this structure's construction, in the iterations of the \textit{ACA Method}.
