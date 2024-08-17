@@ -54,7 +54,7 @@ circle = Inti.parametric_curve(0.0,1.0;labels=["circle"]) do s
     return SVector(cos(2π*s[1]),sin(2π*s[1]))
 end
 Γ = circle
-
+println("Current progress: ",repeat(" ",32),"0%")
 for i in eachindex(range_values)
     ## Physical parameters
     λ = range_values[i]
@@ -95,8 +95,11 @@ for i in eachindex(range_values)
     H_iprod = HMatrices.ITerm(L, 0.0)
     H_iprod.rtol=σ
 
-    benchr_approx = @benchmark mul!($y_approx, $H_iprod, $b, 1, 0)
-    benchr_exact = @benchmark mul!($y_exact, $H_iprod.hmatrix, $b, 1, 0)
+    α=1
+    β=0
+
+    benchr_approx = @benchmark mul!($y_approx, $H_iprod, $b, $α, $β)
+    benchr_exact = @benchmark mul!($y_exact, $H_iprod.hmatrix, $b, $α, $β)
     
 
     results_exact[i] = minimum(benchr_exact).time
@@ -104,7 +107,9 @@ for i in eachindex(range_values)
 
     
     push!(rel_error_sol, norm(y_exact - y_approx) / norm(y_exact))
-    println("Current % of measurement: ",100*(i/length(range_values)))
+    marker = i/length(range_values)
+    #println("Current % of measurement: ",100*(i/length(range_values)))
+    println("Current progress: ",repeat("|",Int(round(marker*30))),repeat(" ",32-Int(round(marker*30))),round(100*marker,digits=1),"%")
 
 end
 # mul!(y_approx, H_iprod.hmatrix, g, 1, 0)

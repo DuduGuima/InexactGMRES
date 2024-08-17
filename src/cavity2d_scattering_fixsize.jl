@@ -26,7 +26,7 @@ BLAS.set_num_threads(1)
 
 
 ## Physical parameters
-λ = 0.05#
+λ = 0.0025#
 k = 2π / λ # wavenumber
 θ = π / 4 # angle of incident wave
 
@@ -147,7 +147,7 @@ H_iprod = HMatrices.ITerm(L, 0.0)
 # b5 = @benchmark mul!($y_approx, $H_iprod, $g, 1, 0)
 
 ##
-
+println("Current progress: ",repeat(" ",32),"0%")
 for i=1:length(range_values)
     benchr_approx = @benchmark igmres($L,$g,tol=range_values[$i]) 
     benchr_exact = @benchmark InexactGMRES.test_gmres($L,$g,tol=range_values[$i])
@@ -170,6 +170,9 @@ for i=1:length(range_values)
 
     results_itn[i] = it
     push!(rel_error_sol, norm(L*y_approx - g)/norm(g))
+    marker = i/length(range_values)
+    #println("Current % of measurement: ",100*(i/length(range_values)))
+    println("Current progress: ",repeat("|",Int(round(marker*30))),repeat(" ",32-Int(round(marker*30))),round(100*marker,digits=1),"%")
 end
 
 

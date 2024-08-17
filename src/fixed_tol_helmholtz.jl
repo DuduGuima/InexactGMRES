@@ -48,7 +48,7 @@ function helmholtz_custom(target, source, k)
 end
 
 
-
+printl("Current progress: ",repeat(" ",32),"0%")
 for i in eachindex(range_values)
     ## Physical parameters
     λ = range_values[i]
@@ -104,8 +104,9 @@ for i in eachindex(range_values)
 
     
     push!(rel_error_sol, norm(y_exact - y_approx) / norm(y_exact))
-    println("Current % of measurement: ",100*(i/length(range_values)))
-
+    marker = i/length(range_values)
+    #println("Current % of measurement: ",100*(i/length(range_values)))
+    println("Current progress: ",repeat("|",Int(round(marker*30))),repeat(" ",32-Int(round(marker*30))),round(100*marker,digits=1),"%")
 end
 # mul!(y_approx, H_iprod.hmatrix, g, 1, 0)
 # mul!(y_exact, L, g, 1, 0)
