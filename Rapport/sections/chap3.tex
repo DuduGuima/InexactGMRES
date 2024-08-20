@@ -113,7 +113,13 @@ It's obvious searching the entire set of partitions $P$ of $I \times J$ is unfea
 
 The result of the recursive division of a set results in a hierarchy of partitions that can be represented as a \textit{cluster tree}.
 
-A tree $T_{I} = (V,E)$ with vertices $V$, edges $E$, with $S(t)={t^{'} \in V : (t,t^{'})\in E}$ the set of sons of $t$ and $\mathfrak{L}(T_{I})$ the set of leaves of $T_{I}$ is called a cluster tree of a set $I\subset \mathbb{N}$ if it follows the conditions:
+We denote this cluster tree associated with the subdivisions of $I$ as $T_{I} = (V,E)$, with vertices $t \in V$ and edges $E$. The set $S(t)={t^{'} \in V : (t,t^{'})\in E}$ is the set of sons of $t$. By $\mathfrak{L}(T_{I})$, we denote the set of leaves of $T_{I}$:
+
+\begin{equation}
+    \mathfrak{L}(T_{I}) = \{ t : S(t) = \emptyset \}
+\end{equation}
+
+The conditions such tree $T_{I}$ must follow are:
 
 \begin{enumerate}
     \item $I$ is the root of $T_{I}$;
@@ -121,8 +127,131 @@ A tree $T_{I} = (V,E)$ with vertices $V$, edges $E$, with $S(t)={t^{'} \in V : (
     \item the degree $\deg t := |S(t)| \geq 2$ of each vertex $t \in V \setminus \mathfrak{L}(T_{I})$ is bounded from below.
 \end{enumerate}
 
+As an illustration of the concept, we draw the balanced binary cluster tree of the set $I=\{1,2,3,4,5,6,7,8\}$ in \autoref{fig:cluster_tree}.
 
-%FIXME: Cluster tree drawing
+\begin{figure}[!h]
+
+    \centering
+    \begin{tikzpicture}\label{tree:cluster}
+        \tikzstyle{level 1}=[sibling distance=30mm]
+        \tikzstyle{level 2}=[sibling distance=10mm]
+        \tikzstyle{level 3}=[sibling distance=5mm]
+        \tikzstyle{level 4}=[sibling distance=5mm]
+        \node(root){I = \{1,2,3,4,5,6,7,8\}}
+        child
+            {
+                node{\{1,2,3,4\}}
+                child
+                    {
+                        node{\{1,2\}}
+                        child{node{\{1\}}}
+                        child{node{\{2\}}}
+                    }
+                child
+                    {
+                        node{\{3,4\}}
+                        child{node{\{3\}}}
+                        child{node{\{4\}}}
+                    }
+            }
+        child
+            {
+                node(level1){\{5,6,7,8\}}
+                child
+                    {
+                        node{\{5,6\}}
+                        child{node{\{5\}}}
+                        child{node{\{6\}}}
+                    }
+                child
+                    {
+                        node(level2){\{7,8\}}
+                        child{node{\{7\}}}
+                        child{node(level3){\{8\}}}
+                    }
+            };
+
+        \coordinate (right) at ($(current bounding box.east) + (1,0)$);
+        \node at (root -| right) {Level 0};
+        \node at (level1 -| right) {Level 1};
+        \node at (level2 -| right) {Level 2};
+        \node at (level3 -| right){Level 3};
+    \end{tikzpicture}
+
+    \caption{Example tree of the set $I=\{1,2,3,4,5,6,7,8\}$.}
+    \label{fig:cluster_tree}
+\end{figure}
+
+For clarification, we also show how a vector $x \in \mathbb{R}^{I}$ can be structured into a \textit{block vector} with the use of a cluster tree, using a partition $P=\{t_{1}, t_{2}, t_{3}, t_{4}\}$ of $I$, with the same definition as in \ref{eq:union_partition}, i.e., $I = \bigcup_{t \in P} t$.
+
+With $t_{1} = \{1\}, t_{2} = \{2\}, t_{3}=\{3,4\}$ and $t_{4}=\{5,6,7,8\}$ we have the following block structure for $x=\{x_{1},x_{2},x_{3},x_{4},x_{5},x_{6},x_{7},x_{8}\}$:
+
+\begin{equation}
+    \begin{tikzpicture}[
+            grow=right,
+            level 1/.style={level distance = 9mm},
+            level 2/.style={level distance = 6.5mm},
+            level 3/.style={level distance = 9mm},
+            level 4/.style={level distance = 17mm}
+        ]
+        \node {$x^{t} = $}
+        child{node[rectangle,draw]{$x_{1}$} edge from parent[draw=none]
+        child{node[rectangle,draw]{$x_{2}$}edge from parent[draw=none]
+        child{
+        node[rectangle,draw]{$x_{3}$ $x_{4}$} edge from parent[draw=none]
+        child{
+        node[rectangle,draw]{$x_{5}$ $x_{6}$ $x_{7}$ $x_{8}$} edge from parent[draw=none]
+        }
+        }
+        }
+        }
+        ;
+    \end{tikzpicture}
+\end{equation}
+
+That would be represented by the subtree $T_{I} ^{'} \subset T_{I}$ with same root $I$:
+
+\begin{figure}[!h]
+
+    \centering
+    \begin{tikzpicture}\label{tree:cluster}
+        \tikzstyle{level 1}=[sibling distance=30mm]
+        \tikzstyle{level 2}=[sibling distance=10mm]
+        \tikzstyle{level 3}=[sibling distance=5mm]
+        \tikzstyle{level 4}=[sibling distance=5mm]
+        \node(root){I = \{1,2,3,4,5,6,7,8\}}
+        child
+            {
+                node{\{1,2,3,4\}}
+                child
+                    {
+                        node{\{1,2\}}
+                        child{node{\{1\}}}
+                        child{node(level3){\{2\}}}
+                    }
+                child
+                    {
+                        node(level2){\{3,4\}}
+                    }
+            }
+        child
+            {
+                node(level1){\{5,6,7,8\}}       
+            };
+
+        \coordinate (right) at ($(current bounding box.east) + (1,0)$);
+        \node at (root -| right) {Level 0};
+        \node at (level1 -| right) {Level 1};
+        \node at (level2 -| right) {Level 2};
+        \node at (level3 -| right){Level 3};
+    \end{tikzpicture}
+
+    \caption{test.}
+    \label{fig:xcluster_tree}
+\end{figure}
+
+Where its leaves, as shown above, coincide with the partition $P$ of $x$ in blocks. It can be stated \cite{hackbusch2015hierarchical} that any partition of $I$ can be described as a leaf set of a tree $T^{'}_{I} \in T_{I}$, just as any subtree $T_{I}^{'}$ can be associated with a partition $P \in I$.
+%FIXME: fix the trees structure and distance between simblings, its weird...
 
 To make a hierarchical structure for the \textit{blocks} of a matrix, we extend the notion of this partition tree to $I \times J$, which contains the indices of said matrix. Thus, we have in each of its leaves, the set $\mathfrak{L}(T_{I \times J})$, one admissible block of the partition.
 
