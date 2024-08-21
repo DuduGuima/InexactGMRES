@@ -148,18 +148,18 @@ This test run was executed with a smaller $A$, of dimensions $1650\times 1650$, 
 
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.6\linewidth}
+    \begin{subfigure}[b]{0.5\linewidth}
         \includesvg[width=\linewidth]{images/bound_study.svg}
         %\label{fig:bound44_norm}
         \caption{Evolution for the upper bound of $||E_{k}||$, using $\ell_{k}=1$ and $\ell_{k}=\frac{\sigma_{k}(H_{k})}{k}$.}
     \end{subfigure}
 
-    \begin{subfigure}[b]{0.4\linewidth}
+    \begin{subfigure}[b]{0.3\linewidth}
         \includesvg[width=\linewidth]{images/bounds_44_normal.svg}
         %\label{fig:bound44_norm}
         \caption{Evolution of the upper bound in $\norm{r_{k} - \tilde{r_{k}}}$ for the case $\ell_{k}=1$.}
     \end{subfigure}
-    \begin{subfigure}[b]{0.4\linewidth}
+    \begin{subfigure}[b]{0.3\linewidth}
         \includesvg[width=\linewidth]{images/bounds_44_sing.svg}
         %\label{fig:bound44_sing}
         \caption{Evolution of the upper bound in $\norm{r_{k} - \tilde{r_{k}}}$ for the case $\ell_{k}=\frac{\sigma_{k}(H_{k})}{k}$.}
@@ -194,7 +194,7 @@ Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is
 
 As we can see, the speed-up did not cause a worse relative residual for the solution, always keeping it under the overall tolerance $\epsilon$ given for the algorithm. But, we can see the existence of a trade-off between tolerance and speed-up: lower precision in the algorithm may lead to a slower execution. The different number of iterations needed for each run, also in \autoref{fig:cavity_results}, shows that the slower results in the lower tolerance rate are not result of a larger number iterations, but maybe heavier ones in comparison to the exact algorithm.
 
-For the last numerical setup, we again assemble $A$ with $10^{-8}$ tolerance, but now its dimensions will change while keeping the overall tolerance passed to the algorithm, $\epsilon$, fixed at $10^{-6}$.
+For the last numerical setup, we again assemble $A$ with $10^{-8}$ tolerance, but now its dimensions will change while keeping the overall tolerance passed to the algorithm, $\epsilon$, fixed at $10^{-4}$.
 
 \begin{figure}[h!]
     \centering
@@ -210,6 +210,6 @@ For the last numerical setup, we again assemble $A$ with $10^{-8}$ tolerance, bu
         \includesvg[width=\linewidth]{images/cavity_fixtol_iterations.svg}
         \caption{Number of iterations for the fixed tolerance cavity scattering problem.}
     \end{subfigure}
-    \caption{Speed-up, relative residual and amount of iterations results for the Inexact GMRES algorithm in the cavity scattering problem. The hierarchical matrix $A$ was assembled with $10^{-8}$ tolerance and used a overall tolerance $\epsilon = 10^{-6}$ to the algorithm.}
+    \caption{Speed-up, relative residual and amount of iterations results for the Inexact GMRES algorithm in the cavity scattering problem. The hierarchical matrix $A$ was assembled with $10^{-8}$ tolerance and used a overall tolerance $\epsilon = 10^{-4}$ to the algorithm.}
     \label{fig:cavity_resultsfixtol}
 \end{figure}

@@ -1,4 +1,3 @@
-
 \section{Low-rank Matrices}
 
 In practice, most matrices are large, so storing each element is not efficient, or even possible for some physical setups. If $A \in \mathbb{C}^{n\times m}$ has a rank \textit{k} such that $k \leq m$ and $k(n+m) < n*m$ (\textit{A} is low-rank), \textit{A} can be written in outer product form, as a product between the matrices $U \in \mathbb{C}^{n\times k} $ and $V \in \mathbb{C}^{m\times k}$, which can be seen in \ref{eq::outer_product}, where $u_{i}, v_{i}$ are the column vectors of \textit{U} and \textit{V}.
@@ -133,10 +132,9 @@ As an illustration of the concept, we draw the balanced binary cluster tree of t
 
     \centering
     \begin{tikzpicture}\label{tree:cluster}
-        \tikzstyle{level 1}=[sibling distance=30mm]
-        \tikzstyle{level 2}=[sibling distance=10mm]
-        \tikzstyle{level 3}=[sibling distance=5mm]
-        \tikzstyle{level 4}=[sibling distance=5mm]
+        \tikzstyle{level 1}=[sibling distance=35mm]
+        \tikzstyle{level 2}=[sibling distance=20mm]
+        \tikzstyle{level 3}=[sibling distance=8mm]
         \node(root){I = \{1,2,3,4,5,6,7,8\}}
         child
             {
@@ -196,15 +194,15 @@ With $t_{1} = \{1\}, t_{2} = \{2\}, t_{3}=\{3,4\}$ and $t_{4}=\{5,6,7,8\}$ we ha
         ]
         \node {$x^{t} = $}
         child{node[rectangle,draw]{$x_{1}$} edge from parent[draw=none]
-        child{node[rectangle,draw]{$x_{2}$}edge from parent[draw=none]
-        child{
-        node[rectangle,draw]{$x_{3}$ $x_{4}$} edge from parent[draw=none]
-        child{
-        node[rectangle,draw]{$x_{5}$ $x_{6}$ $x_{7}$ $x_{8}$} edge from parent[draw=none]
-        }
-        }
-        }
-        }
+                child{node[rectangle,draw]{$x_{2}$}edge from parent[draw=none]
+                        child{
+                                node[rectangle,draw]{$x_{3}$ $x_{4}$} edge from parent[draw=none]
+                                child{
+                                        node[rectangle,draw]{$x_{5}$ $x_{6}$ $x_{7}$ $x_{8}$} edge from parent[draw=none]
+                                    }
+                            }
+                    }
+            }
         ;
     \end{tikzpicture}
 \end{equation}
@@ -214,11 +212,17 @@ That would be represented by the subtree $T_{I} ^{'} \subset T_{I}$ with same ro
 \begin{figure}[!h]
 
     \centering
-    \begin{tikzpicture}\label{tree:cluster}
-        \tikzstyle{level 1}=[sibling distance=30mm]
-        \tikzstyle{level 2}=[sibling distance=10mm]
-        \tikzstyle{level 3}=[sibling distance=5mm]
-        \tikzstyle{level 4}=[sibling distance=5mm]
+    \begin{tikzpicture}
+        [
+            level 1/.style={sibling distance = 30mm},
+            level 2/.style={sibling distance = 12mm},
+            level 3/.style={sibling distance = 10mm},
+            level 4/.style={sibling distance = 5mm}
+        ]
+        % \tikzstyle{level 1}=[sibling distance=30mm]
+        % \tikzstyle{level 2}=[sibling distance=10mm]
+        % \tikzstyle{level 3}=[sibling distance=5mm]
+        % \tikzstyle{level 4}=[sibling distance=5mm]
         \node(root){I = \{1,2,3,4,5,6,7,8\}}
         child
             {
@@ -236,7 +240,7 @@ That would be represented by the subtree $T_{I} ^{'} \subset T_{I}$ with same ro
             }
         child
             {
-                node(level1){\{5,6,7,8\}}       
+                node(level1){\{5,6,7,8\}}
             };
 
         \coordinate (right) at ($(current bounding box.east) + (1,0)$);
@@ -246,22 +250,45 @@ That would be represented by the subtree $T_{I} ^{'} \subset T_{I}$ with same ro
         \node at (level3 -| right){Level 3};
     \end{tikzpicture}
 
-    \caption{test.}
+    \caption{Cluster tree $T_{I}^{'}$ containing the partition of $x$.}
     \label{fig:xcluster_tree}
 \end{figure}
 
 Where its leaves, as shown above, coincide with the partition $P$ of $x$ in blocks. It can be stated \cite{hackbusch2015hierarchical} that any partition of $I$ can be described as a leaf set of a tree $T^{'}_{I} \in T_{I}$, just as any subtree $T_{I}^{'}$ can be associated with a partition $P \in I$.
-%FIXME: fix the trees structure and distance between simblings, its weird...
 
-To make a hierarchical structure for the \textit{blocks} of a matrix, we extend the notion of this partition tree to $I \times J$, which contains the indices of said matrix. Thus, we have in each of its leaves, the set $\mathfrak{L}(T_{I \times J})$, one admissible block of the partition.
+To make a hierarchical structure for the \textit{blocks} of a matrix, we extend the notion of this partition tree to $I \times J$, which contains the indices of said matrix, but without constructing it directly, since the process would be too heavy. Instead, we build $T_{I \times J}$ from $T_{I}$ and $T_{J}$, using the following method:
 
-This cluster tree $T_{I \times J}$ for $I \times J$ is called a \textit{block cluster tree}.
+\begin{enumerate}
+    \item $I \times J$ is the root.
+    \item The recursion begins at the block $b = t \times s$, with $t = I$ and $s = J$.
+          \begin{enumerate}
+              \item The set of sons of $b = t \times s$ is defined as:
+                    $$
+                        S(b) =
+                        \begin{cases}
+                            \emptyset \hspace{4mm} \text{ if } S_{T_{I}}(t) = \emptyset \text{ or } S_{T_{J}}(s)=\emptyset, \\
+                            \{t^{'}\times s^{'}:t^{'}\in S_{T_{I}}(t), s^{'}\in S_{T_{J}}(s)\}  \text{ otherwise.}
+                        \end{cases}
+                    $$
+              \item Apply (a) for all sons of $b$, as long as $S(b) \neq \emptyset$.
+          \end{enumerate}
+\end{enumerate}
+
+With this new structure, a new $P$ is called a partition of $I \times J$ if:
+
+\begin{itemize}
+    \item $P \subset T_{I \times J}$
+    \item $b, b^{'} \in P$ \hspace{1mm} $\Rightarrow$ \hspace{1mm} $(b=b^{'} \text{ or }b\cap b^{'}=\emptyset )$
+    \item $\bigcup_{b\in P} = I \times J$
+\end{itemize}
+
+And thus, we have in each of the leaves of $T_{I \times J}$, the set $\mathfrak{L}(T_{I \times J})$, one admissible block of the partition. This tree $T_{I \times J}$ for $I \times J$ is called a \textit{block cluster tree}.
 
 
-The set of hierarchical matrices in $\mathbf{T}_{I \times J}$ with rank k for each block $A_{b}$ is defined in \ref{eq:matrix_hier}.
+We can now define the set of hierarchical matrices using $T_{I \times J}$ to specify the partitions of its indices. The set $\mathfrak{H}(T_{I \times J},j)$ of hierarchical matrices associated with a partition in $T_{I \times J}$ and with rank k for each block $A_{b}$ is :
 
 \begin{equation}\label{eq:matrix_hier}
-    \mathfrak{H}(\mathbf{T}_{I \times J},k) = \left\{  A\in \mathbb{C}^{I\times J} : rankA_{b} \leq k, \forall b \in P \right\}
+    \mathfrak{H}(T_{I \times J},k) = \left\{  A\in \mathbb{C}^{I\times J} : \text{rank}(A_{b}) \leq k, \forall b \in P \right\}
 \end{equation}
 
 %FIXME: HMatrix figure right here, make things more visual
