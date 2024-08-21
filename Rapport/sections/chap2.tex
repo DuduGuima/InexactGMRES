@@ -152,6 +152,8 @@ It can be shown that $g_{m}$ also contains the residual of each iteration \cite{
 
 \section{Inexact GMRES}
 
+
+
 The most expensive part in the code is in the matrix-vector product \ref{alg:arnoldi}, line 4. Therefore, one approach to accelerate the iterations involves an approximation of $Aq $, instead of using the exact product, as shown in \ref{eq:aprox_Aq}.
 
 \begin{equation}\label{eq:aprox_Aq}
@@ -182,7 +184,14 @@ Now the subspace spawn by the vectors of $Q_{k}$ is not the Krylov's subspace $\
 
 For $k=1$, we have that $q_{2}$ is a combination of the vectors $\mathcal{A}_{1}b$ and $b$ (since $q_{1}$ = b). For $k=2$ we see that $q_{3}$ is a combination that involves $\mathcal{A}_{2} \mathcal{A}_{1}b$ and so forth.
 
-Expression \ref{eq:new_projection} then shows that $Q_{k}$ becomes a basis for a new Krylov's subspace, $\mathcal{K}_{k}(A+\mathcal{E}_{k},b)$ $= \spn \{b,\mathcal{A}_{1}b,\dots, \mathcal{A}_{k}\dots\mathcal{A}_{1}b \}$, made by a large perturbation in $A$, that gets updated in each iteration.
+Expression \ref{eq:new_projection} then shows that $Q_{k}$ becomes a basis for a new Krylov's subspace:
+
+\begin{equation}
+    \mathcal{K}_{k}(A+\mathcal{E}_{k},b)= \spn \{b,\mathcal{A}_{1}b,\dots, \mathcal{A}_{k}\dots\mathcal{A}_{1}b \}    
+\end{equation}
+ 
+
+Made by a large perturbation in $A$, that gets updated in each iteration.
 
 %FIXME: I think it's more clear, but we'll read it later for confirmation
 A new distinction should also be made between the two types of residuals appearing in the process. We denote by $r_{k}$ the exact residual of an iteration, defined as $r_{k} = \norm{b - Ax_{k}}$, but too expensive to calculate every time. And $\tilde{r}_{k}=\norm{b-AQ_{k}y_{k}}$, the one that will really be calculated throughout the algorithm. This is analogous to what was done in the conventional GMRES, where the residual being computed each time was $\norm{b-AQ_{k}y_{k}} = \norm{\beta e_{1} - H_{k}y_{k}}$, the difference being that now these two different residuals are \textbf{not} the same, as we will see below in \ref{eq:res_relation}.

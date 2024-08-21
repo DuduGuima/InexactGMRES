@@ -1,4 +1,4 @@
-\documentclass[twoside, 12pt]{report}
+\documentclass[twoside, 13pt]{report}
 \usepackage{tikz}
 \usetikzlibrary{calc}
 \usepackage[utf8]{inputenc}
@@ -38,6 +38,7 @@
 \usepackage{slantsc}
 \usepackage{url}
 \usepackage{titlesec}
+\usepackage[toc,acronym]{glossaries}
 \lstset { %
     language=python, % set backgroundcolor
     basicstyle=\footnotesize,% basic font setting
@@ -158,6 +159,10 @@
 \fancyhead[CE]{\rightmark}
 \cfoot{GUIMARAES Eduardo - POEMS Laboratory \break \color{red} This work is non confidential}
 \rfoot{\thepage}
+
+%\makeglossaries
+\makenoidxglossaries
+\input{terms}
 
 \begin{document}
 
@@ -280,6 +285,11 @@ or distributed in electronic format.
 \bibliography{bibliografia}
 \bibliographystyle{plain}
 \nocite{*}
+
+
+\glsaddall
+\printnoidxglossaries
+%\printglossaries
 
 %\include{Sections/A-Apendix}
 

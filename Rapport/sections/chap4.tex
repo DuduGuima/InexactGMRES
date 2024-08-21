@@ -45,7 +45,7 @@ If making the matrix-vector product's tolerance as 0 implies the use of the “o
 
 A good way to infer an upper bound for the inexact products would be using only rank 1 blocks for the admissible ones and measuring its execution time. To do that, we change the product tolerance to a very large value, \textit{inf} from Julia, and the product will be realized with only rank-1 blocks, since it's programmed to get the first approximation lower than its given tolerance.
 
-Of course, such thing would not happen in a practical situation, but it gives an upper bound for the speedup we should expect, the maximum value $\frac{t_{exact}}{t_{inexact}}$ could attain.
+Of course, such thing would not happen in a practical situation, but it gives an upper bound for the speedup we should expect, the maximum value $\frac{t_{exact}}{t_{inexact}}$ could attain. This initial guess for the maximum speed-up possible gave $\frac{t_{exact}}{t_{approx}}=2.4$ for the Laplace case and $\frac{t_{exact}}{t_{approx}}=3.6$ for the Helmholtz equation with the unitary circle geometry.
 
 To assemble both hierarchical matrices, $A_{L}$ and $A_{H}$, we use an overall tolerance $\epsilon$ of $10^{-8}$. The results for the speed-ups and the relative residual for each product tolerance, $\nu$, are in \autoref{fig:product_results}.
 
@@ -148,18 +148,18 @@ This test run was executed with a smaller $A$, of dimensions $1650\times 1650$, 
 
 \begin{figure}[h!]
     \centering
-    \begin{subfigure}[b]{0.5\linewidth}
+    \begin{subfigure}[b]{0.6\linewidth}
         \includesvg[width=\linewidth]{images/bound_study.svg}
         %\label{fig:bound44_norm}
         \caption{Evolution for the upper bound of $||E_{k}||$, using $\ell_{k}=1$ and $\ell_{k}=\frac{\sigma_{k}(H_{k})}{k}$.}
     \end{subfigure}
 
-    \begin{subfigure}[b]{0.3\linewidth}
+    \begin{subfigure}[b]{0.4\linewidth}
         \includesvg[width=\linewidth]{images/bounds_44_normal.svg}
         %\label{fig:bound44_norm}
         \caption{Evolution of the upper bound in $\norm{r_{k} - \tilde{r_{k}}}$ for the case $\ell_{k}=1$.}
     \end{subfigure}
-    \begin{subfigure}[b]{0.3\linewidth}
+    \begin{subfigure}[b]{0.4\linewidth}
         \includesvg[width=\linewidth]{images/bounds_44_sing.svg}
         %\label{fig:bound44_sing}
         \caption{Evolution of the upper bound in $\norm{r_{k} - \tilde{r_{k}}}$ for the case $\ell_{k}=\frac{\sigma_{k}(H_{k})}{k}$.}
@@ -172,7 +172,7 @@ The bigger picture in \autoref{fig:bound44} shows how the different bounds of th
 
 The plot shows choosing $\ell_{k} = 1$, what makes the inexact product's tolerance bigger, i.e., “allows” for a more perturbed $A$, still respects the restriction in the bound \ref{eq:borne_delta}, as we can see on the left smaller plot. This shows bigger tolerances can still be used to achieve higher acceleration, while still maintaining the residual in a proper value. The different heuristics for the product tolerances at each iteration did not result in big variations in the total amount of iterations for the Inexact GMRES.
 
-Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is assembled using the overall tolerance $\epsilon = 10^{-8}$. All product tolerances for each iteration, $\nu_{k}$, are obtained through the heuristic in \ref{eq:gen_heuristics}. We fix $A$'s dimensions as a $40000\times 40000$ matrix, and change the overall tolerance passed to the algorithm, varying from $10^{-8}$ to $10^{-2}$. The speed-up results for this fixed size test, as well as their respective relative residuals, are in \autoref{fig:cavity_results}.
+Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is assembled using the overall tolerance $\epsilon = 10^{-8}$. All product tolerances for each iteration, $\nu_{k}$, are obtained through the heuristic in \ref{eq:gen_heuristics}. We fix $A$'s dimensions as a $30000\times 30000$ matrix, and change the overall tolerance passed to the algorithm, varying from $10^{-8}$ to $10^{-2}$. The speed-up results for this fixed size test, as well as their respective relative residuals, are in \autoref{fig:cavity_results}.
 
 \begin{figure}[h!]
     \centering
@@ -188,13 +188,13 @@ Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is
         \includesvg[width=\linewidth]{images/cavity_fixsize_iterations.svg}
         \caption{Number of iterations for the fixed size cavity scattering problem.}
     \end{subfigure}
-    \caption{Speed-up, relative residual and amount of iterations results for the Inexact GMRES algorithm in the cavity scattering problem. The hierarchical matrix $A$ was assembled with $10^{-8}$ tolerance and had a fixed $40000 \times 40000$ size.}
+    \caption{Speed-up, relative residual and amount of iterations results for the Inexact GMRES algorithm in the cavity scattering problem. The hierarchical matrix $A$ was assembled with $10^{-8}$ tolerance and had a fixed $30000 \times 30000$ size.}
     \label{fig:cavity_results}
 \end{figure}
 
-As we can see, the speed-up did not cause a worse relative residual for the solution, always keeping it under the overall tolerance $\epsilon$ given for the algorithm. But, we can see the existence of a trade-off between tolerance and speed-up: lower precision in the algorithm may lead to a slower execution. The different number of iterations needed for each run, also in \autoref{fig:cavity_results}, shows that the slower results in the lower tolerance rate are not result of a larger number iterations, but maybe heavier ones in comparison to the exact algorithm.
+As we can see, the speed-up did not cause a worse relative residual for the solution, always keeping it under the overall tolerance $\epsilon$ given for the algorithm. The approach achieved a maximum speed-up of $\approx 1.3\times$ when the solution required an accuracy up to the 3rd decimal place. We also include the different number of iterations needed for each run in the same image.
 
-For the last numerical setup, we again assemble $A$ with $10^{-8}$ tolerance, but now its dimensions will change while keeping the overall tolerance passed to the algorithm, $\epsilon$, fixed at $10^{-4}$.
+For the last numerical setup, we again assemble $A$ with $10^{-8}$ tolerance, but now its dimensions will change while keeping the overall tolerance passed to the algorithm, $\epsilon$, fixed at $10^{-4}$. We assemble the results in \autoref{fig:cavity_resultsfixtol}.
 
 \begin{figure}[h!]
     \centering
@@ -213,3 +213,17 @@ For the last numerical setup, we again assemble $A$ with $10^{-8}$ tolerance, bu
     \caption{Speed-up, relative residual and amount of iterations results for the Inexact GMRES algorithm in the cavity scattering problem. The hierarchical matrix $A$ was assembled with $10^{-8}$ tolerance and used a overall tolerance $\epsilon = 10^{-4}$ to the algorithm.}
     \label{fig:cavity_resultsfixtol}
 \end{figure}
+
+As expected, larger linear systems led to a growing speed-up, achieving a maximum of $\approx 1.35\times$ to the largest system of a $40000 \times 40000$ matrix. The residuals were always inferior to the overall tolerance, with a slight increase in the residual for the largest system.
+
+\clearpage
+\section{Conclusion}
+
+We have successfully applied the relaxation strategy for the matrix-vector product using hierarchical matrices and different column quantities for its admissible low-rank blocks, based on the theory of the \acrfull{igmres}. The tests with both the product itself and with the full \acrshort{igmres} also showed the inexact method always respected the desired tolerance while also providing minor speed-ups for both operations.
+
+Since the relaxation on the matrix-vector product depends on the residuals obtained during the \acrshort{hmatrix} assembly, the acceleration we obtain will be different for each overall tolerance that was used during to process. Assembling a \acrshort{hmatrix} $A$ with a tolerance of $10^{-12}$ for example would wield batter relaxations, since we would have a larger residual list to choose the amount of columns from, but would also require bigger storage for its elements. At the end, it is highly dependable on the physical setup going to be used.
+
+The heuristic used, \ref{eq:gen_heuristics}, also leave some room to experimentation. Although the theoretical bounds are more restrictive, \ref{eq:boundE_final} from \cite{simoncini2003theory}, experimentation shows, \cite{wang2016inexactkryloviterationsrelaxation} and even this work, that more flexible values of $\ell_{k}$ in \autoref{eq:boundE_final} can be selected while still assuring the desired precision.
+
+It must also be disclosed all speed-ups here are purely algorithmic, using a single thread to execute the code. All values obtained could then be multiplied if we used parallel schemes or moving part of the calculations to a GPU. 
+

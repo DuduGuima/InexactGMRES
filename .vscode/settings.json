@@ -1,4 +1,16 @@
 {
+    "latex-workshop.latex.recipes":[
+        {
+            "name": "pdflatex, makeglossaries, pdflatex (2x)",
+            "tools": [
+                "pdflatex",
+                "makeglossaries",
+                "pdflatex",
+                "pdflatex"
+            ]
+        },
+    ],
+    
     "latex-workshop.latex.tools": [
 
 

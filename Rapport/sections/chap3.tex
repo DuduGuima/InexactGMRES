@@ -11,7 +11,8 @@ Therefore, storing $k(n+m)$ elements to write $A$, and not $n\times m$. A matrix
 
 The representation in \ref{eq::outer_product} also facilitates other operations with $A$, like matrix-vector products $Ab$ that are always present in methods like GMRES \cite{bebendorf2008hierarchical} and different kinds of norms, like $\norm{A}_{F}, \norm{A}_{2}$ \cite{bebendorf2008hierarchical}.
 
-However, even full rank matrices can be approximated by matrices with lower rank. A theorem \cite{bebendorf2008hierarchical} establishes that the closest matrix from $\mathbb{C}^{n\times m}_{k}$ of a matrix from $\mathbb{C}^{n\times m}$ can be obtained from the SVD $A = U \Sigma V^{H}$, where $\Sigma$ contains the singular valuers $\sigma_{1} \geq \sigma_{2} \dots \sigma_{m} \geq 0$ and $U,V$ are unitary.
+
+However, even full rank matrices can be approximated by matrices with lower rank. A theorem \cite{bebendorf2008hierarchical} establishes that the closest matrix from $\mathbb{C}^{n\times m}_{k}$ of a matrix from $\mathbb{C}^{n\times m}$ can be obtained from the  \acrshort{svd} $A = U \Sigma V^{H}$, where $\Sigma$ contains the singular valuers $\sigma_{1} \geq \sigma_{2} \dots \sigma_{m} \geq 0$ and $U,V$ are unitary.
 
 If $ A_{k} $ is the approximation obtained after taking the first k elements of $\Sigma$ (creating the matrix $ \Sigma_{k} $), the error between $ A $ and $ A_{k} $ is \ref{eq:error_lowrank}.
 
@@ -36,7 +37,7 @@ If a problem involves a large matrix that is not low-rank, it can have sub-block
 
 \section{ACA Method(Adaptative Cross Approximation)}
 
-As shown in the last section, the SVD method gives us an approximation of $A$ given a certain $\epsilon$, through the relation in \ref{eq:error_lowrank}. Nevertheless, this is an expensive method. Not only having a large complexity, but also requiring knowledge of every element of the block going to be compressed.
+As shown in the last section, the \acrshort{svd} method gives us an approximation of $A$ given a certain $\epsilon$, through the relation in \ref{eq:error_lowrank}. Nevertheless, this is an expensive method. Not only having a large complexity, but also requiring knowledge of every element of the block going to be compressed.
 
 The algorithm for the method is in \ref{alg:aca_method}, where $a_{ij}$ are the elements of a matrix $A \in \mathbb{R}^{n\times m}$ and $\kappa$ at the stopping criterion is the cluster parameter for a certain admissibility condition(discussed in the next section). The main objective is to approximate $A$ as $A=S_{k} + R_{k}$, $S_{k} = \sum_{l=1}^{k} u_{l}v_{l}^{t}$ and $R_{k}$ is the residual.
 
@@ -92,9 +93,9 @@ Using $I = {1,2, \dots, m}$ and $J={1,2, \dots, n}$, a subset $P$ from the set o
 
 Where if $b_{1} \cap b_{2} \neq \varnothing $ then $b_{1} = b_{2}$.
 
-From here on out we also use the notation $A_{b}$ or $A_{ts}$ for the restriction of a matrix $A$ to the indices in $b= t \times s$ where $b \in P$, $t \in I$ and $s \in J$.
+From here on out we also use the notation \gls{Ab} or $A_{ts}$ for the restriction of a matrix $A$ to the indices in $b= t \times s$ where $b \in P$, $t \in I$ and $s \in J$.
 
-The many algorithms that compress a given matrix have to make sure $A_{b}$ will either be approximated by a low-rank block or is very small(making sure storing its elements will not be expensive). The number of blocks compressed in a matrix also should not be large.
+The many algorithms that compress a given matrix have to make sure \gls{Ab} will either be approximated by a low-rank block or is very small(making sure storing its elements will not be expensive). The number of blocks compressed in a matrix also should not be large.
 
 The problem of knowing whether a block can be compressed comes from the abstract concept of \textit{admissibility}, usually relying on the specific problem we solve. Nevertheless, \textit{admissibility conditions} can be established that each one of the compressed blocks need to satisfy:
 
@@ -285,7 +286,7 @@ With this new structure, a new $P$ is called a partition of $I \times J$ if:
 And thus, we have in each of the leaves of $T_{I \times J}$, the set $\mathfrak{L}(T_{I \times J})$, one admissible block of the partition. This tree $T_{I \times J}$ for $I \times J$ is called a \textit{block cluster tree}.
 
 
-We can now define the set of hierarchical matrices using $T_{I \times J}$ to specify the partitions of its indices. The set $\mathfrak{H}(T_{I \times J},j)$ of hierarchical matrices associated with a partition in $T_{I \times J}$ and with rank k for each block $A_{b}$ is :
+We can now define the set of hierarchical matrices using $T_{I \times J}$ to specify the partitions of its indices. The set $\mathfrak{H}(T_{I \times J},j)$ of hierarchical matrices associated with a partition in $T_{I \times J}$ and with rank k for each block \gls{Ab} is :
 
 \begin{equation}\label{eq:matrix_hier}
     \mathfrak{H}(T_{I \times J},k) = \left\{  A\in \mathbb{C}^{I\times J} : \text{rank}(A_{b}) \leq k, \forall b \in P \right\}
@@ -314,7 +315,7 @@ After giving a tolerance $\nu  \leq \epsilon$ for an inexact product, the algori
 
 Where, if no value smaller than $\nu$ is found, we use all $k$ columns of each block to execute the product.
 
-So, the different perturbations $E_{k}$ used in \ref{eq:new_projection} are the matrices that, when added to $A$, leave each admissible block with the right amount $k^{'}$ of columns in \ref{eq::outer_product}, so the product can be approximated by the tolerance $\nu$. Calling the approximation of each block $A_{b}$ as $\tilde{A_{b}}$, we have \ref{eq:inexact_productblock}.
+So, the different perturbations $E_{k}$ used in \ref{eq:new_projection} are the matrices that, when added to $A$, leave each admissible block with the right amount $k^{'}$ of columns in \ref{eq::outer_product}, so the product can be approximated by the tolerance $\nu$. Calling the approximation of each block \gls{Ab} as $\tilde{A_{b}}$, we have \ref{eq:inexact_productblock}.
 
 \begin{equation}\label{eq:inexact_productblock}
     \frac{\norm{A_{b}q - \tilde{A_{b}}q }}{\norm{A_{b}q}} \leq \nu, \hspace{0.3in} \tilde{A_{b}} = \sum_{i=1} ^{k^{'}} u_{i} v_{i} ^{*}

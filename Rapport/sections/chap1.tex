@@ -6,7 +6,8 @@ We consider the solution of a linear system, with $A \in \mathbb{C}^{n \times n}
     Ax=b
 \end{equation}
 
-A system that can be solved by direct methods, like \textit{Gaussian elimination} and \textit{LU decomposition}. The problem with such approaches comes with their complexity: direct methods usually have $\mathcal{O}(m^{3})$ complexity \cite{trefethen1998numerical}, where $m$ is the dimension of the input matrix. Since we apply larger matrices in practice, to achieve high resolution in the solution of PDEs, the direct algorithms become too slow, and we require a more efficient approach.
+
+A system that can be solved by direct methods, like \textit{Gaussian elimination} and \textit{LU decomposition}. The problem with such approaches comes with their complexity: direct methods usually have $\mathcal{O}(m^{3})$ complexity \cite{trefethen1998numerical}, where $m$ is the dimension of the input matrix. Since we apply larger matrices in practice, to achieve high resolution in the solution of a \acrshort{pde}, the direct algorithms become too slow, and we require a more efficient approach.
 
 
 These iterable methods find, after a certain number of iterations, a sequence ${x_{k}}$ that converges to $x$, the exact solution of the problem \ref{eq:linear_systinit}. This should be done while making the large-scale computations faster, i.e., obtaining a complexity smaller than $\mathcal{O}(m^{3})$, and keeping a maximum tolerance between the iterable solution and the exact one.
@@ -30,7 +31,8 @@ To achieve a smaller complexity than $\mathcal{O}(m^{3})$, Iterative Methods emp
 Therefore, if $k<<m$, i.e., the number of iterations is sufficiently smaller than $m$, the iterative methods become more efficient than the direct ones.
 
 
-The method we employ in our problems is the Generalized Minimal Residuals(GMRES), explained later in the report. Its main idea involves the projection of a high dimensional problem, as large as $A$ in \ref{eq:residual}, in a lower dimensional \textit{Krylov Space}:
+
+The method we employ in our problems is the \acrfull{gmres}, explained later in the report. Its main idea involves the projection of a high dimensional problem, as large as $A$ in \ref{eq:residual}, in a lower dimensional \textit{Krylov Space}:
 
 \begin{equation}\label{eq:xkry}
     x_{k} \in \spn(b,Ab,A^{2}b,...,A^{k-1}b)
