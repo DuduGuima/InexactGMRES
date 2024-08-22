@@ -1,7 +1,7 @@
 ## Load Inti and prepare the environment with weak dependencies
 
 using Inti
-Inti.stack_weakdeps_env!(; update = false)
+Inti.stack_weakdeps_env!(; update=false)
 
 #-
 
@@ -18,6 +18,8 @@ using SpecialFunctions
 using SparseArrays
 using BenchmarkTools
 #-
+using CSV
+using DataFrames
 
 #Inexact
 using InexactGMRES
@@ -33,17 +35,17 @@ k = 2π / λ # wavenumber
 
 ##Definig custom kernel to make L in a single calculation(and leave it as a hmatrix)
 function helmholtz_custom(target, source, k)
-    x,y,ny = Inti.coords(target),Inti.coords(source),Inti.normal(source)
-    r = x-y
+    x, y, ny = Inti.coords(target), Inti.coords(source), Inti.normal(source)
+    r = x - y
     d = norm(r)
     filter = !(d <= Inti.SAME_POINT_TOLERANCE)
     sod_term = im / 4 * hankelh1(0, k * d)
     dod_term = (im * k / 4 / d * hankelh1(1, k * d) .* dot(r, ny))
-    return filter*(dod_term - im*k*sod_term)
+    return filter * (dod_term - im * k * sod_term)
 end
 
 K = let k = k
-    (t,q) -> helmholtz_custom(t,q,k)
+    (t, q) -> helmholtz_custom(t, q, k)
 end
 
 
@@ -60,7 +62,7 @@ gmsh.option.setNumber("Mesh.MeshSizeMax", meshsize)
 gmsh.open(filename)
 gmsh.model.mesh.generate(1)
 gmsh.model.mesh.setOrder(gorder)
-msh = Inti.import_mesh(; dim = 2)
+msh = Inti.import_mesh(; dim=2)
 gmsh.finalize()
 
 ## Extract the entities and elements of interest
@@ -80,7 +82,7 @@ Q = Inti.Quadrature(Γ_msh; qorder)
 println("Number of quadrature points: ", length(Q))
 
 ## Setup the integral operators
-pde = Inti.Helmholtz(; dim = 2, k)
+pde = Inti.Helmholtz(; dim=2, k)
 ## Right-hand side given by Dirichlet trace of plane wave
 g = map(Q) do q
     # normal derivative of e^{ik*d⃗⋅x}
@@ -90,20 +92,20 @@ end ## Neumann trace on boundary
 
 ## Use GMRES to solve the linear system
 ε = 1e-8
-Lop = Inti.IntegralOperator(K,Q,Q)
-L = Inti.assemble_hmatrix(Lop; rtol = ε)
-Id = sparse((0.5 + 0*im)I,size(L))
-axpy!(1.0,Id,L) # in place sum of L
+Lop = Inti.IntegralOperator(K, Q, Q)
+L = Inti.assemble_hmatrix(Lop; rtol=ε)
+Id = sparse((0.5 + 0 * im)I, size(L))
+axpy!(1.0, Id, L) # in place sum of L
 
 # δL = Inti.adaptive_correction(Lop;tol=1e-4,maxdist=5*meshsize)
 # axpy!(1.0,δL,L) # in place sum of L
 
 #arrays to store results
 range_values = Vector{Float64}()
-push!(range_values,Inf)
+push!(range_values, Inf)
 
-for i=2:Int(-log10(ε))
-    push!(range_values,10.0^(-i))
+for i = 2:Int(-log10(ε))
+    push!(range_values, 10.0^(-i))
 end
 
 results_exact_mean = zeros(length(range_values))
@@ -147,12 +149,12 @@ H_iprod = HMatrices.ITerm(L, 0.0)
 # b5 = @benchmark mul!($y_approx, $H_iprod, $g, 1, 0)
 
 ##
-println("Current progress: ",repeat(" ",32),"0%")
-for i=1:length(range_values)
-    benchr_approx = @benchmark igmres($L,$g,tol=range_values[$i]) 
-    benchr_exact = @benchmark InexactGMRES.test_gmres($L,$g,tol=range_values[$i])
+println("Current progress: ", repeat(" ", 32), "0%")
+for i = 1:length(range_values)
+    benchr_approx = @benchmark igmres($L, $g, tol=range_values[$i])
+    benchr_exact = @benchmark InexactGMRES.test_gmres($L, $g, tol=range_values[$i])
     #benchr_exact = @benchmark gmres($L,$g;reltol=range_values[$i])
-    
+
 
     results_approx_mean[i] = mean(benchr_approx).time
     results_exact_mean[i] = mean(benchr_exact).time
@@ -164,20 +166,20 @@ for i=1:length(range_values)
     results_approx_min[i] = minimum(benchr_approx).time
 
 
-    y_exact = gmres(L,g;reltol=range_values[i])
-    
-    y_approx,res_aprox,it = igmres(L,g,tol=range_values[i])
+    y_exact = gmres(L, g; reltol=range_values[i])
+
+    y_approx, res_aprox, it = igmres(L, g, tol=range_values[i])
 
     results_itn[i] = it
-    push!(rel_error_sol, norm(L*y_approx - g)/norm(g))
-    marker = i/length(range_values)
+    push!(rel_error_sol, norm(L * y_approx - g) / norm(g))
+    marker = i / length(range_values)
     #println("Current % of measurement: ",100*(i/length(range_values)))
-    println("Current progress: ",repeat("|",Int(round(marker*30))),repeat(" ",32-Int(round(marker*30))),round(100*marker,digits=1),"%")
+    println("Current progress: ", repeat("|", Int(round(marker * 30))), repeat(" ", 32 - Int(round(marker * 30))), round(100 * marker, digits=1), "%")
 end
 
 
 
-speed_up = (results_exact_min ) ./ results_approx_min
+speed_up = (results_exact_min) ./ results_approx_min
 
-df = DataFrame("Rel. error" => rel_error_sol, "Speed up" => speed_up, "Iterations"=>results_itn)
+df = DataFrame("Rel. error" => rel_error_sol, "Speed up" => speed_up, "Iterations" => results_itn)
 CSV.write("Cavity_results.csv", df)
