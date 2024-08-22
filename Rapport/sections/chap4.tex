@@ -172,7 +172,7 @@ The bigger picture in \autoref{fig:bound44} shows how the different bounds of th
 
 The plot shows choosing $\ell_{k} = 1$, what makes the inexact product's tolerance bigger, i.e., “allows” for a more perturbed $A$, still respects the restriction in the bound \ref{eq:borne_delta}, as we can see on the left smaller plot. This shows bigger tolerances can still be used to achieve higher acceleration, while still maintaining the residual in a proper value. The different heuristics for the product tolerances at each iteration did not result in big variations in the total amount of iterations for the Inexact GMRES.
 
-Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is assembled using the overall tolerance $\epsilon = 10^{-8}$. All product tolerances for each iteration, $\nu_{k}$, are obtained through the heuristic in \ref{eq:gen_heuristics}. We fix $A$'s dimensions as a $30000\times 30000$ matrix, and change the overall tolerance passed to the algorithm, varying from $10^{-8}$ to $10^{-2}$. The speed-up results for this fixed size test, as well as their respective relative residuals, are in \autoref{fig:cavity_results}.
+Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is assembled using the overall tolerance $\epsilon = 10^{-12}$. All product tolerances for each iteration, $\nu_{k}$, are obtained through the heuristic in \ref{eq:gen_heuristics}. We fix $A$'s dimensions as a $30000\times 30000$ matrix, and change the overall tolerance passed to the algorithm, varying from $10^{-12}$ to $10^{-2}$. The speed-up results for this fixed size test, as well as their respective relative residuals, are in \autoref{fig:cavity_results}.
 
 \begin{figure}[h!]
     \centering
@@ -188,13 +188,13 @@ Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is
         \includesvg[width=\linewidth]{images/cavity_fixsize_iterations.svg}
         \caption{Number of iterations for the fixed size cavity scattering problem.}
     \end{subfigure}
-    \caption{Speed-up, relative residual and amount of iterations results for the Inexact GMRES algorithm in the cavity scattering problem. The hierarchical matrix $A$ was assembled with $10^{-8}$ tolerance and had a fixed $30000 \times 30000$ size.}
+    \caption{Speed-up, relative residual and amount of iterations results for the Inexact GMRES algorithm in the cavity scattering problem. The hierarchical matrix $A$ was assembled with $10^{-12}$ tolerance and had a fixed $30000 \times 30000$ size.}
     \label{fig:cavity_results}
 \end{figure}
 
-As we can see, the speed-up did not cause a worse relative residual for the solution, always keeping it under the overall tolerance $\epsilon$ given for the algorithm. The approach achieved a maximum speed-up of $\approx 1.3\times$ when the solution required an accuracy up to the 3rd decimal place. We also include the different number of iterations needed for each run in the same image.
+As we can see, the speed-up did not cause a worse relative residual for the solution, always keeping it under the overall tolerance $\epsilon$ given for the algorithm. The approach achieved a maximum speed-up of $\approx 1.4\times$ when the solution required an accuracy up to the 3rd decimal place. We also include the different number of iterations needed for each run in the same image.
 
-For the last numerical setup, we again assemble $A$ with $10^{-8}$ tolerance, but now its dimensions will change while keeping the overall tolerance passed to the algorithm, $\epsilon$, fixed at $10^{-4}$. We assemble the results in \autoref{fig:cavity_resultsfixtol}.
+For the last numerical setup, we again assemble $A$ with $10^{-12}$ tolerance, but now its dimensions will change while keeping the overall tolerance passed to the algorithm, $\epsilon$, fixed at $10^{-4}$. We assemble the results in \autoref{fig:cavity_resultsfixtol}.
 
 \begin{figure}[h!]
     \centering
@@ -214,7 +214,7 @@ For the last numerical setup, we again assemble $A$ with $10^{-8}$ tolerance, bu
     \label{fig:cavity_resultsfixtol}
 \end{figure}
 
-As expected, larger linear systems led to a growing speed-up, achieving a maximum of $\approx 1.35\times$ to the largest system of a $40000 \times 40000$ matrix. The residuals were always inferior to the overall tolerance, with a slight increase in the residual for the largest system.
+As expected, larger linear systems led to a growing speed-up, achieving a maximum of $\approx 1.53\times$ to the largest system of a $40000 \times 40000$ matrix. The residuals were always inferior to the overall tolerance, with a slight increase in the residual for the largest system.
 
 \clearpage
 \section{Conclusion}
