@@ -294,6 +294,11 @@ We can now define the set of hierarchical matrices using $T_{I \times J}$ to spe
 
 %FIXME: HMatrix figure right here, make things more visual
 
+\begin{figure}[h!]
+    \centering 
+    \includegraphics[width=0.4\linewidth]{images/hmatrix_bebendorf.png}
+    \caption{Usual representation of a Hierarchical Matrix, with each block's rank. Obtained from \cite{bebendorf2008hierarchical}.}
+\end{figure}
 
 In practice, \ref{alg:aca_method} works with $\epsilon$ given by the user during the assembling of the Hierarchical Matrix, and the compression acts in each of the admissible blocks that will then be represented as low rank matrices, shown in \ref{eq::outer_product}. We also store each one of the residuals obtained in the outer loop of \ref{alg:aca_method}.
 
@@ -329,19 +334,16 @@ And then, since the Frobenius norm of the hierarchical matrix is \cite{hackbusch
 \end{equation}
 
 %this line is completely wrong, ill change it afterwards
-But from the ACA Method \ref{eq:stop_ACA}, we know the method stops as to make each block's successive approximation inferior to previous one by a factor of $\epsilon$, then:
+But from \autoref{eq:inexact_productblock}, we know how the perturbation norm relates to the original block's one, then:
 
 \begin{equation}
-    \norm{E_{k}}_{F} = \sqrt{\sum_{b \in P} \norm{A_{b} - \tilde{A_{b}}}_{F}^{2} } \leq \sqrt{\sum_{b\in P}\epsilon^{2}\norm{A_{b}}_{F}^{2}} = \epsilon \sqrt{\sum_{b \in P}\norm{A_{b}}_{F}^{2}}
-    \leq \epsilon \norm{A}_{F}
+    \norm{E_{k}}_{F} = \sqrt{\sum_{b \in P} \norm{A_{b} - \tilde{A_{b}}}_{F}^{2} } \leq \sqrt{\sum_{b\in P}\nu^{2}\norm{A_{b}}_{F}^{2}} = \nu \sqrt{\sum_{b \in P}\norm{A_{b}}_{F}^{2}}
+    \leq \nu \norm{A}_{F}
 \end{equation}
 
 
 %FIXME: Fix this, ||Ek|| != e_{k} ||Ek|| prop e_{k} ||A||
 % So, with the use of the relative errors and the Frobenius norm, $\norm{E_{i}}$ appearing in the bounds of section 2.2 can be exchanged by $\epsilon_{i}$, the tolerance used for that specific approximation in the inexact products.
 
-With this result, we can then substitute $\norm{E_{k}}$ appearing in the upper bounds of \autoref{chap:gmres}, using the fact that $E_{k}\propto \epsilon_{k} \norm{A}$, where $\epsilon_{k}$ is the tolerance used in the k-th inexact matrix-vector product.
-
-%FIXME: write sigma = ||(\tilde{B} b) - B b|| relate it to the block approximations
-
+With this result, we can then substitute $\norm{E_{k}}$ appearing in the upper bounds of \autoref{chap:gmres}, using the fact that $E_{k}\propto \nu_{k} \norm{A}$, where $\nu_{k}$ is the tolerance used in the \textit{k-th} inexact matrix-vector product.
 

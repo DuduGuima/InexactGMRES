@@ -7,19 +7,91 @@
 
 \newglossaryentry{Ab}{
     name=$A_{b}$,
-    description={Restriction of $A$ to the indices of the block $b$.}
+    description={Restriction of $A$ to the indices of the block $b$}
 }
 
 \newglossaryentry{epsilon}{
     name=$\epsilon$,
-    description={Overall tolerance used to build a hierarchical matrix or input into the IGMRES/GMRES Algorithm.}
+    description={Overall tolerance used to build a hierarchical matrix or input into the IGMRES/GMRES Algorithm}
 }
 
 \newglossaryentry{mu}{
-    name=$\mu$,
-    description={Tolerance used in the inexact product between a hierarchical matrix and a vector.}
+    name=$\nu$,
+    description={Tolerance used in the inexact product between a hierarchical matrix and a vector}
 }
 
 \newacronym{hmatrix}{HMatrix}{Hierarchical Matrix}
 
 \newacronym{aca}{ACA}{Adaptive Cross-Approximation}
+
+\newglossaryentry{bigo}{
+    name=$\mathcal{O}(x)$,
+    description={Big O notation for the complexity of an algorithm, stating it scales with \textit{x}}
+}
+
+\newglossaryentry{complex}{
+    name=$\mathbb{C}$,
+    description={Set of the complex numbers}
+}
+
+
+\newglossaryentry{complexn}{
+    name=$\mathbb{C}^{n}$,
+    description={Set of the vectors with n complex elements}
+}
+
+\newglossaryentry{complexnm}{
+    name=$\mathbb{C}^{n \times m}$,
+    description={Set of the matrices with dimension $n \times m$ and complex elements}
+}
+
+\newglossaryentry{krylov}{
+    name=$\mathcal{K}_{k}(A\text{,}b)$,
+    description={Krylov subspace spanned by the vectors $\{b, Ab, \dots, A^{k-1}b\}$}
+}
+
+\newglossaryentry{Qk}{
+    name=$Q_{k}$,
+    description={Matrix with new orthonormal basis for Krylov subspace obtained in the
+            $k-th$ iteration of the GMRES/IGMRES algorithm}
+}
+
+\newglossaryentry{hessenberg}{
+    name=$H_{k}$,
+    description={$(k+1)\times k$ Hessenberg's matrix obtained in the $k-th$ iteration of the GMRES/IGMRES algorithm}
+}
+
+\newglossaryentry{givens}{
+    name=$G(i\text{,}i+1)$,
+    description={Givens rotation's operator that zeroes out $(i+1)-th$ element of a given column vector}
+}
+
+\newglossaryentry{deltak}{
+    name=$\delta_{k}$,
+    description={Difference between exact and measured residuals in the IGMRES algorithm}
+}
+
+\newglossaryentry{ek}{
+    name=$E_{k}$,
+    description={Perturbation of the coefficient matrix $A$ in the $k-th$ iteration of the IGMRES}
+}
+
+\newglossaryentry{lk}{
+    name=$\ell_{k}$,
+    description={Order term to be used in the bound for $E_{k}$ and one of the values to be adjusted in the heuristic of the IGMRES algorithm}
+}
+
+\newglossaryentry{sigmak}{
+    name=$\sigma_{k}(A)$,
+    description={$k-th$ singular value of the matrix $A$, ordered in descending order}
+}
+
+\newglossaryentry{ij}{
+    name=$I\text{,}J$,
+    description={Index set for a certain matrix or verctor}
+}
+
+\newglossaryentry{hmatrixset}{
+    name=$\mathfrak{H}(T_{I \times J}\text{,}k)$,
+    description={Set of the hierarchical matrices with partitions $P\subset T_{I\times J}$ and maximum rank between sub-blocks $k$}
+}

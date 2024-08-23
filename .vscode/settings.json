@@ -4,8 +4,8 @@
             "name": "pdflatex, makeglossaries, pdflatex (2x)",
             "tools": [
                 "pdflatex",
+                "bibtex",
                 "makeglossaries",
-                "pdflatex",
                 "pdflatex"
             ]
         },
@@ -141,6 +141,13 @@
                 "%DOC%.tex"
             ],
             "env": {}
-        }
+        },
+        {
+            "name": "makeglossaries",
+            "command": "makeglossaries",
+            "args": [
+              "%DOCFILE%"
+            ]
+          }
     ]
 }

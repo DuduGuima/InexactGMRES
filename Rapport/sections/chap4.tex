@@ -63,9 +63,9 @@ To assemble both hierarchical matrices, $A_{L}$ and $A_{H}$, we use an overall t
     \label{fig:product_results}
 \end{figure}
 
-We leave the identity curve in the plot on the right due to compare each inexact product's residual with the minimum accuracy that should be satisfied by its resulting vector. And since the matrix-product is accelerated, we should expect some speedup in the algorithm as well.
+We leave the identity curve in the plot on \autoref{fig:product_results}(b) to compare each inexact product's residual with the minimum accuracy that should be satisfied by its resulting vector. And since the matrix-product is accelerated, as shown in \autoref{fig:product_results}(a), we should expect some speedup in the algorithm as well.
 
-For a second evaluation of the inexact product, we change our setup. Fixing the product tolerance $\nu=10^{-6}$, now the dimensions of $A_{L}$ and $A_{H}$ are variable, with both still being assembled with tolerance $10^{-8}$. The observed speed-ups are in \autoref{fig:product_fixtol_results}.
+For a second evaluation of the inexact product, we change our setup. Fixing the product tolerance $\nu=10^{-6}$, now the dimensions of $A_{L}$ and $A_{H}$ are variable, with both still being assembled with tolerance $10^{-8}$. The observed speed-ups and residuals to each case are in \autoref{fig:product_fixtol_results}.
 
 \begin{figure}[h!]
     \centering
@@ -81,7 +81,7 @@ For a second evaluation of the inexact product, we change our setup. Fixing the 
     \label{fig:product_fixtol_results}
 \end{figure}
 
-%FIXME: talk a little about what these curves mean 
+Again \autoref{fig:product_fixtol_results}(a) shows a speed-up that increases with each matrix size, indicating we should expect similar results to the complex cavity problem ahead. \autoref{fig:product_fixtol_results}(b) also shows the inexact product maintains the desired tolerance for all matrix dimensions.
 
 It should be noted that the acceleration is highly dependent on the compression of the coefficient matrix. Matrices with low maximum rank of each block would not receive a big boost, since the number of columns used for each sub-block might not vary much with each different tolerance.
 
@@ -93,7 +93,7 @@ It should be noted that the acceleration is highly dependent on the compression 
 
 We mentioned the inexact product's tolerance, $\nu$, multiple times throughout this study, but haven't really disclosed \textbf{how} to obtain it. For the simple example of the matrix-vector product of before, we could simply define it as we please, but the situation changes for the Inexact GMRES. For the latter, everything needs to be made as to give a converging solution, specially to respect all bound found in the inexact session of \autoref{chap:gmres}.
 
-As told in \autoref{chap:hmatrices}, we adjust the inexact matrix-vector product with the number of columns used by each one of the subblocks during the operation.
+As told in \autoref{chap:hmatrices}, we adjust the inexact matrix-vector product with the number of columns used by each one of the sub-blocks during the operation.
 
 We use a heuristic to obtain, at each iteration $k$, a product tolerance $\nu_{k}$ as to keep $||E_{k}||$ lower than the bounds in \autoref{eq:bound_E} or \autoref{eq:boundE_final}. Then $\nu_{k}$ is later converted to an integer, the number of columns used by each admissible block, through algorithm \ref{alg:inexact_product}.
 
@@ -168,11 +168,11 @@ This test run was executed with a smaller $A$, of dimensions $1650\times 1650$, 
     \label{fig:bound44}
 \end{figure}
 
-The bigger picture in \autoref{fig:bound44} shows how the different bounds of the perturbation's behave through iterations. Recalling that a greater tolerance means a bigger room to work with larger perturbations of $A$, what can make the inexact matrix-vector product faster.
+The picture in \autoref{fig:bound44}(a) shows how the different bounds of the perturbation's behave through iterations. Recalling that a greater tolerance means a bigger room to work with larger perturbations of $A$, what can make the inexact matrix-vector product faster.
 
-The plot shows choosing $\ell_{k} = 1$, what makes the inexact product's tolerance bigger, i.e., “allows” for a more perturbed $A$, still respects the restriction in the bound \ref{eq:borne_delta}, as we can see on the left smaller plot. This shows bigger tolerances can still be used to achieve higher acceleration, while still maintaining the residual in a proper value. The different heuristics for the product tolerances at each iteration did not result in big variations in the total amount of iterations for the Inexact GMRES.
+The plot shows choosing $\ell_{k} = 1$, what makes the inexact product's tolerance bigger, i.e., “allows” for a more perturbed $A$, still respects the restriction in the bound \ref{eq:borne_delta}, as we can see on \autoref{fig:bound44}(b). This shows bigger tolerances can still be used to achieve higher acceleration, while still maintaining the residual in a proper value. The different heuristics for the product tolerances at each iteration did not result in big variations in the total amount of iterations for the Inexact GMRES. The more restrictive value of $\ell_{k}=\frac{\sigma_{m}(H_{m})}{m}$ also maintained the restriction on the same bound, in \autoref{fig:bound44}(c), as expected.
 
-Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is assembled using the overall tolerance $\epsilon = 10^{-12}$. All product tolerances for each iteration, $\nu_{k}$, are obtained through the heuristic in \ref{eq:gen_heuristics}. We fix $A$'s dimensions as a $30000\times 30000$ matrix, and change the overall tolerance passed to the algorithm, varying from $10^{-12}$ to $10^{-2}$. The speed-up results for this fixed size test, as well as their respective relative residuals, are in \autoref{fig:cavity_results}.
+Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is assembled using the overall tolerance $\epsilon = 10^{-12}$. All product tolerances for each iteration, $\nu_{k}$, are obtained through the heuristic in \autoref{eq:gen_heuristics}. We fix $A$'s dimensions as a $30000\times 30000$ matrix, and change the overall tolerance passed to the algorithm, varying from $10^{-12}$ to $10^{-2}$. The speed-up results for this fixed size test, as well as their respective relative residuals, are in \autoref{fig:cavity_results}.
 
 \begin{figure}[h!]
     \centering
@@ -192,7 +192,7 @@ Passing on to the speed-up evaluation, we repeat a similar numeral setup: $A$ is
     \label{fig:cavity_results}
 \end{figure}
 
-As we can see, the speed-up did not cause a worse relative residual for the solution, always keeping it under the overall tolerance $\epsilon$ given for the algorithm. The approach achieved a maximum speed-up of $\approx 1.4\times$ when the solution required an accuracy up to the 3rd decimal place. We also include the different number of iterations needed for each run in the same image.
+As we can see in \autoref{fig:cavity_results}(b), the speed-up did not cause a worse relative residual for the solution, always keeping it under the overall tolerance $\epsilon$ given for the algorithm. The approach achieved a maximum speed-up of $\approx 1.4\times$ when the solution required an accuracy up to the 3rd decimal place, as shown in \autoref{fig:cavity_results}(a). We also include the different number of iterations needed for each run in \ref{fig:cavity_results}(c), having a maximum of 10 additional iterations for the \acrshort{igmres}.
 
 For the last numerical setup, we again assemble $A$ with $10^{-12}$ tolerance, but now its dimensions will change while keeping the overall tolerance passed to the algorithm, $\epsilon$, fixed at $10^{-4}$. We assemble the results in \autoref{fig:cavity_resultsfixtol}.
 
@@ -214,16 +214,16 @@ For the last numerical setup, we again assemble $A$ with $10^{-12}$ tolerance, b
     \label{fig:cavity_resultsfixtol}
 \end{figure}
 
-As expected, larger linear systems led to a growing speed-up, achieving a maximum of $\approx 1.53\times$ to the largest system of a $40000 \times 40000$ matrix. The residuals were always inferior to the overall tolerance, with a slight increase in the residual for the largest system.
+As expected, larger linear systems led to a growing speed-up, achieving a maximum of $\approx 1.53\times$ to the largest system of a $40000 \times 40000$ matrix, shown in \autoref{fig:cavity_resultsfixtol}(a). The residuals were always inferior to the overall tolerance, with a slight increase in the residual for the largest system, as shown in \autoref{fig:cavity_resultsfixtol}(b). \autoref{fig:cavity_resultsfixtol}(c) also shows the largest size used for the linear system also required around 50 additional iterations in comparison with the conventional version of the GMRES.
 
 \clearpage
 \section{Conclusion}
 
-We have successfully applied the relaxation strategy for the matrix-vector product using hierarchical matrices and different column quantities for its admissible low-rank blocks, based on the theory of the \acrfull{igmres}. The tests with both the product itself and with the full \acrshort{igmres} also showed the inexact method always respected the desired tolerance while also providing minor speed-ups for both operations.
+We have successfully applied the relaxation strategy for the matrix-vector product using hierarchical matrices and different column quantities for its admissible low-rank blocks, based on the theory of the \acrfull{igmres}. The tests with both the product itself and with the full \acrshort{igmres} also showed the inexact method always respected the desired tolerance while also providing speed-ups for both operations. Although the acceleration was indeed measurable, it was not comparable to the results other alternative methods, like the FMM \cite{wang2016inexactkryloviterationsrelaxation}, presented before.
 
 Since the relaxation on the matrix-vector product depends on the residuals obtained during the \acrshort{hmatrix} assembly, the acceleration we obtain will be different for each overall tolerance that was used during to process. Assembling a \acrshort{hmatrix} $A$ with a tolerance of $10^{-12}$ for example would wield batter relaxations, since we would have a larger residual list to choose the amount of columns from, but would also require bigger storage for its elements. At the end, it is highly dependable on the physical setup going to be used.
 
 The heuristic used, \ref{eq:gen_heuristics}, also leave some room to experimentation. Although the theoretical bounds are more restrictive, \ref{eq:boundE_final} from \cite{simoncini2003theory}, experimentation shows, \cite{wang2016inexactkryloviterationsrelaxation} and even this work, that more flexible values of $\ell_{k}$ in \autoref{eq:boundE_final} can be selected while still assuring the desired precision.
 
-It must also be disclosed all speed-ups here are purely algorithmic, using a single thread to execute the code. All values obtained could then be multiplied if we used parallel schemes or moving part of the calculations to a GPU. 
+It must also be disclosed all speed-ups here are purely algorithmic, using a single thread to execute the code. All values obtained could then be multiplied if we used parallel schemes or moving part of the calculations to a GPU.
 

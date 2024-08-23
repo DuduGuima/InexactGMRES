@@ -53,7 +53,7 @@ An initial version of the GMRES is in \ref{alg:gmres_init}. The lines 4 to 12 co
 \begin{algorithm}
     \caption{Initial GMRES}\label{alg:gmres_init}
     \begin{algorithmic}[1]
-        \State $A \in \mathbb{K}^{n \times n}$ and $b\in \mathbb{K}^{n}$
+        \State $A \in \mathbb{C}^{n \times n}$ and $b\in \mathbb{C}^{n}$
         \State $x=0, \beta=\norm{b},q_{1}=\frac{b}{\beta}$
         \For{$k=1,2,\dots$}
         \For{$j=1,2,\dots k$}
@@ -115,7 +115,7 @@ A simple algorithm to this end can be written as \ref{alg:triang_system}.
 \begin{algorithm}
     \caption{Backwards substitution}\label{alg:triang_system}
     \begin{algorithmic}[1]
-        \State $A \in \mathbb{K}^{n \times n}, \{ A \}_{ij} = a_{ij}$ and $b\in \mathbb{K}^{n}$
+        \State $A \in \mathbb{C}^{n \times n}, \{ A \}_{ij} = a_{ij}$ and $b\in \mathbb{C}^{n}$
         \For{$k=n,n-1,\dots$}
         \State $y_{k} = b_{k}$
         \For{$j=n,n-1,\dots k+1$}
